@@ -121,25 +121,13 @@ print('MATRIX A : OK')
 # Ou bien utiliser scipy si c'est trop lourd à inverser
 c, X = spl.eig(A,B)
 
+sigma1 = k*np.imag(c[:Ny])
+sigma2 = k*np.imag(c[Ny:])
+
 
 
 print('COMPUTATION : OK')
 print('/////////////////////////////////////////////////////')
-
-'''#extract = c * X ou X
-extract = c*X
-
-
-
-phi = X[:N,:N]
-phi2 = X[:N,N:]
-
-theta = X[N:,:N]
-theta2 = X[N:,N:]
-
-PHI = np.real(phi + phi2)
-THETA = np.real(theta + theta2)'''
-
 
 
 
@@ -153,137 +141,17 @@ print('PLOT...')
 
 
 
-'''
-fig, (ax) = plt.subplots(1,2,figsize=(15,6))
-
-# vmin , vmax pour phi
-if np.abs(np.min(PHI)) > np.abs(np.max(PHI)):
-	vmin, vmax = np.min(PHI), -np.min(PHI)
-else:
-	vmin, vmax = -np.max(PHI), np.min(PHI)
-
-
-im = ax[0].contourf(x_l,y_l,PHI,cmap='RdBu_r',vmin=vmin,vmax=vmax)
-fig.colorbar(im,label=r'$\phi$')
-
-
-# vmin , vmax pour theta
-if np.abs(np.min(THETA)) > np.abs(np.max(THETA)):
-	vmin, vmax = np.min(THETA), -np.min(THETA)
-else:
-	vmin, vmax = -np.max(THETA), np.min(THETA)
-
-
-im = ax[1].contourf(x_l,y_l,THETA,cmap='RdBu_r',vmin=vmin,vmax=vmax)
-fig.colorbar(im,label=r'$\Theta$')
-
-
-
-
-phi = extract[:N,:N]
-theta = extract[N:,:N]
-
-
-phi2 = extract[:N,N:]
-theta2 = extract[N:,N:]
-fig, (ax) = plt.subplots(2,2,figsize=(15,10))
-
-ax[0,0].set_title(r'$\phi$')
-ax[0,0].set_ylabel('1')
-im = ax[0,0].contourf(x_l,y_l,phi,cmap='RdBu_r')
-fig.colorbar(im)
-ax[1,0].set_ylabel('2')
-im = ax[1,0].contourf(x_l,y_l,phi2,cmap='RdBu_r')
-fig.colorbar(im)
-
-
-im = ax[0,1].contourf(x_l,y_l,theta,cmap='RdBu_r')
-fig.colorbar(im)
-im = ax[1,1].contourf(x_l,y_l,theta2,cmap='RdBu_r')
-fig.colorbar(im)
-ax[0,1].set_title(r'$\Theta$')'''
-
-
-
-
-####################
-# test plot
-
-
-
-# Extract dominant eigenmode (largest eigenvalue)
-idx = np.argmax(np.real(c))  # Index of the most dominant eigenvalue
-phi_mode = np.real(X[:Ny, idx])
-theta_mode = np.real(X[Ny:, idx])
-# Reconstruct 2D fields (assume you're in 2D space)
-PHI_2D = np.outer(phi_mode, np.exp(1j * k * y_l))  # Example, modify as needed
-THETA_2D = np.outer(theta_mode, np.exp(1j * k * y_l))  # Example, modify as needed
-# Plot reconstructed 2D fields
-fig, (ax) = plt.subplots(1, 2, figsize=(15, 6))
-im_phi = ax[0].pcolormesh(k, y_l, np.real(PHI_2D), cmap='RdBu_r')
-ax[0].set_xlabel(r'$k$')
-ax[0].set_ylabel(r'$y$')
-fig.colorbar(im_phi, ax=ax[0])
-ax[0].set_title(r'Reconstructed $\phi$')
-
-im_theta = ax[1].pcolormesh(k, y_l, np.real(THETA_2D), cmap='RdBu_r')
-fig.colorbar(im_theta, ax=ax[1])
-ax[1].set_title(r'Reconstructed $\Theta$')
-ax[1].set_xlabel(r'$k$')
-ax[1].set_ylabel(r'$y$')
-
-
-
 plt.figure(figsize=(8, 6))
-plt.scatter(np.real(c), np.imag(c), color='b', label='Eigenvalues')
+plt.scatter(k, sigma1, color='b', label=r'$\sigma_1$')
+plt.scatter(k, sigma2, color='r', label=r'$\sigma_2$')
 plt.axhline(0, color='k', linestyle='--', label='Real axis')
 plt.axvline(0, color='k', linestyle='--', label='Imaginary axis')
-plt.title('Eigenvalue Spectrum')
-plt.xlabel('Real part of eigenvalue')
-plt.ylabel('Imaginary part of eigenvalue')
+plt.title('Eigenvalue and wavenumber')
+plt.xlabel(r'$k$')
+plt.ylabel(r'$\sigma = \mathbf{Im}\{c\}.k$')
 plt.legend()
 
 
-
-'''
-fig, (ax) = plt.subplots(1,2,figsize=(15,6))
-
-ax[0].plot(k,np.real(PHI_2D[0,:]))
-ax[0].plot(k,np.real(PHI_2D[1,:]))
-ax[0].set_xlabel(r'$k$')
-ax[0].set_ylabel(r'$\phi$')
-ax[0].legend()
-
-ax[1].plot(k,np.real(THETA_2D[0,:]))
-ax[1].plot(k,np.real(THETA_2D[1,:]))
-ax[1].set_xlabel(r'$k$')
-ax[1].set_ylabel(r'$\Theta$')
-ax[1].legend()
-
-
-
-
-
-
-
-phi_mode = X[:Ny, idx]
-theta_mode = X[Ny:, idx]
-
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
-ax1.plot(y_l,np.real(phi_mode), label='Re($\phi$)')
-ax1.plot(y_l,np.imag(phi_mode), label='Im($\phi$)', linestyle='--')
-ax1.set_ylabel(r'$\phi$')
-ax1.set_xlabel(r'$y$')
-ax1.legend()
-ax1.set_title('structure of $\phi$')
-
-ax2.plot(y_l, np.real(theta_mode), label='Re($\Theta$)')
-ax2.plot(y_l, np.imag(theta_mode), label='Im($\Theta$)', linestyle='--')
-ax2.set_ylabel(r'$\Theta$')
-ax2.set_xlabel(r'$y$')
-ax2.legend()
-ax2.set_title('structure of $\Theta$')
-plt.tight_layout()'''
 
 
 
