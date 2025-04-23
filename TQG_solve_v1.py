@@ -1,7 +1,17 @@
 import numpy as np
+import matplotlib as mpl
 import numpy.linalg as npl
 import scipy.linalg as spl
 import matplotlib.pyplot as plt
+
+mpl.rcParams['font.size'] = 15
+mpl.rcParams['mathtext.fontset'] = 'stix'
+mpl.rcParams['font.family'] = 'STIXGeneral'
+
+
+print('-----------------------------------------------------')
+print('TQG_SOLVE_1')
+
 
 # cf TQG notes : A.X = c.B.X
 # @uthor : dimitri moreau 22/04/2025
@@ -22,7 +32,7 @@ x_l, y_l = np.linspace(0.1,Lx,Nx), np.linspace(0.1,Ly,Ny)
 
 
 beta = 0 #1e-11
-k, Rd = np.linspace(0.1,0.1+0.1*51,60),50 # à modifier
+k, Rd = np.linspace(0.1,0.1+0.1*51,60),1 # à modifier
 K2 = (k**2 + 1/(Rd**2))*dy**2
 #K2 = 0
 U0= 1
@@ -132,6 +142,11 @@ print('/////////////////////////////////////////////////////')
 ##################################
 
 
+
+print('PLOT...')
+
+
+'''
 fig, (ax) = plt.subplots(1,2,figsize=(15,6))
 
 # vmin , vmax pour phi
@@ -179,36 +194,53 @@ im = ax[0,1].contourf(x_l,y_l,theta,cmap='RdBu_r')
 fig.colorbar(im)
 im = ax[1,1].contourf(x_l,y_l,theta2,cmap='RdBu_r')
 fig.colorbar(im)
-ax[0,1].set_title(r'$\Theta$')
+ax[0,1].set_title(r'$\Theta$')'''
 
 
-'''
+
+
+####################"
 # test plot
 
-idx = np.argsort(np.imag(c))         # sort eigenvalues by growth rate
-dominant = idx[-1]                   # index of the most unstable mode
 
-phi_mode = np.real(X[:N, dominant])
-theta_mode = np.real(X[N:, dominant])
+# Extract dominant eigenmode (largest eigenvalue)
+idx = np.argmax(np.real(c))  # Index of the most dominant eigenvalue
 
-# Reconstruct full 2D fields
-PHI_2D = np.real(np.outer(phi_mode, np.exp(1j * k * x_l)))
-THETA_2D = np.real(np.outer(theta_mode, np.exp(1j * k * x_l)))
+phi_mode = np.real(X[:N, idx])
+theta_mode = np.real(X[N:, idx])
 
+# Reconstruct 2D fields (assume you're in 2D space)
+PHI_2D = np.outer(phi_mode, np.exp(1j * k * x_l))  # Example, modify as needed
+THETA_2D = np.outer(theta_mode, np.exp(1j * k * x_l))  # Example, modify as needed
 
+# Plot reconstructed 2D fields
+fig, (ax) = plt.subplots(1, 2, figsize=(15, 6))
+im_phi = ax[0].contourf(x_l, y_l, np.real(PHI_2D), cmap='RdBu_r')
+fig.colorbar(im_phi, ax=ax[0], label=r'$\phi$')
+ax[0].set_title(r'Reconstructed $\phi$')
 
-fig, (ax) = plt.subplots(1,2,figsize=(15,6))
-
-im = ax[0].contourf(x_l,y_l,PHI_2D,cmap='RdBu_r')
-fig.colorbar(im)
-
-im = ax[1].contourf(x_l,y_l,THETA_2D,cmap='RdBu_r')
-fig.colorbar(im)
-'''
-
-
+im_theta = ax[1].contourf(x_l, y_l, np.real(THETA_2D), cmap='RdBu_r')
+fig.colorbar(im_theta, ax=ax[1], label=r'$\Theta$')
+ax[1].set_title(r'Reconstructed $\Theta$')
 
 
+
+plt.figure(figsize=(8, 6))
+plt.scatter(np.real(c), np.imag(c), color='b', label='Eigenvalues')
+plt.axhline(0, color='k', linestyle='--', label='Real axis')
+plt.axvline(0, color='k', linestyle='--', label='Imaginary axis')
+plt.title('Eigenvalue Spectrum')
+plt.xlabel('Real part of eigenvalue')
+plt.ylabel('Imaginary part of eigenvalue')
+plt.legend()
 plt.show()
+
+
+
+print('END')
+print('-----------------------------------------------------')
+
+
+
 
 
