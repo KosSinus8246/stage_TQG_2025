@@ -8,9 +8,9 @@ mpl.rcParams['font.size'] = 15
 mpl.rcParams['mathtext.fontset'] = 'stix'
 mpl.rcParams['font.family'] = 'STIXGeneral'
 
-
-print('-----------------------------------------------------')
 print('TQG_SOLVE_1_BIS')
+print('-----------------------------------------------------')
+
 
 
 # cf TQG notes : A.X = c.B.X
@@ -43,12 +43,14 @@ phi_r,theta_r = phi.reshape(Nk*Ny), theta.reshape(Nk*Ny)
 # X = np.array([phi_r,theta_r])
 
 # V/G/Mn
-F1 = 0
-Vn, Mn = Un * dy**2, np.ones_like(Un)*2
-G11 = 2.0*Un*(1-2*y_l**2) + F1*Un+beta
-F11 = G11*dy**2
 Theta0 = 1
+F1 = 0
+Vn = Un * dy**2
 G12 = -2*y_l*Theta0*np.exp(-y_l**2)
+G11 = 2.0*Un*(1-2*y_l**2) + F1*Un+beta - G12
+F11 = G11*dy**2
+
+
 
 print('/////////////////////////////////////////////////////')
 print('PARAMS : OK')
@@ -285,12 +287,21 @@ plt.tight_layout()'''
 
 
 
+print('-----------------------------------------------------')
+
 
 #####################
 # stabiilité
 
 borne = (1/4)*(Un*y_l)**2
 test_crit = Un * G12
+
+print('Stability analysis : ')
+if (test_crit < borne).all() == True:
+	print('Totally unstable')
+else:
+	print('Stable ?')
+
 
 
 plt.figure()
@@ -310,8 +321,10 @@ plt.legend()
 
 plt.show()
 
-print('END')
 print('-----------------------------------------------------')
+
+print('END')
+
 
 
 
