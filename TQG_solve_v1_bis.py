@@ -10,7 +10,7 @@ mpl.rcParams['font.family'] = 'STIXGeneral'
 
 
 print('-----------------------------------------------------')
-print('TQG_SOLVE_1')
+print('TQG_SOLVE_1_BIS')
 
 
 # cf TQG notes : A.X = c.B.X
@@ -24,22 +24,21 @@ print('TQG_SOLVE_1')
 
 
 
-Nx, Ny = 60, 60
-N = Nx
-Lx, Ly = np.pi, np.pi
-dx, dy = Lx/Nx, Ly/Ny
-x_l, y_l = np.linspace(0.1,Lx,Nx), np.linspace(0.1,Ly,Ny)
+Ny, Nk = 60, 60
+Ly = np.pi
+dy = Ly/Ny
+y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,0.1+Nk*0.1,Nk)
 
 
 beta = 0 #1e-11
-k, Rd = np.linspace(0.1,0.1+0.1*51,60),1 # à modifier
+k, Rd = np.linspace(0.1,0.1+0.1*Nk,Nk),1 # à modifier
 K2 = (k**2 + 1/(Rd**2))*dy**2
 #K2 = 0
 U0= 1
 
 
-phi, theta, Un = np.zeros((Ny, Nx)), np.zeros((Ny, Nx)), U0*np.exp(-y_l**2)
-phi_r,theta_r = phi.reshape(Nx*Ny), theta.reshape(Nx*Ny)
+phi, theta, Un = np.zeros((Ny, Nk)), np.zeros((Ny, Nk)), U0*np.exp(-y_l**2)
+phi_r,theta_r = phi.reshape(Nk*Ny), theta.reshape(Nk*Ny)
 
 # X = np.array([phi_r,theta_r])
 
@@ -63,14 +62,14 @@ print('PARAMS : OK')
 
 
 # Diagonale principale
-main_diag = -(2 + K2) * np.ones(N)
-off_diag = np.ones(N-1)
+main_diag = -(2 + K2) * np.ones(Ny)
+off_diag = np.ones(Ny-1)
 # Construct tridiagonal B11 using np.diag
 B11 = np.diag(main_diag) + np.diag(off_diag, k=1) + np.diag(off_diag, k=-1)
 # Construct other blocks
-B12 = np.zeros((N, N))
-B21 = np.zeros((N, N))
-B22 = np.eye(N)
+B12 = np.zeros((Ny, Nk))
+B21 = np.zeros((Ny, Nk))
+B22 = np.eye(Ny, Nk)
 # Combine them into full block matrix B
 top = np.concatenate((B11, B12), axis=1)
 bottom = np.concatenate((B21, B22), axis=1)
@@ -87,12 +86,12 @@ print('MATRIX B : OK')
 
 # Block A11
 main_diag_A11 = (-Un*(2 + K2) + F11)  # shape (3,)
-A11 = np.zeros((N, N))
+A11 = np.zeros((Ny,Nk))
 np.fill_diagonal(A11, main_diag_A11)
 
-for i in range(N - 1):
-    A11[i, i + 1] = Un[i]
-    A11[i + 1, i] = Un[i]
+for i in range(Ny - 1):
+    A11[i,i+1] = Un[i]
+    A11[i+1,i] = Un[i]
 
 # Block A12
 A12 = np.diag(-Vn)
@@ -212,23 +211,23 @@ ax[0,1].set_title(r'$\Theta$')'''
 
 # Extract dominant eigenmode (largest eigenvalue)
 idx = np.argmax(np.real(c))  # Index of the most dominant eigenvalue
-phi_mode = np.real(X[:N, idx])
-theta_mode = np.real(X[N:, idx])
+phi_mode = np.real(X[:Ny, idx])
+theta_mode = np.real(X[Ny:, idx])
 # Reconstruct 2D fields (assume you're in 2D space)
-PHI_2D = np.outer(phi_mode, np.exp(1j * k * x_l))  # Example, modify as needed
-THETA_2D = np.outer(theta_mode, np.exp(1j * k * x_l))  # Example, modify as needed
+PHI_2D = np.outer(phi_mode, np.exp(1j * k * y_l))  # Example, modify as needed
+THETA_2D = np.outer(theta_mode, np.exp(1j * k * y_l))  # Example, modify as needed
 # Plot reconstructed 2D fields
 fig, (ax) = plt.subplots(1, 2, figsize=(15, 6))
-im_phi = ax[0].pcolormesh(x_l, y_l, np.real(PHI_2D), cmap='RdBu_r')
-ax[0].set_xlabel(r'$x$')
+im_phi = ax[0].pcolormesh(k, y_l, np.real(PHI_2D), cmap='RdBu_r')
+ax[0].set_xlabel(r'$k$')
 ax[0].set_ylabel(r'$y$')
 fig.colorbar(im_phi, ax=ax[0])
 ax[0].set_title(r'Reconstructed $\phi$')
 
-im_theta = ax[1].pcolormesh(x_l, y_l, np.real(THETA_2D), cmap='RdBu_r')
+im_theta = ax[1].pcolormesh(k, y_l, np.real(THETA_2D), cmap='RdBu_r')
 fig.colorbar(im_theta, ax=ax[1])
 ax[1].set_title(r'Reconstructed $\Theta$')
-ax[1].set_xlabel(r'$x$')
+ax[1].set_xlabel(r'$k$')
 ax[1].set_ylabel(r'$y$')
 
 
@@ -241,9 +240,75 @@ plt.title('Eigenvalue Spectrum')
 plt.xlabel('Real part of eigenvalue')
 plt.ylabel('Imaginary part of eigenvalue')
 plt.legend()
+
+
+
+'''
+fig, (ax) = plt.subplots(1,2,figsize=(15,6))
+
+ax[0].plot(k,np.real(PHI_2D[0,:]))
+ax[0].plot(k,np.real(PHI_2D[1,:]))
+ax[0].set_xlabel(r'$k$')
+ax[0].set_ylabel(r'$\phi$')
+ax[0].legend()
+
+ax[1].plot(k,np.real(THETA_2D[0,:]))
+ax[1].plot(k,np.real(THETA_2D[1,:]))
+ax[1].set_xlabel(r'$k$')
+ax[1].set_ylabel(r'$\Theta$')
+ax[1].legend()
+
+
+
+
+
+
+
+phi_mode = X[:Ny, idx]
+theta_mode = X[Ny:, idx]
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+ax1.plot(y_l,np.real(phi_mode), label='Re($\phi$)')
+ax1.plot(y_l,np.imag(phi_mode), label='Im($\phi$)', linestyle='--')
+ax1.set_ylabel(r'$\phi$')
+ax1.set_xlabel(r'$y$')
+ax1.legend()
+ax1.set_title('structure of $\phi$')
+
+ax2.plot(y_l, np.real(theta_mode), label='Re($\Theta$)')
+ax2.plot(y_l, np.imag(theta_mode), label='Im($\Theta$)', linestyle='--')
+ax2.set_ylabel(r'$\Theta$')
+ax2.set_xlabel(r'$y$')
+ax2.legend()
+ax2.set_title('structure of $\Theta$')
+plt.tight_layout()'''
+
+
+
+
+#####################
+# stabiilité
+
+borne = (1/4)*(Un*y_l)**2
+test_crit = Un * G12
+
+
+plt.figure()
+plt.plot(y_l,borne,'--',label=r'Borne : $\frac{1}{4}.(\overline{U}.y)^2$')
+plt.plot(y_l,test_crit,label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+plt.fill_between(y_l,borne,test_crit,alpha=0.3)
+
+plt.xlabel(r'$y$')
+plt.ylabel(r'Analysis')
+
+plt.legend()
+
+
+
+
+
+
 plt.show()
-
-
 
 print('END')
 print('-----------------------------------------------------')
