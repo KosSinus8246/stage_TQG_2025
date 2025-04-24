@@ -30,9 +30,9 @@ dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,0.1+Nk*0.1,Nk)
 
 
-beta = 0 #1e-11
-k, Rd = np.linspace(0.1,0.1+0.1*Nk,Nk),1 # à modifier
-K2 = (k**2 + 1/(Rd**2))*dy**2
+beta, Rd = 0, 1 #1e-11
+F1star = 0 #1/Rd**2
+K2 = (k**2 + F1star)*dy**2
 #K2 = 0
 U0= 1
 
@@ -44,10 +44,9 @@ phi_r,theta_r = phi.reshape(Nk*Ny), theta.reshape(Nk*Ny)
 
 # V/G/Mn
 Theta0 = 1
-F1 = 0
 Vn = Un * dy**2
 G12 = -2*y_l*Theta0*np.exp(-y_l**2)
-G11 = 2.0*Un*(1-2*y_l**2) + F1*Un+beta - G12
+G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un+beta - G12
 F11 = G11*dy**2
 
 
@@ -142,11 +141,11 @@ print('PLOT...')
 
 
 plt.figure(figsize=(8, 6))
-plt.scatter(k, sigma1, color='b', label=r'$\sigma_1$')
-plt.scatter(k, sigma2, color='r', label=r'$\sigma_2$')
-plt.axhline(0, color='k', linestyle='--', label='Real axis')
-plt.axvline(0, color='k', linestyle='--', label='Imaginary axis')
-plt.title('Eigenvalue and wavenumber')
+plt.axhline(0, color='k', linestyle=':')
+plt.axvline(0, color='k', linestyle=':')
+plt.scatter(k, sigma1,marker='o', color='b',edgecolor='k',alpha=0.6, label=r'$\sigma_1$')
+plt.scatter(k, sigma2,marker='^', color='r',edgecolor='k',alpha=0.6, label=r'$\sigma_2$')
+plt.title('Stability')
 plt.xlabel(r'$k$')
 plt.ylabel(r'$\sigma = \mathbf{Im}\{c\}.k$')
 plt.legend()
@@ -171,25 +170,24 @@ else:
 	print('Stable ?')
 
 
+print('-----------------------------------------------------')
+
 
 plt.figure()
-plt.plot(y_l,borne,'--',label=r'Borne : $\frac{1}{4}.(\overline{U}.y)^2$')
-plt.plot(y_l,test_crit,label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
-plt.fill_between(y_l,borne,test_crit,alpha=0.3)
+plt.axhline(0, color='k', linestyle=':')
+plt.axvline(0, color='k', linestyle=':')
+plt.plot(y_l,borne,'r--',label=r'Borne : $\frac{1}{4}.(\overline{U}.y)^2$')
+plt.plot(y_l,test_crit,'b',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+plt.fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
 
 plt.xlabel(r'$y$')
 plt.ylabel(r'Analysis')
 
 plt.legend()
 
-
-
-
-
-
 plt.show()
 
-print('-----------------------------------------------------')
+
 
 print('END')
 
