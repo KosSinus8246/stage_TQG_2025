@@ -1,4 +1,5 @@
 import numpy as np
+import seaborn as sns
 import matplotlib as mpl
 #import numpy.linalg as npl
 import scipy.linalg as spl
@@ -29,6 +30,7 @@ Ny, Nk = 60, 60
 Ly = np.pi
 dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,0.1+Nk*0.1,Nk)
+dk = (0.1+Nk*0.1)/Nk
 
 
 beta, Rd = 0, 1 #1e-11
@@ -144,9 +146,11 @@ fig, ax = plt.subplots(1, 2, figsize=(15, 6))
 
 ax[0].axhline(0, color='gray', linestyle=':')
 ax[0].axvline(0, color='gray', linestyle=':')
+ax[0].plot(k,sigma1,'b:',alpha=0.15)
 ax[0].scatter(k, sigma1, marker='o', color='b', edgecolor='k', alpha=0.6, label=r'$\sigma_\phi$')
 
 axbis = ax[0].twinx()
+axbis.plot(k,sigma2,'r:',alpha=0.1)
 axbis.scatter(k, sigma2, marker='^', color='r', edgecolor='k', alpha=0.6, label=r'$\sigma_\Theta$')
 
 # Axis colors
@@ -225,7 +229,7 @@ ax[1].plot(y_l,test_crit,'b',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\math
 ax[1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
 ax[1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
 ax[1].set_xlabel(r'$y$')
-ax[1].set_ylabel(r'Homogeneous to $\overline{U}.y^2$')
+ax[1].set_ylabel(r'Value $\propto ~\overline{U}.y^2$')
 ax[1].legend(loc='best',fancybox=False)
 
 # Make the axes (spines) bold
@@ -234,6 +238,47 @@ for spine in ax[1].spines.values():
 
 
 plt.tight_layout()
+
+
+
+
+
+# derivative of sigma
+
+dsigma1, dsigma2 = np.zeros_like(sigma1), np.zeros_like(sigma2)
+
+for i in range(len(k)-1):
+	dsigma1[i] = (sigma1[i+1] - sigma1[i-1])/(2*dk)
+	dsigma2[i] = (sigma2[i+1] - sigma2[i-1])/(2*dk)
+
+
+
+
+nb_bins = 20
+fig, ax = plt.subplots(2, 2, figsize=(15, 10))
+
+sns.histplot(sigma1,bins=nb_bins,ax=ax[0,0],kde=True,stat='percent',color='b')
+sns.histplot(sigma2,bins=nb_bins,ax=ax[0,1],kde=True,stat='percent',color='r')
+
+
+sns.histplot(dsigma1,bins=nb_bins,ax=ax[1,0],kde=True,stat='percent',color='b')
+sns.histplot(dsigma2,bins=nb_bins,ax=ax[1,1],kde=True,stat='percent',color='r')
+
+
+
+
+plt.figure()
+
+omega = np.sqrt(c)
+
+plt.plot(np.real(omega[:Ny]),np.imag(omega[:Ny]),'b+')
+plt.xlabel(r'$\mathbf{Re}\{\omega\}$')
+plt.ylabel(r'$\mathbf{Im}\{\omega\}$ of $\phi$')
+plt.twinx()
+plt.plot(np.real(omega[Ny:]),np.imag(omega[Ny:]),'r+')
+plt.ylabel(r'$\mathbf{Im}\{\omega\}$ of $\Theta$')
+
+
 
 
 plt.show()
