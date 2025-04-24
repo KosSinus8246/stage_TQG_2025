@@ -4,9 +4,10 @@ import matplotlib as mpl
 import scipy.linalg as spl
 import matplotlib.pyplot as plt
 
-mpl.rcParams['font.size'] = 15
+mpl.rcParams['font.size'] = 14
 mpl.rcParams['mathtext.fontset'] = 'stix'
 mpl.rcParams['font.family'] = 'STIXGeneral'
+mpl.rcParams['legend.edgecolor'] = '0'
 
 print('TQG_SOLVE_1_BIS')
 print('-----------------------------------------------------')
@@ -38,7 +39,7 @@ U0= 1
 
 
 phi, theta, Un = np.zeros((Ny, Nk)), np.zeros((Ny, Nk)), U0*np.exp(-y_l**2)
-phi_r,theta_r = phi.reshape(Nk*Ny), theta.reshape(Nk*Ny)
+# phi_r,theta_r = phi.reshape(Nk*Ny), theta.reshape(Nk*Ny)
 
 # X = np.array([phi_r,theta_r])
 
@@ -68,9 +69,9 @@ off_diag = np.ones(Ny-1)
 # Construct tridiagonal B11 using np.diag
 B11 = np.diag(main_diag) + np.diag(off_diag, k=1) + np.diag(off_diag, k=-1)
 # Construct other blocks
-B12 = np.zeros((Ny, Nk))
-B21 = np.zeros((Ny, Nk))
-B22 = np.eye(Ny, Nk)
+B12 = np.zeros((Ny, Ny))
+B21 = np.zeros((Ny, Ny))
+B22 = np.eye(Ny, Ny)
 # Combine them into full block matrix B
 top = np.concatenate((B11, B12), axis=1)
 bottom = np.concatenate((B21, B22), axis=1)
@@ -139,18 +140,63 @@ print('/////////////////////////////////////////////////////')
 print('PLOT...')
 
 
+fig, ax = plt.subplots(1, 1, figsize=(8, 5))
+ax.axhline(0, color='gray', linestyle=':')
+ax.axvline(0, color='gray', linestyle=':')
+ax.scatter(k, sigma1, marker='o', color='b', edgecolor='k', alpha=0.6, label=r'$\sigma_\phi$')
 
-plt.figure(figsize=(8, 6))
-plt.axhline(0, color='k', linestyle=':')
-plt.axvline(0, color='k', linestyle=':')
-plt.scatter(k, sigma1,marker='o', color='b',edgecolor='k',alpha=0.6, label=r'$\sigma_1$')
-plt.scatter(k, sigma2,marker='^', color='r',edgecolor='k',alpha=0.6, label=r'$\sigma_2$')
-plt.title('Stability')
-plt.xlabel(r'$k$')
-plt.ylabel(r'$\sigma = \mathbf{Im}\{c\}.k$')
-plt.legend()
+axbis = ax.twinx()
+axbis.scatter(k, sigma2, marker='^', color='r', edgecolor='k', alpha=0.6, label=r'$\sigma_\Theta$')
+
+# Axis colors
+ax.set_ylabel(r'$\sigma_\phi$', color='blue')
+ax.tick_params(axis='y', colors='blue',direction='in',size=4,width=1)
+ax.spines['left'].set_color('blue')
+ax.spines['left'].set_linewidth(2)
+
+axbis.set_ylabel(r'$\sigma_\Theta$', color='red')
+axbis.tick_params(axis='y', colors='red',direction='in',size=4,width=1)
+axbis.spines['right'].set_color('red')
+axbis.spines['right'].set_linewidth(2)
+
+ax.spines['bottom'].set_linewidth(2)
+ax.spines['top'].set_linewidth(2)
+
+# Common elements
+ax.set_xlabel(r'$k$')
+ax.set_title(r'$\sigma = \mathbf{Im}\{c\}.k$')
+ax.tick_params(top=True,direction='in', size=4, width=1)
+
+# Combine legends
+handles1, labels1 = ax.get_legend_handles_labels()
+handles2, labels2 = axbis.get_legend_handles_labels()
+ax.legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False)
 
 
+# stuff to put 0 on the same line
+if np.abs(sigma1.max()) - np.abs(sigma1.min()) > 0:
+	vlim1phi, vlim2phi = -sigma1.max(), sigma1.max()
+	print('!!')
+else:
+	vlim1phi, vlim2phi = sigma1.min(), -sigma1.min()
+	print('**')
+	
+ax.set_ylim(vlim1phi, vlim2phi)
+
+# stuff to put 0 on the same line
+if np.abs(sigma2.max()) - np.abs(sigma2.min()) > 0:
+	vlim1theta, vlim2theta = -sigma2.max(), sigma2.max()
+	print('!!')
+else:
+	vlim1theta, vlim2theta = sigma2.min(), -sigma2.min()
+	print('**')
+
+axbis.set_ylim(vlim1theta, vlim2theta)
+
+
+
+
+plt.tight_layout()
 
 
 
@@ -168,22 +214,28 @@ if (test_crit < borne).all() == True:
 	print('Totally unstable')
 else:
 	print('Stable ?')
-
-
 print('-----------------------------------------------------')
 
 
-plt.figure()
-plt.axhline(0, color='k', linestyle=':')
-plt.axvline(0, color='k', linestyle=':')
-plt.plot(y_l,borne,'r--',label=r'Borne : $\frac{1}{4}.(\overline{U}.y)^2$')
-plt.plot(y_l,test_crit,'b',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
-plt.fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
+fig, (ax) = plt.subplots(1,1,figsize=(8,5))
 
-plt.xlabel(r'$y$')
-plt.ylabel(r'Analysis')
+ax.axhline(0, color='gray', linestyle=':')
+ax.axvline(0, color='gray', linestyle=':')
+ax.plot(y_l,borne,'r--',label=r'Borne : $\frac{1}{4}.(\overline{U}.y)^2$')
+ax.plot(y_l,test_crit,'b',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+ax.fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
+ax.tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
+ax.set_xlabel(r'$y$')
+ax.set_ylabel(r'Analysis')
+ax.legend(loc='best',fancybox=False)
 
-plt.legend()
+# Make the axes (spines) bold
+for spine in ax.spines.values():
+    spine.set_linewidth(2)
+
+
+plt.tight_layout()
+
 
 plt.show()
 
