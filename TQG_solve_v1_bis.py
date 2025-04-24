@@ -20,7 +20,7 @@ print('-----------------------------------------------------')
 
 
 ##################################
-# VARIABLES, ESPACE ...
+# VARIABLES, SPACE ...
 ##################################
 
 
@@ -58,7 +58,7 @@ print('PARAMS : OK')
 
 
 ##################################
-# CONSTRUCTION DE LA MATRICE B
+# CONSTRUCTION OF THE B MATRIX
 ##################################
 
 
@@ -81,7 +81,7 @@ print('MATRIX B : OK')
 
 
 ##################################
-# CONSTRUCTION DE LA MATRICE A
+# CONSTRUCTION OF THE A MATRIX
 ##################################
 
 
@@ -139,57 +139,58 @@ print('/////////////////////////////////////////////////////')
 
 print('PLOT...')
 
+fig, ax = plt.subplots(1, 2, figsize=(15, 6))
 
-fig, ax = plt.subplots(1, 1, figsize=(8, 5))
-ax.axhline(0, color='gray', linestyle=':')
-ax.axvline(0, color='gray', linestyle=':')
-ax.scatter(k, sigma1, marker='o', color='b', edgecolor='k', alpha=0.6, label=r'$\sigma_\phi$')
 
-axbis = ax.twinx()
+ax[0].axhline(0, color='gray', linestyle=':')
+ax[0].axvline(0, color='gray', linestyle=':')
+ax[0].scatter(k, sigma1, marker='o', color='b', edgecolor='k', alpha=0.6, label=r'$\sigma_\phi$')
+
+axbis = ax[0].twinx()
 axbis.scatter(k, sigma2, marker='^', color='r', edgecolor='k', alpha=0.6, label=r'$\sigma_\Theta$')
 
 # Axis colors
-ax.set_ylabel(r'$\sigma_\phi$', color='blue')
-ax.tick_params(axis='y', colors='blue',direction='in',size=4,width=1)
-ax.spines['left'].set_color('blue')
-ax.spines['left'].set_linewidth(2)
+ax[0].set_ylabel(r'$\sigma_\phi$', color='blue')
+ax[0].tick_params(axis='y', colors='blue',direction='in',size=4,width=1)
+ax[0].spines['left'].set_color('blue')
+ax[0].spines['left'].set_linewidth(2)
 
 axbis.set_ylabel(r'$\sigma_\Theta$', color='red')
 axbis.tick_params(axis='y', colors='red',direction='in',size=4,width=1)
 axbis.spines['right'].set_color('red')
 axbis.spines['right'].set_linewidth(2)
 
-ax.spines['bottom'].set_linewidth(2)
-ax.spines['top'].set_linewidth(2)
+ax[0].spines['bottom'].set_linewidth(2)
+ax[0].spines['top'].set_linewidth(2)
 
 # Common elements
-ax.set_xlabel(r'$k$')
-ax.set_title(r'$\sigma = \mathbf{Im}\{c\}.k$')
-ax.tick_params(top=True,direction='in', size=4, width=1)
+ax[0].set_xlabel(r'$k$')
+ax[0].set_title(r'$\sigma = \mathbf{Im}\{c\}.k$')
+ax[0].tick_params(top=True,direction='in', size=4, width=1)
 
 # Combine legends
-handles1, labels1 = ax.get_legend_handles_labels()
+handles1, labels1 = ax[0].get_legend_handles_labels()
 handles2, labels2 = axbis.get_legend_handles_labels()
-ax.legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False)
+ax[0].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False)
 
 
 # stuff to put 0 on the same line
 if np.abs(sigma1.max()) - np.abs(sigma1.min()) > 0:
 	vlim1phi, vlim2phi = -sigma1.max(), sigma1.max()
-	print('!!')
+	print('Axe shift : !!')
 else:
 	vlim1phi, vlim2phi = sigma1.min(), -sigma1.min()
-	print('**')
+	print('Axe shift : **')
 	
-ax.set_ylim(vlim1phi, vlim2phi)
+ax[0].set_ylim(vlim1phi, vlim2phi)
 
 # stuff to put 0 on the same line
 if np.abs(sigma2.max()) - np.abs(sigma2.min()) > 0:
 	vlim1theta, vlim2theta = -sigma2.max(), sigma2.max()
-	print('!!')
+	print('Axe shift : !!')
 else:
 	vlim1theta, vlim2theta = sigma2.min(), -sigma2.min()
-	print('**')
+	print('Axe shift : **')
 
 axbis.set_ylim(vlim1theta, vlim2theta)
 
@@ -217,20 +218,18 @@ else:
 print('-----------------------------------------------------')
 
 
-fig, (ax) = plt.subplots(1,1,figsize=(8,5))
-
-ax.axhline(0, color='gray', linestyle=':')
-ax.axvline(0, color='gray', linestyle=':')
-ax.plot(y_l,borne,'r--',label=r'Borne : $\frac{1}{4}.(\overline{U}.y)^2$')
-ax.plot(y_l,test_crit,'b',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
-ax.fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
-ax.tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
-ax.set_xlabel(r'$y$')
-ax.set_ylabel(r'Analysis')
-ax.legend(loc='best',fancybox=False)
+ax[1].axhline(0, color='gray', linestyle=':')
+ax[1].axvline(0, color='gray', linestyle=':')
+ax[1].plot(y_l,borne,'r--',label=r'Borne : $\frac{1}{4}.(\overline{U}.y)^2$')
+ax[1].plot(y_l,test_crit,'b',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+ax[1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
+ax[1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
+ax[1].set_xlabel(r'$y$')
+ax[1].set_ylabel(r'Homogeneous to $\overline{U}.y^2$')
+ax[1].legend(loc='best',fancybox=False)
 
 # Make the axes (spines) bold
-for spine in ax.spines.values():
+for spine in ax[1].spines.values():
     spine.set_linewidth(2)
 
 
