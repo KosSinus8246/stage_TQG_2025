@@ -27,13 +27,13 @@ print('-----------------------------------------------------')
 
 
 Ny, Nk = 60, 60
-Ly = np.pi
+Ly, Lk = np.pi, 0.1+Nk*0.1
 dy = Ly/Ny
-y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,0.1+Nk*0.1,Nk)
-dk = (0.1+Nk*0.1)/Nk
+y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
+dk = Lk/Nk
 
 
-beta, Rd = 0, 1 #1e-11
+beta, Rd = 5, 1 #1e-11
 F1star = 0 #1/Rd**2
 K2 = (k**2 + F1star)*dy**2
 #K2 = 0
@@ -141,6 +141,12 @@ print('/////////////////////////////////////////////////////')
 
 print('PLOT...')
 
+
+##################################
+# Plot 1
+
+
+
 fig, ax = plt.subplots(1, 2, figsize=(15, 6))
 
 
@@ -178,38 +184,10 @@ handles2, labels2 = axbis.get_legend_handles_labels()
 ax[0].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False)
 
 
-# stuff to put 0 on the same line
-if np.abs(sigma1.max()) - np.abs(sigma1.min()) > 0:
-	vlim1phi, vlim2phi = -sigma1.max(), sigma1.max()
-	print('Axe shift : !!')
-else:
-	vlim1phi, vlim2phi = sigma1.min(), -sigma1.min()
-	print('Axe shift : **')
-	
-ax[0].set_ylim(vlim1phi, vlim2phi)
-
-# stuff to put 0 on the same line
-if np.abs(sigma2.max()) - np.abs(sigma2.min()) > 0:
-	vlim1theta, vlim2theta = -sigma2.max(), sigma2.max()
-	print('Axe shift : !!')
-else:
-	vlim1theta, vlim2theta = sigma2.min(), -sigma2.min()
-	print('Axe shift : **')
-
-axbis.set_ylim(vlim1theta, vlim2theta)
-
-
-
-
-plt.tight_layout()
-
 
 
 print('-----------------------------------------------------')
 
-
-#####################
-# stabiilité
 
 borne = (1/4)*(Un*y_l)**2
 test_crit = Un * G12
@@ -224,8 +202,8 @@ print('-----------------------------------------------------')
 
 ax[1].axhline(0, color='gray', linestyle=':')
 ax[1].axvline(0, color='gray', linestyle=':')
-ax[1].plot(y_l,borne,'r--',label=r'Borne : $\frac{1}{4}.(\overline{U}.y)^2$')
-ax[1].plot(y_l,test_crit,'b',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+ax[1].plot(y_l,borne,'k--',label=r'Borne : $\frac{1}{4}.(\overline{U}.y)^2$')
+ax[1].plot(y_l,test_crit,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
 ax[1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
 ax[1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
 ax[1].set_xlabel(r'$y$')
@@ -242,6 +220,9 @@ plt.tight_layout()
 
 
 
+##################################
+# Plot 2
+
 
 # derivative of sigma
 
@@ -254,31 +235,119 @@ for i in range(len(k)-1):
 
 
 
-nb_bins = 20
-fig, ax = plt.subplots(2, 2, figsize=(15, 10))
+nb_bins = 30
+fig, ax = plt.subplots(1, 2, figsize=(15, 6))
 
-sns.histplot(sigma1,bins=nb_bins,ax=ax[0,0],kde=True,stat='percent',color='b')
-sns.histplot(sigma2,bins=nb_bins,ax=ax[0,1],kde=True,stat='percent',color='r')
+sns.histplot(sigma1,bins=nb_bins,ax=ax[0],kde=True,stat='percent',color='b',label=r'$\sigma_\phi$')
+#ax[0].set_ylim(0,40)
+ax1 = ax[0].twiny()
+sns.histplot(sigma2,bins=nb_bins,ax=ax1,kde=True,stat='percent',color='r',label=r'$\sigma_\theta$')
+#ax[0].set_ylim(0,40)
+ax[0].set_title(r'$\sigma$')
+
+# Axis colors
+ax[0].tick_params(axis='x', colors='blue',direction='in',size=4,width=1)
+ax[0].tick_params(right=True,direction='in',size=4,width=1)
+ax[0].spines['bottom'].set_color('blue')
+ax[0].spines['bottom'].set_linewidth(2)
+
+ax1.tick_params(axis='x', colors='red',direction='in',size=4,width=1)
+ax1.spines['top'].set_color('red')
+ax1.spines['top'].set_linewidth(2)
+
+ax[0].spines[['left','right']].set_linewidth(2)
+
+# Combine legends
+handles1, labels1 = ax[0].get_legend_handles_labels()
+handles2, labels2 = ax1.get_legend_handles_labels()
+ax[0].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False)
 
 
-sns.histplot(dsigma1,bins=nb_bins,ax=ax[1,0],kde=True,stat='percent',color='b')
-sns.histplot(dsigma2,bins=nb_bins,ax=ax[1,1],kde=True,stat='percent',color='r')
 
 
 
 
-plt.figure()
+sns.histplot(dsigma1,bins=nb_bins,ax=ax[1],kde=True,stat='percent',color='b',label=r'$\frac{\partial \sigma_\phi}{\partial k}$')
+#ax[1].set_ylim(0,40)
+ax[1].set_title(r'$\frac{\partial \sigma}{\partial k}$')
+ax2 = ax[1].twiny()
+sns.histplot(dsigma2,bins=nb_bins,ax=ax2,kde=True,stat='percent',color='r',label=r'$\frac{\partial \sigma_\theta}{\partial k}$')
+ax[1].set_ylabel('')
+#ax[1].set_ylim(0,40)
+
+
+# Axis colors
+ax[1].tick_params(axis='x', colors='blue',direction='in',size=4,width=1)
+ax[1].tick_params(right=True,direction='in',size=4,width=1)
+ax[1].spines['bottom'].set_color('blue')
+ax[1].spines['bottom'].set_linewidth(2)
+
+ax2.tick_params(axis='x', colors='red',direction='in',size=4,width=1)
+ax2.spines['top'].set_color('red')
+ax2.spines['top'].set_linewidth(2)
+
+ax[1].spines[['left','right']].set_linewidth(2)
+
+
+# Combine legends
+handles1, labels1 = ax[1].get_legend_handles_labels()
+handles2, labels2 = ax2.get_legend_handles_labels()
+ax[1].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False)
+
+
+
+
+
+##################################
+# Plot 3
+
+
+
+fig, (ax) = plt.subplots(1,2,figsize=(15,6))
 
 omega = np.sqrt(c)
 
-plt.plot(np.real(omega[:Ny]),np.imag(omega[:Ny]),'b+')
-plt.xlabel(r'$\mathbf{Re}\{\omega\}$')
-plt.ylabel(r'$\mathbf{Im}\{\omega\}$ of $\phi$')
-plt.twinx()
-plt.plot(np.real(omega[Ny:]),np.imag(omega[Ny:]),'r+')
-plt.ylabel(r'$\mathbf{Im}\{\omega\}$ of $\Theta$')
+ax[0].plot(np.real(omega[:Ny]),np.imag(omega[:Ny]),'b+')
+ax[0].set_xlabel(r'$\mathbf{Re}\{\omega\}$')
+ax[0].set_ylabel(r'$\mathbf{Im}\{\omega\}$ of $\phi$')
+ax1=ax[0].twinx()
+ax1.plot(np.real(omega[Ny:]),np.imag(omega[Ny:]),'r+')
+ax1.set_ylabel(r'$\mathbf{Im}\{\omega\}$ of $\Theta$')
 
 
+
+# Axis colors
+ax[0].set_ylabel(r'$\sigma_\phi$', color='blue')
+ax[0].tick_params(axis='y', colors='blue',direction='in',size=4,width=1)
+ax[0].spines['left'].set_color('blue')
+ax[0].spines['left'].set_linewidth(2)
+ax[0].tick_params(bottom=True, top=True,size=4,width=1,direction='in')
+
+ax1.set_ylabel(r'$\sigma_\Theta$', color='red')
+ax1.tick_params(axis='y', colors='red',direction='in',size=4,width=1)
+ax1.spines['right'].set_color('red')
+ax1.spines['right'].set_linewidth(2)
+
+ax[0].spines[['bottom','top']].set_linewidth(2)
+#ax.axhline(0, color='gray', linestyle=':')
+#ax.axvline(0, color='gray', linestyle=':')
+
+
+#ax.set_ylim(1e-5,1)
+#ax1.set_ylim(1e-5,1)
+
+ax[0].set_yscale('log')
+ax1.set_yscale('log')
+
+
+ax[1].plot(Un,y_l,'k')
+ax[1].tick_params(right=True, top=True,size=4,width=1,direction='in')
+ax[1].spines[['top','bottom','right','left']].set_linewidth(2)
+ax[1].set_ylabel(r'$y$')
+ax[1].set_xlabel(r'$\overline{U}$')
+
+    
+plt.tight_layout()
 
 
 plt.show()
