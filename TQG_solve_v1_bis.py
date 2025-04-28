@@ -18,6 +18,11 @@ print('-----------------------------------------------------')
 # cf TQG notes : A.X = c.B.X
 # @uthor : dimitri moreau 23/04/2025
 
+
+
+# if True : it will plot the 2 varibale phi and theta
+# if False : it will only plot the part where Im(c) is important
+choice_plot = True
 name_exp = input('Name of the experience ?')
 
 print('-----------------------------------------------------')
@@ -28,8 +33,6 @@ print('-----------------------------------------------------')
 ##################################
 # VARIABLES, SPACE ...
 ##################################
-
-
 
 Ny, Nk = 60, 60
 Ly, Lk = np.pi, 0.1+Nk*0.1
@@ -129,337 +132,349 @@ print('MATRIX A : OK')
 # Ou bien utiliser scipy si c'est trop lourd à inverser
 c, X = spl.eig(A,B)
 
-sigma1 = k*np.imag(c[:Ny])
-sigma2 = k*np.imag(c[Ny:])
 
 
 
-###############################
-# prendre la partie im de c la plus importante
+if choice_plot == True:
+	sigma1 = k*np.imag(c[:Ny])
+	sigma2 = k*np.imag(c[Ny:])
 
-if np.max(np.imag(c[:Ny])) > np.max(np.imag(c[Ny:])):
-	big_img_part_c = c[:Ny]
-	print('Les coccinelles sont des coléoptères')
+
+
+
+
+
+
+	print('COMPUTATION : OK')
+	print('/////////////////////////////////////////////////////')
+
+
+
+	##################################
+	# PLOT
+	##################################
+
+
+
+	print('PLOT...')
+
+
+	##################################
+	# Plot 1
+
+	figsize_tuple = (15,6.5)
+	font_size = 17
+
+
+
+	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
+
+
+	ax[0].plot(Un,y_l,'b')
+	ax[0].tick_params(right=True, top=True,size=4,width=1,direction='in')
+	ax[0].spines[['top','bottom','right','left']].set_linewidth(2)
+	ax[0].set_ylabel(r'$y$',size=font_size)
+	ax[0].set_xlabel(r'$\overline{U}$',size=font_size)
+	ax[0].set_title('Velocity profile',size=font_size)
+	ax[0].axhline(0, color='gray', linestyle=':')
+	ax[0].axvline(0, color='gray', linestyle=':')
+
+
+
+	print('-----------------------------------------------------')
+
+
+	borne = (1/4)*(Un*y_l)**2
+	test_crit = Un * G12
+
+	print('Stability analysis : ')
+	if (test_crit < borne).all() == True:
+		print('Totally unstable')
+	else:
+		print('Stable ?')
+	print('-----------------------------------------------------')
+
+
+	ax[1].axhline(0, color='gray', linestyle=':')
+	ax[1].axvline(0, color='gray', linestyle=':')
+	ax[1].plot(y_l,borne,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
+	ax[1].plot(y_l,test_crit,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+	ax[1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
+	ax[1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
+	ax[1].set_xlabel(r'$y$',size=font_size)
+	ax[1].set_ylabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
+	ax[1].legend(loc='best',fancybox=False)
+	ax[1].set_title('Stability',size=font_size)
+
+	# Make the axes (spines) bold
+	for spine in ax[1].spines.values():
+	    spine.set_linewidth(2)
+
+
+	plt.tight_layout()
+
+	plt.savefig('img/fig1_'+name_exp+'.png',dpi=300)
+
+
+
+
+
+
+	##################################
+	# Plot 2
+
+
+
+	fig, (ax) = plt.subplots(2,2,figsize=(15,10))
+
+	omega_phi = c[:Ny]*k
+	omega_theta = c[Ny:]*k
+
+
+	ax[0,0].axhline(0, color='gray', linestyle=':')
+	ax[0,0].axvline(0, color='gray', linestyle=':')
+	ax[0,0].plot(k,sigma1,'b:',alpha=0.15)
+	ax[0,0].scatter(k, sigma1, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+	ax[0,0].axhline(0, color='gray', linestyle=':')
+	ax[0,0].axvline(0, color='gray', linestyle=':')
+
+	axbis = ax[0,0].twinx()
+	axbis.plot(k,sigma2,'r:',alpha=0.1)
+	axbis.scatter(k, sigma2, marker='^', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\Theta$')
+
+	ax[0,0].set_xscale('log')
+
+	# Axis colors
+	ax[0,0].set_ylabel(r'$\sigma_\phi$', color='blue',size=font_size)
+	ax[0,0].tick_params(axis='y', colors='blue',direction='in',size=4,width=1)
+	ax[0,0].spines['left'].set_color('blue')
+	ax[0,0].spines['left'].set_linewidth(2)
+
+	axbis.set_ylabel(r'$\sigma_\Theta$', color='red',size=font_size)
+	axbis.tick_params(axis='y', colors='red',direction='in',size=4,width=1)
+	axbis.spines['right'].set_color('red')
+	axbis.spines['right'].set_linewidth(2)
+
+	ax[0,0].spines['bottom'].set_linewidth(2)
+	ax[0,0].spines['top'].set_linewidth(2)
+
+	# Common elements
+	ax[0,0].set_xlabel(r'$k$',size=font_size)
+	ax[0,0].set_title(r'$\sigma = \mathbf{Im}\{c\}.k$',size=font_size)
+	ax[0,0].tick_params(top=True,direction='in', size=4, width=1)
+
+	# Combine legends
+	handles1, labels1 = ax[0,0].get_legend_handles_labels()
+	handles2, labels2 = axbis.get_legend_handles_labels()
+	ax[0,0].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False)
+
+	if np.abs(np.max(sigma1)) - np.abs(np.min(sigma1)) < 0:
+		ax[0,0].set_ylim(-np.abs(np.min(sigma1)), np.abs(np.min(sigma1)))
+		print('**')
+	else:
+		ax[0,0].set_ylim(-np.abs(np.max(sigma1)), np.abs(np.max(sigma1)))
+		
+		
+	if np.abs(np.max(sigma2)) - np.abs(np.min(sigma2)) < 0:
+		axbis.set_ylim(-np.abs(np.min(sigma2)), np.abs(np.min(sigma2)))
+		print('**')
+	else:
+		axbis.set_ylim(-np.abs(np.max(sigma2)), np.abs(np.max(sigma2)))
+
+
+	ax[1,0].plot(Un,y_l,'b')
+	ax[1,0].tick_params(right=True, top=True,size=4,width=1,direction='in')
+	ax[1,0].spines[['top','bottom','right','left']].set_linewidth(2)
+	ax[1,0].set_ylabel(r'$y$',size=font_size)
+	ax[1,0].set_xlabel(r'$\overline{U}$',size=font_size)
+	ax[1,0].set_title('Velocity profile',size=font_size)
+	ax[1,0].axhline(0, color='gray', linestyle=':')
+	ax[1,0].axvline(0, color='gray', linestyle=':')
+
+
+
+
+	ax[0,1].scatter(np.real(omega_phi),np.imag(omega_phi),color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label=r'$\phi$')
+	ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega_\phi\}$',size=font_size)
+	ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega_\phi\}$',size=font_size)
+	ax[0,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
+	ax[0,1].axhline(0, color='gray', linestyle=':')
+	ax[0,1].axvline(0, color='gray', linestyle=':')
+	ax[0,1].set_title(r'Eigenfrequencies $\omega_\phi = c_\phi.k$')
+	# Make the axes (spines) bold
+	for spine in ax[0,1].spines.values():
+	    spine.set_linewidth(2)
+
+
+	ax[1,1].scatter(np.real(omega_theta),np.imag(omega_theta),color='r',marker='s',s=50,alpha=0.6,edgecolor='k',label=r'$\Theta$')
+	ax[1,1].set_ylabel(r'$\mathbf{Im}\{\omega_\Theta\}$',size=font_size)
+	ax[1,1].set_xlabel(r'$\mathbf{Re}\{\omega_\Theta\}$',size=font_size)
+	ax[1,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
+	ax[1,1].axhline(0, color='gray', linestyle=':')
+	ax[1,1].axvline(0, color='gray', linestyle=':')
+	ax[1,1].set_title(r'Eigenfrequencies $\omega_\Theta = c_\Theta.k$')
+	# Make the axes (spines) bold
+	for spine in ax[1,1].spines.values():
+	    spine.set_linewidth(2)
+
+
+
+	plt.tight_layout()
+
+
+	plt.savefig('img/fig2_'+name_exp+'.png',dpi=300)
+
+
+
+
+
+
+	##################################
+	# Plot 3
+
+
+	# derivative of sigma
+
+	dsigma1, dsigma2 = np.zeros_like(sigma1), np.zeros_like(sigma2)
+
+	for i in range(len(k)-1):
+		dsigma1[i] = (sigma1[i+1] - sigma1[i-1])/(2*dk)
+		dsigma2[i] = (sigma2[i+1] - sigma2[i-1])/(2*dk)
+
+
+
+
+	nb_bins = 30
+	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
+
+	sns.histplot(sigma1,bins=nb_bins,ax=ax[0],kde=True,stat='percent',color='b',label=r'$\phi$')
+	#ax[0].set_ylim(0,40)
+	ax1 = ax[0].twiny()
+	sns.histplot(sigma2,bins=nb_bins,ax=ax1,kde=True,stat='percent',color='r',label=r'$\Theta$')
+	#ax[0].set_ylim(0,40)
+	ax[0].set_xlabel(r'$\sigma_\phi$',color='blue',size=font_size)
+	ax1.set_xlabel(r'$\sigma_\Theta$',color='red',size=font_size)
+
+	ax[0].set_ylim(0,100)
+	ax1.set_ylim(0,100)
+
+
+	ax[0].set_ylabel('Percent %')
+
+	# Axis colors
+	ax[0].tick_params(axis='x', colors='blue',direction='in',size=4,width=1)
+	ax[0].tick_params(right=True,direction='in',size=4,width=1)
+	ax[0].spines['bottom'].set_color('blue')
+	ax[0].spines['bottom'].set_linewidth(2)
+	ax[0].axhline(0, color='gray', linestyle=':')
+	ax[0].axvline(0, color='gray', linestyle=':')
+
+	ax1.tick_params(axis='x', colors='red',direction='in',size=4,width=1)
+	ax1.spines['top'].set_color('red')
+	ax1.spines['top'].set_linewidth(2)
+
+	ax[0].spines[['left','right']].set_linewidth(2)
+
+	# Combine legends
+	handles1, labels1 = ax[0].get_legend_handles_labels()
+	handles2, labels2 = ax1.get_legend_handles_labels()
+	ax[0].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False,title='Values for')
+
+
+
+
+	if np.abs(np.max(sigma1)) - np.abs(np.min(sigma1)) < 0:
+		ax[0].set_xlim(-np.abs(np.min(sigma1)), np.abs(np.min(sigma1)))
+		print('**')
+	else:
+		ax[0].set_xlim(-np.abs(np.max(sigma1)), np.abs(np.max(sigma1)))
+		
+		
+	if np.abs(np.max(sigma2)) - np.abs(np.min(sigma2)) < 0:
+		ax1.set_xlim(-np.abs(np.min(sigma2)), np.abs(np.min(sigma2)))
+		print('**')
+	else:
+		ax1.set_xlim(-np.abs(np.max(sigma2)), np.abs(np.max(sigma2)))
+
+
+
+
+
+
+
+
+
+	sns.histplot(dsigma1,bins=nb_bins,ax=ax[1],kde=True,stat='percent',color='b',label=r'$\phi$')
+	ax[1].set_xlabel(r'$\partial \sigma_\phi/\partial k$',color='blue',size=font_size)
+	ax2 = ax[1].twiny()
+	sns.histplot(dsigma2,bins=nb_bins,ax=ax2,kde=True,stat='percent',color='r',label=r'$\Theta$')
+	ax[1].set_ylabel('')
+	ax2.set_xlabel(r'$\partial \sigma_\Theta/\partial k$',color='red',size=font_size)
+
+
+
+	# Axis colors
+	ax[1].tick_params(axis='x', colors='blue',direction='in',size=4,width=1)
+	ax[1].tick_params(labelleft=False,right=True,direction='in',size=4,width=1)
+	ax[1].spines['bottom'].set_color('blue')
+	ax[1].spines['bottom'].set_linewidth(2)
+
+	ax2.tick_params(axis='x', colors='red',direction='in',size=4,width=1)
+	ax2.spines['top'].set_color('red')
+	ax2.spines['top'].set_linewidth(2)
+
+	ax[1].set_ylim(0,100)
+	ax2.set_ylim(0,100)
+
+
+	ax[1].spines[['left','right']].set_linewidth(2)
+	ax[1].axhline(0, color='gray', linestyle=':')
+	ax[1].axvline(0, color='gray', linestyle=':')
+
+
+	# Combine legends
+	handles1, labels1 = ax[1].get_legend_handles_labels()
+	handles2, labels2 = ax2.get_legend_handles_labels()
+	ax[1].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False,title='Values for')
+
+
+
+	if np.abs(np.max(dsigma1)) - np.abs(np.min(dsigma1)) < 0:
+		ax[1].set_xlim(-np.abs(np.min(dsigma1)), np.abs(np.min(dsigma1)))
+		print('**')
+	else:
+		ax[1].set_xlim(-np.abs(np.max(dsigma1)), np.abs(np.max(dsigma1)))
+		
+		
+	if np.abs(np.max(dsigma2)) - np.abs(np.min(dsigma2)) < 0:
+		ax2.set_xlim(-np.abs(np.min(dsigma2)), np.abs(np.min(dsigma2)))
+		print('**')
+	else:
+		ax2.set_xlim(-np.abs(np.max(dsigma2)), np.abs(np.max(dsigma2)))
+
+
+
+	plt.tight_layout()
+	plt.savefig('img/fig3_'+name_exp+'.png',dpi=300)
+
+
 else:
-	big_img_part_c = c[Ny:]
-	print('Sur le pont d\'Avignon on y danse')
-
-
-
-print('COMPUTATION : OK')
-print('/////////////////////////////////////////////////////')
-
-
-
-##################################
-# PLOT
-##################################
-
-
-
-print('PLOT...')
-
-
-##################################
-# Plot 1
-
-figsize_tuple = (15,6.5)
-font_size = 17
-
-
-
-fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
-
-
-ax[0].plot(Un,y_l,'b')
-ax[0].tick_params(right=True, top=True,size=4,width=1,direction='in')
-ax[0].spines[['top','bottom','right','left']].set_linewidth(2)
-ax[0].set_ylabel(r'$y$',size=font_size)
-ax[0].set_xlabel(r'$\overline{U}$',size=font_size)
-ax[0].set_title('Velocity profile',size=font_size)
-ax[0].axhline(0, color='gray', linestyle=':')
-ax[0].axvline(0, color='gray', linestyle=':')
-
-
-
-print('-----------------------------------------------------')
-
-
-borne = (1/4)*(Un*y_l)**2
-test_crit = Un * G12
-
-print('Stability analysis : ')
-if (test_crit < borne).all() == True:
-	print('Totally unstable')
-else:
-	print('Stable ?')
-print('-----------------------------------------------------')
-
-
-ax[1].axhline(0, color='gray', linestyle=':')
-ax[1].axvline(0, color='gray', linestyle=':')
-ax[1].plot(y_l,borne,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
-ax[1].plot(y_l,test_crit,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
-ax[1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
-ax[1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
-ax[1].set_xlabel(r'$y$',size=font_size)
-ax[1].set_ylabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
-ax[1].legend(loc='best',fancybox=False)
-ax[1].set_title('Stability',size=font_size)
-
-# Make the axes (spines) bold
-for spine in ax[1].spines.values():
-    spine.set_linewidth(2)
-
-
-plt.tight_layout()
-
-plt.savefig('img/fig1_'+name_exp+'.png',dpi=300)
-
-
-
-
-
-
-##################################
-# Plot 2
-
-
-
-fig, (ax) = plt.subplots(2,2,figsize=(15,10))
-
-omega_phi = c[:Ny]*k
-omega_theta = c[Ny:]*k
-
-
-ax[0,0].axhline(0, color='gray', linestyle=':')
-ax[0,0].axvline(0, color='gray', linestyle=':')
-ax[0,0].plot(k,sigma1,'b:',alpha=0.15)
-ax[0,0].scatter(k, sigma1, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-ax[0,0].axhline(0, color='gray', linestyle=':')
-ax[0,0].axvline(0, color='gray', linestyle=':')
-
-axbis = ax[0,0].twinx()
-axbis.plot(k,sigma2,'r:',alpha=0.1)
-axbis.scatter(k, sigma2, marker='^', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\Theta$')
-
-ax[0,0].set_xscale('log')
-
-# Axis colors
-ax[0,0].set_ylabel(r'$\sigma_\phi$', color='blue',size=font_size)
-ax[0,0].tick_params(axis='y', colors='blue',direction='in',size=4,width=1)
-ax[0,0].spines['left'].set_color('blue')
-ax[0,0].spines['left'].set_linewidth(2)
-
-axbis.set_ylabel(r'$\sigma_\Theta$', color='red',size=font_size)
-axbis.tick_params(axis='y', colors='red',direction='in',size=4,width=1)
-axbis.spines['right'].set_color('red')
-axbis.spines['right'].set_linewidth(2)
-
-ax[0,0].spines['bottom'].set_linewidth(2)
-ax[0,0].spines['top'].set_linewidth(2)
-
-# Common elements
-ax[0,0].set_xlabel(r'$k$',size=font_size)
-ax[0,0].set_title(r'$\sigma = \mathbf{Im}\{c\}.k$',size=font_size)
-ax[0,0].tick_params(top=True,direction='in', size=4, width=1)
-
-# Combine legends
-handles1, labels1 = ax[0,0].get_legend_handles_labels()
-handles2, labels2 = axbis.get_legend_handles_labels()
-ax[0,0].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False)
-
-if np.abs(np.max(sigma1)) - np.abs(np.min(sigma1)) < 0:
-	ax[0,0].set_ylim(-np.abs(np.min(sigma1)), np.abs(np.min(sigma1)))
-	print('**')
-else:
-	ax[0,0].set_ylim(-np.abs(np.max(sigma1)), np.abs(np.max(sigma1)))
+	print('Alas, there\'s no plot')
 	
-	
-if np.abs(np.max(sigma2)) - np.abs(np.min(sigma2)) < 0:
-	axbis.set_ylim(-np.abs(np.min(sigma2)), np.abs(np.min(sigma2)))
-	print('**')
-else:
-	axbis.set_ylim(-np.abs(np.max(sigma2)), np.abs(np.max(sigma2)))
-
-
-ax[1,0].plot(Un,y_l,'b')
-ax[1,0].tick_params(right=True, top=True,size=4,width=1,direction='in')
-ax[1,0].spines[['top','bottom','right','left']].set_linewidth(2)
-ax[1,0].set_ylabel(r'$y$',size=font_size)
-ax[1,0].set_xlabel(r'$\overline{U}$',size=font_size)
-ax[1,0].set_title('Velocity profile',size=font_size)
-ax[1,0].axhline(0, color='gray', linestyle=':')
-ax[1,0].axvline(0, color='gray', linestyle=':')
-
-
-
-
-ax[0,1].scatter(np.real(omega_phi),np.imag(omega_phi),color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label=r'$\phi$')
-ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega_\phi\}$',size=font_size)
-ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega_\phi\}$',size=font_size)
-ax[0,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
-ax[0,1].axhline(0, color='gray', linestyle=':')
-ax[0,1].axvline(0, color='gray', linestyle=':')
-ax[0,1].set_title(r'Eigenfrequencies $\omega_\phi = c_\phi.k$')
-# Make the axes (spines) bold
-for spine in ax[0,1].spines.values():
-    spine.set_linewidth(2)
-
-
-ax[1,1].scatter(np.real(omega_theta),np.imag(omega_theta),color='r',marker='s',s=50,alpha=0.6,edgecolor='k',label=r'$\Theta$')
-ax[1,1].set_ylabel(r'$\mathbf{Im}\{\omega_\Theta\}$',size=font_size)
-ax[1,1].set_xlabel(r'$\mathbf{Re}\{\omega_\Theta\}$',size=font_size)
-ax[1,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
-ax[1,1].axhline(0, color='gray', linestyle=':')
-ax[1,1].axvline(0, color='gray', linestyle=':')
-ax[1,1].set_title(r'Eigenfrequencies $\omega_\Theta = c_\Theta.k$')
-# Make the axes (spines) bold
-for spine in ax[1,1].spines.values():
-    spine.set_linewidth(2)
-
-
-
-plt.tight_layout()
-
-
-plt.savefig('img/fig2_'+name_exp+'.png',dpi=300)
-
-
-
-
-
-
-##################################
-# Plot 3
-
-
-# derivative of sigma
-
-dsigma1, dsigma2 = np.zeros_like(sigma1), np.zeros_like(sigma2)
-
-for i in range(len(k)-1):
-	dsigma1[i] = (sigma1[i+1] - sigma1[i-1])/(2*dk)
-	dsigma2[i] = (sigma2[i+1] - sigma2[i-1])/(2*dk)
-
-
-
-
-nb_bins = 30
-fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
-
-sns.histplot(sigma1,bins=nb_bins,ax=ax[0],kde=True,stat='percent',color='b',label=r'$\phi$')
-#ax[0].set_ylim(0,40)
-ax1 = ax[0].twiny()
-sns.histplot(sigma2,bins=nb_bins,ax=ax1,kde=True,stat='percent',color='r',label=r'$\Theta$')
-#ax[0].set_ylim(0,40)
-ax[0].set_xlabel(r'$\sigma_\phi$',color='blue',size=font_size)
-ax1.set_xlabel(r'$\sigma_\Theta$',color='red',size=font_size)
-
-ax[0].set_ylim(0,100)
-ax1.set_ylim(0,100)
-
-
-ax[0].set_ylabel('Percent %')
-
-# Axis colors
-ax[0].tick_params(axis='x', colors='blue',direction='in',size=4,width=1)
-ax[0].tick_params(right=True,direction='in',size=4,width=1)
-ax[0].spines['bottom'].set_color('blue')
-ax[0].spines['bottom'].set_linewidth(2)
-ax[0].axhline(0, color='gray', linestyle=':')
-ax[0].axvline(0, color='gray', linestyle=':')
-
-ax1.tick_params(axis='x', colors='red',direction='in',size=4,width=1)
-ax1.spines['top'].set_color('red')
-ax1.spines['top'].set_linewidth(2)
-
-ax[0].spines[['left','right']].set_linewidth(2)
-
-# Combine legends
-handles1, labels1 = ax[0].get_legend_handles_labels()
-handles2, labels2 = ax1.get_legend_handles_labels()
-ax[0].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False,title='Values for')
-
-
-
-
-if np.abs(np.max(sigma1)) - np.abs(np.min(sigma1)) < 0:
-	ax[0].set_xlim(-np.abs(np.min(sigma1)), np.abs(np.min(sigma1)))
-	print('**')
-else:
-	ax[0].set_xlim(-np.abs(np.max(sigma1)), np.abs(np.max(sigma1)))
-	
-	
-if np.abs(np.max(sigma2)) - np.abs(np.min(sigma2)) < 0:
-	ax1.set_xlim(-np.abs(np.min(sigma2)), np.abs(np.min(sigma2)))
-	print('**')
-else:
-	ax1.set_xlim(-np.abs(np.max(sigma2)), np.abs(np.max(sigma2)))
-
-
-
-
-
-
-
-
-
-sns.histplot(dsigma1,bins=nb_bins,ax=ax[1],kde=True,stat='percent',color='b',label=r'$\phi$')
-ax[1].set_xlabel(r'$\partial \sigma_\phi/\partial k$',color='blue',size=font_size)
-ax2 = ax[1].twiny()
-sns.histplot(dsigma2,bins=nb_bins,ax=ax2,kde=True,stat='percent',color='r',label=r'$\Theta$')
-ax[1].set_ylabel('')
-ax2.set_xlabel(r'$\partial \sigma_\Theta/\partial k$',color='red',size=font_size)
-
-
-
-# Axis colors
-ax[1].tick_params(axis='x', colors='blue',direction='in',size=4,width=1)
-ax[1].tick_params(labelleft=False,right=True,direction='in',size=4,width=1)
-ax[1].spines['bottom'].set_color('blue')
-ax[1].spines['bottom'].set_linewidth(2)
-
-ax2.tick_params(axis='x', colors='red',direction='in',size=4,width=1)
-ax2.spines['top'].set_color('red')
-ax2.spines['top'].set_linewidth(2)
-
-ax[1].set_ylim(0,100)
-ax2.set_ylim(0,100)
-
-
-ax[1].spines[['left','right']].set_linewidth(2)
-ax[1].axhline(0, color='gray', linestyle=':')
-ax[1].axvline(0, color='gray', linestyle=':')
-
-
-# Combine legends
-handles1, labels1 = ax[1].get_legend_handles_labels()
-handles2, labels2 = ax2.get_legend_handles_labels()
-ax[1].legend(handles1 + handles2, labels1 + labels2, loc='best',fancybox=False,title='Values for')
-
-
-
-if np.abs(np.max(dsigma1)) - np.abs(np.min(dsigma1)) < 0:
-	ax[1].set_xlim(-np.abs(np.min(dsigma1)), np.abs(np.min(dsigma1)))
-	print('**')
-else:
-	ax[1].set_xlim(-np.abs(np.max(dsigma1)), np.abs(np.max(dsigma1)))
-	
-	
-if np.abs(np.max(dsigma2)) - np.abs(np.min(dsigma2)) < 0:
-	ax2.set_xlim(-np.abs(np.min(dsigma2)), np.abs(np.min(dsigma2)))
-	print('**')
-else:
-	ax2.set_xlim(-np.abs(np.max(dsigma2)), np.abs(np.max(dsigma2)))
-
-
-
-plt.tight_layout()
-plt.savefig('img/fig3_'+name_exp+'.png',dpi=300)
-
-
-
+	###############################
+	# prendre la partie im de c la plus importante
+
+	if np.max(np.imag(c[:Ny])) > np.max(np.imag(c[Ny:])):
+		big_img_part_c = c[:Ny]
+		print('Les coccinelles sont des coléoptères')
+	else:
+		big_img_part_c = c[Ny:]
+		print('Sur le pont d\'Avignon on y danse')
+		
+		
+	##################################
+	# PLOT
+	##################################
 
 
 
