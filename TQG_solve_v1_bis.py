@@ -22,7 +22,7 @@ print('-----------------------------------------------------')
 
 # if True : it will plot the 2 varibale phi and theta
 # if False : it will only plot the part where Im(c) is important
-choice_plot = True
+choice_plot = False
 name_exp = input('Name of the experience ?')
 
 print('-----------------------------------------------------')
@@ -134,91 +134,82 @@ c, X = spl.eig(A,B)
 
 
 
+##################################
+# PLOT
+##################################
+
+
+print('COMPUTATION : OK')
+print('/////////////////////////////////////////////////////')
+print('PLOT...')
+
+
+
+##################################
+# Plot 1
+
+figsize_tuple = (15,6.5)
+font_size = 17
+
+
+
+fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
+
+
+ax[0].plot(Un,y_l,'b')
+ax[0].tick_params(right=True, top=True,size=4,width=1,direction='in')
+ax[0].spines[['top','bottom','right','left']].set_linewidth(2)
+ax[0].set_ylabel(r'$y$',size=font_size)
+ax[0].set_xlabel(r'$\overline{U}$',size=font_size)
+ax[0].set_title('Velocity profile',size=font_size)
+ax[0].axhline(0, color='gray', linestyle=':')
+ax[0].axvline(0, color='gray', linestyle=':')
+
+
+
+print('-----------------------------------------------------')
+
+
+borne = (1/4)*(Un*y_l)**2
+test_crit = Un * G12
+
+print('Stability analysis : ')
+if (test_crit < borne).all() == True:
+	print('Totally unstable')
+else:
+	print('Stable ?')
+print('-----------------------------------------------------')
+
+
+ax[1].axhline(0, color='gray', linestyle=':')
+ax[1].axvline(0, color='gray', linestyle=':')
+ax[1].plot(y_l,borne,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
+ax[1].plot(y_l,test_crit,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+ax[1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
+ax[1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
+ax[1].set_xlabel(r'$y$',size=font_size)
+ax[1].set_ylabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
+ax[1].legend(loc='best',fancybox=False)
+ax[1].set_title('Stability',size=font_size)
+
+# Make the axes (spines) bold
+for spine in ax[1].spines.values():
+    spine.set_linewidth(2)
+
+
+plt.tight_layout()
+
+plt.savefig('img/fig1_'+name_exp+'.png',dpi=300)
+
+
+
+
+
 
 if choice_plot == True:
+
 	sigma1 = k*np.imag(c[:Ny])
 	sigma2 = k*np.imag(c[Ny:])
-
-
-
-
-
-
-
-	print('COMPUTATION : OK')
-	print('/////////////////////////////////////////////////////')
-
-
-
-	##################################
-	# PLOT
-	##################################
-
-
-
-	print('PLOT...')
-
-
-	##################################
-	# Plot 1
-
-	figsize_tuple = (15,6.5)
-	font_size = 17
-
-
-
-	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
-
-
-	ax[0].plot(Un,y_l,'b')
-	ax[0].tick_params(right=True, top=True,size=4,width=1,direction='in')
-	ax[0].spines[['top','bottom','right','left']].set_linewidth(2)
-	ax[0].set_ylabel(r'$y$',size=font_size)
-	ax[0].set_xlabel(r'$\overline{U}$',size=font_size)
-	ax[0].set_title('Velocity profile',size=font_size)
-	ax[0].axhline(0, color='gray', linestyle=':')
-	ax[0].axvline(0, color='gray', linestyle=':')
-
-
-
-	print('-----------------------------------------------------')
-
-
-	borne = (1/4)*(Un*y_l)**2
-	test_crit = Un * G12
-
-	print('Stability analysis : ')
-	if (test_crit < borne).all() == True:
-		print('Totally unstable')
-	else:
-		print('Stable ?')
-	print('-----------------------------------------------------')
-
-
-	ax[1].axhline(0, color='gray', linestyle=':')
-	ax[1].axvline(0, color='gray', linestyle=':')
-	ax[1].plot(y_l,borne,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
-	ax[1].plot(y_l,test_crit,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
-	ax[1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
-	ax[1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
-	ax[1].set_xlabel(r'$y$',size=font_size)
-	ax[1].set_ylabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
-	ax[1].legend(loc='best',fancybox=False)
-	ax[1].set_title('Stability',size=font_size)
-
-	# Make the axes (spines) bold
-	for spine in ax[1].spines.values():
-	    spine.set_linewidth(2)
-
-
-	plt.tight_layout()
-
-	plt.savefig('img/fig1_'+name_exp+'.png',dpi=300)
-
-
-
-
-
 
 	##################################
 	# Plot 2
@@ -458,23 +449,94 @@ if choice_plot == True:
 	plt.savefig('img/fig3_'+name_exp+'.png',dpi=300)
 
 
+
+
+
+
 else:
-	print('Alas, there\'s no plot')
-	
+
 	###############################
 	# prendre la partie im de c la plus importante
 
 	if np.max(np.imag(c[:Ny])) > np.max(np.imag(c[Ny:])):
 		big_img_part_c = c[:Ny]
-		print('Les coccinelles sont des coléoptères')
+		print('^^')
 	else:
 		big_img_part_c = c[Ny:]
-		print('Sur le pont d\'Avignon on y danse')
+		print('++')
 		
 		
 	##################################
 	# PLOT
 	##################################
+	
+	
+	sigma_big_img = k*np.imag(big_img_part_c)
+	omega_big_c = big_img_part_c*k
+
+	##################################
+	# Plot 2
+
+
+
+	fig, (ax) = plt.subplots(2,2,figsize=(15,10))
+
+
+	ax[0,0].axhline(0, color='gray', linestyle=':')
+	ax[0,0].axvline(0, color='gray', linestyle=':')
+	ax[0,0].plot(k,sigma_big_img,'b:',alpha=0.15)
+	ax[0,0].scatter(k, sigma_big_img, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+	ax[0,0].axhline(0, color='gray', linestyle=':')
+	ax[0,0].axvline(0, color='gray', linestyle=':')
+	
+	for spine in ax[0,0].spines.values():
+	    spine.set_linewidth(2)
+
+
+	ax[0,0].set_xscale('log')
+
+	# Common elements
+	ax[0,0].set_xlabel(r'$k$',size=font_size)
+	ax[0,0].set_title(r'$\sigma = \mathbf{Im}\{c\}.k$',size=font_size)
+	ax[0,0].tick_params(top=True,right=True,direction='in', size=4, width=1)
+
+	if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
+		ax[0,0].set_ylim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
+		print('**')
+	else:
+		ax[0,0].set_ylim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
+	
+
+	
+	ax[1,0].plot(Un,y_l,'b')
+	ax[1,0].tick_params(right=True, top=True,size=4,width=1,direction='in')
+	ax[1,0].spines[['top','bottom','right','left']].set_linewidth(2)
+	ax[1,0].set_ylabel(r'$y$',size=font_size)
+	ax[1,0].set_xlabel(r'$\overline{U}$',size=font_size)
+	ax[1,0].set_title('Velocity profile',size=font_size)
+	ax[1,0].axhline(0, color='gray', linestyle=':')
+	ax[1,0].axvline(0, color='gray', linestyle=':')
+
+
+
+
+	ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k')
+	ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
+	ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega\}$',size=font_size)
+	ax[0,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
+	ax[0,1].axhline(0, color='gray', linestyle=':')
+	ax[0,1].axvline(0, color='gray', linestyle=':')
+	ax[0,1].set_title(r'Eigenfrequencies $\omega = c.k$')
+	# Make the axes (spines) bold
+	for spine in ax[0,1].spines.values():
+	    spine.set_linewidth(2)
+
+
+
+	plt.tight_layout()
+
+
+	plt.savefig('img/fig2_'+name_exp+'.png',dpi=300)
 
 
 
