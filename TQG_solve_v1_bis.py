@@ -18,15 +18,19 @@ print('-----------------------------------------------------')
 
 
 # cf TQG notes : A.X = c.B.X
-# @uthor : dimitri moreau 23/04/2025
+# @uthor : dimitri moreau 29/04/2025
 
 
 
 # if True : it will plot the 2 varibale phi and theta
 # if False : it will only plot the part where Im(c) is important
 choice_plot = False
+nb_bins = 50
+figsize_tuple = (15,6.5)
+font_size = 17
 
 name_exp = input('Name of the experience ?')
+
 
 print('-----------------------------------------------------')
 
@@ -38,7 +42,7 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 200, 200
-Ly, Lk = np.pi, 30
+Ly, Lk = np.pi, 40
 dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
 dk = Lk/Nk
@@ -51,10 +55,11 @@ K2 = (k**2 + F1star)*dy**2
 U0= 1
 
 
-phi, theta, Un = np.zeros((Ny, Nk)), np.zeros((Ny, Nk)), U0*np.exp(-y_l**2)
-# phi_r,theta_r = phi.reshape(Nk*Ny), theta.reshape(Nk*Ny)
+phi, theta = np.zeros((Ny, Nk)), np.zeros((Ny, Nk))
 
-# X = np.array([phi_r,theta_r])
+Un = U0*np.exp(-y_l**2)
+#Un = 1/(1+np.exp(-y_l)) # sigmoide
+
 
 # V/G/Mn
 Theta0 = 1
@@ -147,14 +152,15 @@ print('/////////////////////////////////////////////////////')
 print('PLOT...')
 
 
-figsize_tuple = (15,6.5)
-font_size = 17
+
 
 #################### for only the 2 values phi and theta
 
 if choice_plot == True:
 
 	choice_plot_name = '_phi_n_theta'
+	print('-----------------------------------------------------')
+	print('You have chosen the **'+choice_plot_name+'** plot')
 
 	sigma1 = k*np.imag(c[:Ny])
 	sigma2 = k*np.imag(c[Ny:])
@@ -336,7 +342,6 @@ if choice_plot == True:
 
 
 
-	nb_bins = 30
 	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
 
 	sns.histplot(sigma1,bins=nb_bins,ax=ax[0],kde=True,stat='percent',color='b',label=r'$\phi$')
@@ -453,6 +458,8 @@ if choice_plot == True:
 else:
 
 	choice_plot_name = '_max_imag'
+	print('-----------------------------------------------------')
+	print('You have chosen the **'+choice_plot_name+'** plot')
 	###############################
 	# prendre la partie im de c la plus importante
 
@@ -577,7 +584,6 @@ else:
 
 
 
-	nb_bins = 30
 	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
 
 	sns.histplot(sigma_big_img,bins=nb_bins,ax=ax[0],kde=True,stat='percent',color='b')
@@ -625,6 +631,30 @@ else:
 
 
 
+
+# temporaire
+
+fig, (ax) = plt.subplots(1,2,figsize=figsize_tuple)
+
+# pour k,sigma_big_img
+Nfourier = len(sigma_big_img)
+kmax = k[-1] - k[0]
+Fs = Nfourier/kmax
+fourier11 = np.fft.fft(sigma_big_img)/(Nfourier/2)
+freq11 = np.fft.fftfreq(Nfourier,1/Fs)
+
+
+ax[0].plot(freq11[0:Nfourier//2],np.abs(fourier11[0:Nfourier//2]))
+
+# pour  np.real(omega_big_c),np.imag(omega_big_c)
+Nfourier = len(omega_big_c)
+x_max = np.real(omega_big_c)[-1] - np.real(omega_big_c)[0]
+Fs = Nfourier/x_max
+fourier12 = np.fft.fft(np.imag(omega_big_c))/(Nfourier/2)
+freq12 = np.fft.fftfreq(Nfourier,1/Fs)
+
+
+ax[1].plot(freq12[0:Nfourier//2],np.abs(fourier12[0:Nfourier//2]))
 
 
 plt.show()
