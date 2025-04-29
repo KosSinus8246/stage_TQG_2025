@@ -64,7 +64,10 @@ Un = U0*np.exp(-y_l**2)
 # V/G/Mn
 Theta0 = 1
 Vn = Un * dy**2
-G12 = -2*y_l*Theta0*np.exp(-y_l**2)
+G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
+
+#G12 = np.zeros_like(y_l) # ondes de rossby (stable)
+
 G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un+beta - G12
 F11 = G11*dy**2
 
@@ -173,6 +176,8 @@ if choice_plot == True:
 
 
 	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
+	
+	fig.suptitle('Experience : '+name_exp)
 
 
 	ax[0].plot(Un,y_l,'b')
@@ -226,6 +231,8 @@ if choice_plot == True:
 
 
 	fig, (ax) = plt.subplots(2,2,figsize=(15,10))
+	
+	fig.suptitle('Experience : '+name_exp)
 
 	omega_phi = c[:Ny]*k
 	omega_theta = c[Ny:]*k
@@ -343,6 +350,8 @@ if choice_plot == True:
 
 
 	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
+	
+	fig.suptitle('Experience : '+name_exp)
 
 	sns.histplot(sigma1,bins=nb_bins,ax=ax[0],kde=True,stat='percent',color='b',label=r'$\phi$')
 	#ax[0].set_ylim(0,40)
@@ -449,6 +458,7 @@ if choice_plot == True:
 
 	plt.tight_layout()
 	plt.savefig('img/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
+	
 
 
 
@@ -479,6 +489,9 @@ else:
 
 
 	fig, (ax) = plt.subplots(2,2,figsize=(15,10))
+	
+	
+	fig.suptitle('Experience : '+name_exp)
 
 
 	ax[0,0].axhline(0, color='gray', linestyle=':')
@@ -585,6 +598,10 @@ else:
 
 
 	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
+	
+	
+	fig.suptitle('Experience : '+name_exp)
+	
 
 	sns.histplot(sigma_big_img,bins=nb_bins,ax=ax[0],kde=True,stat='percent',color='b')
 	ax[0].set_xlabel(r'$\sigma$',size=font_size)
@@ -628,33 +645,50 @@ else:
 
 	plt.tight_layout()
 	plt.savefig('img/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
+	
+	
+	
+	
+	# temporaire
+
+	fig, (ax) = plt.subplots(2,2,figsize=(15,10))
+
+
+
+	ax[0,0].scatter(k, sigma_big_img, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+	ax[0,0].set_xscale('log')
+
+	ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k')
 
 
 
 
-# temporaire
-
-fig, (ax) = plt.subplots(1,2,figsize=figsize_tuple)
-
-# pour k,sigma_big_img
-Nfourier = len(sigma_big_img)
-kmax = k[-1] - k[0]
-Fs = Nfourier/kmax
-fourier11 = np.fft.fft(sigma_big_img)/(Nfourier/2)
-freq11 = np.fft.fftfreq(Nfourier,1/Fs)
 
 
-ax[0].plot(freq11[0:Nfourier//2],np.abs(fourier11[0:Nfourier//2]))
-
-# pour  np.real(omega_big_c),np.imag(omega_big_c)
-Nfourier = len(omega_big_c)
-x_max = np.real(omega_big_c)[-1] - np.real(omega_big_c)[0]
-Fs = Nfourier/x_max
-fourier12 = np.fft.fft(np.imag(omega_big_c))/(Nfourier/2)
-freq12 = np.fft.fftfreq(Nfourier,1/Fs)
+	# pour k,sigma_big_img
+	Nfourier = len(sigma_big_img)
+	kmax = k[-1] - k[0]
+	Fs = Nfourier/kmax
+	fourier11 = np.fft.fft(sigma_big_img)/(Nfourier/2)
+	freq11 = np.fft.fftfreq(Nfourier,1/Fs)
 
 
-ax[1].plot(freq12[0:Nfourier//2],np.abs(fourier12[0:Nfourier//2]))
+	ax[1,0].plot(freq11[0:Nfourier//2],np.abs(fourier11[0:Nfourier//2]))
+
+	# pour  np.real(omega_big_c),np.imag(omega_big_c)
+	Nfourier = len(omega_big_c)
+	x_max = np.real(omega_big_c)[-1] - np.real(omega_big_c)[0]
+	Fs = Nfourier/x_max
+	fourier12 = np.fft.fft(np.imag(omega_big_c))/(Nfourier/2)
+	freq12 = np.fft.fftfreq(Nfourier,1/Fs)
+
+
+	ax[1,1].plot(freq12[0:Nfourier//2],np.abs(fourier12[0:Nfourier//2]))
+
+
+
+
+
 
 
 plt.show()
