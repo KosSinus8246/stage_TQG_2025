@@ -10,7 +10,9 @@ mpl.rcParams['mathtext.fontset'] = 'stix'
 mpl.rcParams['font.family'] = 'STIXGeneral'
 mpl.rcParams['legend.edgecolor'] = '0'
 
-print('TQG_SOLVE_1_BIS')
+print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_1_BIS~~~~~~~~~~~~~~~~~~~~')
+print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 print('-----------------------------------------------------')
 
 
@@ -35,7 +37,7 @@ print('-----------------------------------------------------')
 # VARIABLES, SPACE ...
 ##################################
 
-Ny, Nk = 120, 120
+Ny, Nk = 200, 200
 Ly, Lk = np.pi, 30
 dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
@@ -99,7 +101,7 @@ print('MATRIX B : OK')
 
 # Block A11
 main_diag_A11 = (-Un*(2 + K2) + F11)  # shape (3,)
-A11 = np.zeros((Ny,Nk))
+A11 = np.zeros((Ny,Ny))
 np.fill_diagonal(A11, main_diag_A11)
 
 for i in range(Ny - 1):
@@ -151,6 +153,8 @@ font_size = 17
 #################### for only the 2 values phi and theta
 
 if choice_plot == True:
+
+	choice_plot_name = '_phi_n_theta'
 
 	sigma1 = k*np.imag(c[:Ny])
 	sigma2 = k*np.imag(c[Ny:])
@@ -208,7 +212,7 @@ if choice_plot == True:
 
 	plt.tight_layout()
 
-	plt.savefig('img/fig1_'+name_exp+'.png',dpi=300)
+	plt.savefig('img/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 	##################################
 	# Plot 2
@@ -260,14 +264,12 @@ if choice_plot == True:
 
 	if np.abs(np.max(sigma1)) - np.abs(np.min(sigma1)) < 0:
 		ax[0,0].set_ylim(-np.abs(np.min(sigma1)), np.abs(np.min(sigma1)))
-		print('**')
 	else:
 		ax[0,0].set_ylim(-np.abs(np.max(sigma1)), np.abs(np.max(sigma1)))
 		
 		
 	if np.abs(np.max(sigma2)) - np.abs(np.min(sigma2)) < 0:
 		axbis.set_ylim(-np.abs(np.min(sigma2)), np.abs(np.min(sigma2)))
-		print('**')
 	else:
 		axbis.set_ylim(-np.abs(np.max(sigma2)), np.abs(np.max(sigma2)))
 
@@ -312,7 +314,7 @@ if choice_plot == True:
 	plt.tight_layout()
 
 
-	plt.savefig('img/fig2_'+name_exp+'.png',dpi=300)
+	plt.savefig('img/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 
 
@@ -375,14 +377,12 @@ if choice_plot == True:
 
 	if np.abs(np.max(sigma1)) - np.abs(np.min(sigma1)) < 0:
 		ax[0].set_xlim(-np.abs(np.min(sigma1)), np.abs(np.min(sigma1)))
-		print('**')
 	else:
 		ax[0].set_xlim(-np.abs(np.max(sigma1)), np.abs(np.max(sigma1)))
 		
 		
 	if np.abs(np.max(sigma2)) - np.abs(np.min(sigma2)) < 0:
 		ax1.set_xlim(-np.abs(np.min(sigma2)), np.abs(np.min(sigma2)))
-		print('**')
 	else:
 		ax1.set_xlim(-np.abs(np.max(sigma2)), np.abs(np.max(sigma2)))
 
@@ -431,21 +431,19 @@ if choice_plot == True:
 
 	if np.abs(np.max(dsigma1)) - np.abs(np.min(dsigma1)) < 0:
 		ax[1].set_xlim(-np.abs(np.min(dsigma1)), np.abs(np.min(dsigma1)))
-		print('**')
 	else:
 		ax[1].set_xlim(-np.abs(np.max(dsigma1)), np.abs(np.max(dsigma1)))
 		
 		
 	if np.abs(np.max(dsigma2)) - np.abs(np.min(dsigma2)) < 0:
 		ax2.set_xlim(-np.abs(np.min(dsigma2)), np.abs(np.min(dsigma2)))
-		print('**')
 	else:
 		ax2.set_xlim(-np.abs(np.max(dsigma2)), np.abs(np.max(dsigma2)))
 
 
 
 	plt.tight_layout()
-	plt.savefig('img/fig3_'+name_exp+'.png',dpi=300)
+	plt.savefig('img/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 
 
@@ -454,15 +452,14 @@ if choice_plot == True:
 #################### for only the 1 imaginary part
 else:
 
+	choice_plot_name = '_max_imag'
 	###############################
 	# prendre la partie im de c la plus importante
 
 	if np.max(np.imag(c[:Ny])) > np.max(np.imag(c[Ny:])):
 		big_img_part_c = c[:Ny]
-		print('^^')
 	else:
 		big_img_part_c = c[Ny:]
-		print('++')
 		
 	
 	
@@ -470,7 +467,7 @@ else:
 	omega_big_c = big_img_part_c*k
 
 	##################################
-	# Plot 2
+	# Plot 1
 
 
 
@@ -498,7 +495,6 @@ else:
 
 	if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
 		ax[0,0].set_ylim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
-		print('**')
 	else:
 		ax[0,0].set_ylim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
 	
@@ -563,11 +559,11 @@ else:
 	plt.tight_layout()
 
 
-	plt.savefig('img/fig2_'+name_exp+'.png',dpi=300)
+	plt.savefig('img/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 	
 	##################################
-	# Plot 3
+	# Plot 2
 	
 	
 	
@@ -598,7 +594,6 @@ else:
 
 	if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
 		ax[0].set_xlim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
-		print('**')
 	else:
 		ax[0].set_xlim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
 
@@ -620,14 +615,13 @@ else:
 
 	if np.abs(np.max(dsigma)) - np.abs(np.min(dsigma)) < 0:
 		ax[1].set_xlim(-np.abs(np.min(dsigma)), np.abs(np.min(dsigma)))
-		print('**')
 	else:
 		ax[1].set_xlim(-np.abs(np.max(dsigma)), np.abs(np.max(dsigma)))
 
 
 
 	plt.tight_layout()
-	plt.savefig('img/fig3_'+name_exp+'.png',dpi=300)
+	plt.savefig('img/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 
 
@@ -637,6 +631,7 @@ plt.show()
 
 
 print('END')
+print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
 
 
