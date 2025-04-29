@@ -23,6 +23,7 @@ print('-----------------------------------------------------')
 # if True : it will plot the 2 varibale phi and theta
 # if False : it will only plot the part where Im(c) is important
 choice_plot = False
+
 name_exp = input('Name of the experience ?')
 
 print('-----------------------------------------------------')
@@ -34,8 +35,8 @@ print('-----------------------------------------------------')
 # VARIABLES, SPACE ...
 ##################################
 
-Ny, Nk = 60, 60
-Ly, Lk = np.pi, 0.1+Nk*0.1
+Ny, Nk = 120, 120
+Ly, Lk = np.pi, 30
 dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
 dk = Lk/Nk
@@ -144,72 +145,70 @@ print('/////////////////////////////////////////////////////')
 print('PLOT...')
 
 
-
-##################################
-# Plot 1
-
 figsize_tuple = (15,6.5)
 font_size = 17
 
-
-
-fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
-
-
-ax[0].plot(Un,y_l,'b')
-ax[0].tick_params(right=True, top=True,size=4,width=1,direction='in')
-ax[0].spines[['top','bottom','right','left']].set_linewidth(2)
-ax[0].set_ylabel(r'$y$',size=font_size)
-ax[0].set_xlabel(r'$\overline{U}$',size=font_size)
-ax[0].set_title('Velocity profile',size=font_size)
-ax[0].axhline(0, color='gray', linestyle=':')
-ax[0].axvline(0, color='gray', linestyle=':')
-
-
-
-print('-----------------------------------------------------')
-
-
-borne = (1/4)*(Un*y_l)**2
-test_crit = Un * G12
-
-print('Stability analysis : ')
-if (test_crit < borne).all() == True:
-	print('Totally unstable')
-else:
-	print('Stable ?')
-print('-----------------------------------------------------')
-
-
-ax[1].axhline(0, color='gray', linestyle=':')
-ax[1].axvline(0, color='gray', linestyle=':')
-ax[1].plot(y_l,borne,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
-ax[1].plot(y_l,test_crit,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
-ax[1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
-ax[1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
-ax[1].set_xlabel(r'$y$',size=font_size)
-ax[1].set_ylabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
-ax[1].legend(loc='best',fancybox=False)
-ax[1].set_title('Stability',size=font_size)
-
-# Make the axes (spines) bold
-for spine in ax[1].spines.values():
-    spine.set_linewidth(2)
-
-
-plt.tight_layout()
-
-plt.savefig('img/fig1_'+name_exp+'.png',dpi=300)
-
-
-
-
-
+#################### for only the 2 values phi and theta
 
 if choice_plot == True:
 
 	sigma1 = k*np.imag(c[:Ny])
 	sigma2 = k*np.imag(c[Ny:])
+	
+	
+	
+	##################################
+	# Plot 1
+
+
+
+	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
+
+
+	ax[0].plot(Un,y_l,'b')
+	ax[0].tick_params(right=True, top=True,size=4,width=1,direction='in')
+	ax[0].spines[['top','bottom','right','left']].set_linewidth(2)
+	ax[0].set_ylabel(r'$y$',size=font_size)
+	ax[0].set_xlabel(r'$\overline{U}$',size=font_size)
+	ax[0].set_title('Velocity profile',size=font_size)
+	ax[0].axhline(0, color='gray', linestyle=':')
+	ax[0].axvline(0, color='gray', linestyle=':')
+
+
+
+	print('-----------------------------------------------------')
+
+
+	borne = (1/4)*(Un*y_l)**2
+	test_crit = Un * G12
+
+	print('Stability analysis : ')
+	if (test_crit < borne).all() == True:
+		print('Totally unstable')
+	else:
+		print('Stable ?')
+	print('-----------------------------------------------------')
+
+
+	ax[1].axhline(0, color='gray', linestyle=':')
+	ax[1].axvline(0, color='gray', linestyle=':')
+	ax[1].plot(y_l,borne,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
+	ax[1].plot(y_l,test_crit,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+	ax[1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
+	ax[1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
+	ax[1].set_xlabel(r'$y$',size=font_size)
+	ax[1].set_ylabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
+	ax[1].legend(loc='best',fancybox=False)
+	ax[1].set_title('Stability',size=font_size)
+
+	# Make the axes (spines) bold
+	for spine in ax[1].spines.values():
+	    spine.set_linewidth(2)
+
+
+	plt.tight_layout()
+
+	plt.savefig('img/fig1_'+name_exp+'.png',dpi=300)
 
 	##################################
 	# Plot 2
@@ -285,7 +284,7 @@ if choice_plot == True:
 
 
 
-	ax[0,1].scatter(np.real(omega_phi),np.imag(omega_phi),color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label=r'$\phi$')
+	ax[0,1].scatter(np.real(omega_phi),np.imag(omega_phi),color='b',marker='*',s=50,alpha=0.6,edgecolor='k')
 	ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega_\phi\}$',size=font_size)
 	ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega_\phi\}$',size=font_size)
 	ax[0,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
@@ -297,7 +296,7 @@ if choice_plot == True:
 	    spine.set_linewidth(2)
 
 
-	ax[1,1].scatter(np.real(omega_theta),np.imag(omega_theta),color='r',marker='s',s=50,alpha=0.6,edgecolor='k',label=r'$\Theta$')
+	ax[1,1].scatter(np.real(omega_theta),np.imag(omega_theta),color='r',marker='s',s=50,alpha=0.6,edgecolor='k')
 	ax[1,1].set_ylabel(r'$\mathbf{Im}\{\omega_\Theta\}$',size=font_size)
 	ax[1,1].set_xlabel(r'$\mathbf{Re}\{\omega_\Theta\}$',size=font_size)
 	ax[1,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
@@ -452,7 +451,7 @@ if choice_plot == True:
 
 
 
-
+#################### for only the 1 imaginary part
 else:
 
 	###############################
@@ -465,10 +464,6 @@ else:
 		big_img_part_c = c[Ny:]
 		print('++')
 		
-		
-	##################################
-	# PLOT
-	##################################
 	
 	
 	sigma_big_img = k*np.imag(big_img_part_c)
@@ -497,6 +492,7 @@ else:
 
 	# Common elements
 	ax[0,0].set_xlabel(r'$k$',size=font_size)
+	ax[0,0].set_ylabel(r'$\sigma$',size=font_size)
 	ax[0,0].set_title(r'$\sigma = \mathbf{Im}\{c\}.k$',size=font_size)
 	ax[0,0].tick_params(top=True,right=True,direction='in', size=4, width=1)
 
@@ -530,6 +526,37 @@ else:
 	# Make the axes (spines) bold
 	for spine in ax[0,1].spines.values():
 	    spine.set_linewidth(2)
+	    
+	    
+	    
+	print('-----------------------------------------------------')
+
+
+	borne = (1/4)*(Un*y_l)**2
+	test_crit = Un * G12
+
+	print('Stability analysis : ')
+	if (test_crit < borne).all() == True:
+		print('Totally unstable')
+	else:
+		print('Stable ?')
+	print('-----------------------------------------------------')
+
+
+	ax[1,1].axhline(0, color='gray', linestyle=':')
+	ax[1,1].axvline(0, color='gray', linestyle=':')
+	ax[1,1].plot(y_l,borne,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
+	ax[1,1].plot(y_l,test_crit,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+	ax[1,1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
+	ax[1,1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
+	ax[1,1].set_xlabel(r'$y$',size=font_size)
+	ax[1,1].set_ylabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
+	ax[1,1].legend(loc='best',fancybox=False)
+	ax[1,1].set_title('Stability',size=font_size)
+
+	# Make the axes (spines) bold
+	for spine in ax[1,1].spines.values():
+	    spine.set_linewidth(2)
 
 
 
@@ -538,7 +565,69 @@ else:
 
 	plt.savefig('img/fig2_'+name_exp+'.png',dpi=300)
 
+	
+	##################################
+	# Plot 3
+	
+	
+	
+	# derivative of sigma
 
+	dsigma = np.zeros_like(sigma_big_img)
+
+	for i in range(len(k)-1):
+		dsigma[i] = (sigma_big_img[i+1] - sigma_big_img[i-1])/(2*dk)
+
+
+
+
+	nb_bins = 30
+	fig, ax = plt.subplots(1, 2, figsize=figsize_tuple)
+
+	sns.histplot(sigma_big_img,bins=nb_bins,ax=ax[0],kde=True,stat='percent',color='b')
+	ax[0].set_xlabel(r'$\sigma$',size=font_size)
+	ax[0].set_ylim(0,100)
+	ax[0].set_ylabel('Percent %')
+	ax[0].spines[['left','right','top','bottom']].set_linewidth(2)
+	ax[0].tick_params(right=True,top=True,direction='in',size=4,width=1)
+	ax[0].axhline(0, color='gray', linestyle=':')
+	ax[0].axvline(0, color='gray', linestyle=':')
+
+
+
+
+	if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
+		ax[0].set_xlim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
+		print('**')
+	else:
+		ax[0].set_xlim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
+
+
+
+	sns.histplot(dsigma,bins=nb_bins,ax=ax[1],kde=True,stat='percent',color='b')
+	ax[1].set_xlabel(r'$\partial \sigma/\partial k$',size=font_size)
+
+
+	ax[1].set_ylim(0,100)
+
+	ax[1].spines[['left','right','top','bottom']].set_linewidth(2)
+	ax[1].axhline(0, color='gray', linestyle=':')
+	ax[1].axvline(0, color='gray', linestyle=':')
+	ax[1].tick_params(labelleft=False,right=True,top=True,direction='in',size=4,width=1)
+	ax[1].set_ylabel('')
+
+
+
+	if np.abs(np.max(dsigma)) - np.abs(np.min(dsigma)) < 0:
+		ax[1].set_xlim(-np.abs(np.min(dsigma)), np.abs(np.min(dsigma)))
+		print('**')
+	else:
+		ax[1].set_xlim(-np.abs(np.max(dsigma)), np.abs(np.max(dsigma)))
+
+
+
+	plt.tight_layout()
+	plt.savefig('img/fig3_'+name_exp+'.png',dpi=300)
 
 
 
