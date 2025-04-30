@@ -81,8 +81,6 @@ os.makedirs(folder_path, exist_ok=True)  # Create directories if they don't exis
 # Create full file path
 file_path = os.path.join(folder_path, 'variables_used_' + name_exp + '.txt')
 
-
-
 # Open a file in write mode
 with open('im_para/'+name_exp+'/variables_used_'+name_exp+'.txt', 'w') as file:
     file.write('Used variables for : '+name_exp+'\n')
@@ -96,6 +94,7 @@ with open('im_para/'+name_exp+'/variables_used_'+name_exp+'.txt', 'w') as file:
     file.write(f"Rd = {Rd}\n")
     file.write(f"U0 = {U0}\n")
     file.write(f"Theta0 = {Theta0}\n")
+    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
 print('Variables stored into : variables_used_'+name_exp+'.txt')
 
