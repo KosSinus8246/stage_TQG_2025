@@ -43,7 +43,7 @@ y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
 dk = Lk/Nk
 
 
-beta, Rd = 5, 1 #1e-11
+beta, Rd = 0, 1 #1e-11
 F1star = 0 #1/Rd**2
 K2 = (k**2 + F1star)*dy**2
 #K2 = 0
@@ -75,6 +75,11 @@ print('/////////////////////////////////////////////////////')
 with open('im_para/variables_used_'+name_exp+'.txt', 'w') as file:
     file.write('Used variables for : '+name_exp+'\n')
     file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+    file.write(f"Ny = {Ny}\n")
+    file.write(f"Nk = {Nk}\n")
+    file.write(f"Ly = {Ly}\n")
+    file.write(f"Lk = {Lk}\n")
+    file.write(f"F1star = {F1star}\n")
     file.write(f"beta = {beta}\n")
     file.write(f"Rd = {Rd}\n")
     file.write(f"U0 = {U0}\n")
