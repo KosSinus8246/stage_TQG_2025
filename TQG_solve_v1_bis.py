@@ -22,19 +22,14 @@ print('-----------------------------------------------------')
 
 
 
-# if True : it will plot the 2 varibale phi and theta
-# if False : it will only plot the part where Im(c) is important
-choice_plot = False
+# if 1 : it will plot the 2 varibale phi and theta
+# if 2 : it will only plot the part where Im(c) is important
+choice_plot = 2
 nb_bins = 50
 figsize_tuple = (15,6.5)
 font_size = 17
 
 name_exp = input('Name of the experience ?')
-
-
-print('-----------------------------------------------------')
-
-print('Preparing your experience : '+name_exp)
 
 print('-----------------------------------------------------')
 ##################################
@@ -42,7 +37,7 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 200, 200
-Ly, Lk = np.pi, 40
+Ly, Lk = np.pi, 100 #40
 dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
 dk = Lk/Nk
@@ -55,7 +50,7 @@ K2 = (k**2 + F1star)*dy**2
 U0= 1
 
 
-phi, theta = np.zeros((Ny, Nk)), np.zeros((Ny, Nk))
+#phi, theta = np.zeros((Ny, Nk)), np.zeros((Ny, Nk))
 
 Un = U0*np.exp(-y_l**2)
 #Un = 1/(1+np.exp(-y_l)) # sigmoide
@@ -70,6 +65,22 @@ G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
 
 G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un+beta - G12
 F11 = G11*dy**2
+
+
+print('/////////////////////////////////////////////////////')
+
+
+
+# Open a file in write mode
+with open('im_para/variables_used_'+name_exp+'.txt', 'w') as file:
+    file.write('Used variables for : '+name_exp+'\n')
+    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+    file.write(f"beta = {beta}\n")
+    file.write(f"Rd = {Rd}\n")
+    file.write(f"U0 = {U0}\n")
+    file.write(f"Theta0 = {Theta0}\n")
+
+print('Variables stored into : variables_used_'+name_exp+'.txt')
 
 
 
@@ -159,7 +170,7 @@ print('PLOT...')
 
 #################### for only the 2 values phi and theta
 
-if choice_plot == True:
+if choice_plot == 1:
 
 	choice_plot_name = '_phi_n_theta'
 	print('-----------------------------------------------------')
@@ -223,7 +234,7 @@ if choice_plot == True:
 
 	plt.tight_layout()
 
-	plt.savefig('img/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 	##################################
 	# Plot 2
@@ -249,7 +260,7 @@ if choice_plot == True:
 	axbis.plot(k,sigma2,'r:',alpha=0.1)
 	axbis.scatter(k, sigma2, marker='^', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\Theta$')
 
-	ax[0,0].set_xscale('log')
+	#ax[0,0].set_xscale('log')
 
 	# Axis colors
 	ax[0,0].set_ylabel(r'$\sigma_\phi$', color='blue',size=font_size)
@@ -327,7 +338,7 @@ if choice_plot == True:
 	plt.tight_layout()
 
 
-	plt.savefig('img/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 
 
@@ -457,7 +468,7 @@ if choice_plot == True:
 
 
 	plt.tight_layout()
-	plt.savefig('img/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
 	
 
 
@@ -465,7 +476,7 @@ if choice_plot == True:
 
 
 #################### for only the 1 imaginary part
-else:
+elif choice_plot == 2:
 
 	choice_plot_name = '_max_imag'
 	print('-----------------------------------------------------')
@@ -505,7 +516,7 @@ else:
 	    spine.set_linewidth(2)
 
 
-	ax[0,0].set_xscale('log')
+	#ax[0,0].set_xscale('log')
 
 	# Common elements
 	ax[0,0].set_xlabel(r'$k$',size=font_size)
@@ -579,7 +590,7 @@ else:
 	plt.tight_layout()
 
 
-	plt.savefig('img/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 	
 	##################################
@@ -644,11 +655,11 @@ else:
 
 
 	plt.tight_layout()
-	plt.savefig('img/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
 	
 	
 	
-	
+	'''
 	# temporaire
 
 	fig, (ax) = plt.subplots(2,2,figsize=(15,10))
@@ -656,7 +667,7 @@ else:
 
 
 	ax[0,0].scatter(k, sigma_big_img, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-	ax[0,0].set_xscale('log')
+	#ax[0,0].set_xscale('log')
 
 	ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k')
 
@@ -683,7 +694,7 @@ else:
 	freq12 = np.fft.fftfreq(Nfourier,1/Fs)
 
 
-	ax[1,1].plot(freq12[0:Nfourier//2],np.abs(fourier12[0:Nfourier//2]))
+	ax[1,1].plot(freq12[0:Nfourier//2],np.abs(fourier12[0:Nfourier//2]))'''
 
 
 
