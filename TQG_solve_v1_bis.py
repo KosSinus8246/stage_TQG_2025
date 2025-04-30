@@ -1,3 +1,5 @@
+import os
+import warnings
 import numpy as np
 import seaborn as sns
 import matplotlib as mpl
@@ -9,6 +11,7 @@ mpl.rcParams['font.size'] = 14
 mpl.rcParams['mathtext.fontset'] = 'stix'
 mpl.rcParams['font.family'] = 'STIXGeneral'
 mpl.rcParams['legend.edgecolor'] = '0'
+warnings.filterwarnings("ignore")
 
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_1_BIS~~~~~~~~~~~~~~~~~~~~')
@@ -32,11 +35,12 @@ font_size = 17
 name_exp = input('Name of the experience ?')
 
 print('-----------------------------------------------------')
+
 ##################################
 # VARIABLES, SPACE ...
 ##################################
 
-Ny, Nk = 200, 200
+Ny, Nk = 300, 300
 Ly, Lk = np.pi, 100 #40
 dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
@@ -70,9 +74,17 @@ F11 = G11*dy**2
 print('/////////////////////////////////////////////////////')
 
 
+# Create the full directory path
+folder_path = os.path.join("im_para", name_exp)
+os.makedirs(folder_path, exist_ok=True)  # Create directories if they don't exist
+
+# Create full file path
+file_path = os.path.join(folder_path, 'variables_used_' + name_exp + '.txt')
+
+
 
 # Open a file in write mode
-with open('im_para/variables_used_'+name_exp+'.txt', 'w') as file:
+with open('im_para/'+name_exp+'/variables_used_'+name_exp+'.txt', 'w') as file:
     file.write('Used variables for : '+name_exp+'\n')
     file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
     file.write(f"Ny = {Ny}\n")
@@ -239,7 +251,7 @@ if choice_plot == 1:
 
 	plt.tight_layout()
 
-	plt.savefig('im_para/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 	##################################
 	# Plot 2
@@ -343,7 +355,7 @@ if choice_plot == 1:
 	plt.tight_layout()
 
 
-	plt.savefig('im_para/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/'+name_exp+'/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 
 
@@ -473,7 +485,7 @@ if choice_plot == 1:
 
 
 	plt.tight_layout()
-	plt.savefig('im_para/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/'+name_exp+'/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
 	
 
 
@@ -595,7 +607,7 @@ elif choice_plot == 2:
 	plt.tight_layout()
 
 
-	plt.savefig('im_para/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 	
 	##################################
@@ -660,22 +672,55 @@ elif choice_plot == 2:
 
 
 	plt.tight_layout()
-	plt.savefig('im_para/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
+	plt.savefig('im_para/'+name_exp+'/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
 	
 	
 	
-	'''
+	
 	# temporaire
 
 	fig, (ax) = plt.subplots(2,2,figsize=(15,10))
+	
+	len_fft = 5000
 
 
+	fig.suptitle('Experience : '+name_exp)
 
+
+	ax[0,0].axhline(0, color='gray', linestyle=':')
+	ax[0,0].axvline(0, color='gray', linestyle=':')
+	ax[0,0].plot(k,sigma_big_img,'b:',alpha=0.15)
 	ax[0,0].scatter(k, sigma_big_img, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+	ax[0,0].axhline(0, color='gray', linestyle=':')
+	ax[0,0].axvline(0, color='gray', linestyle=':')
+	
+	for spine in ax[0,0].spines.values():
+	    spine.set_linewidth(2)
+
+
 	#ax[0,0].set_xscale('log')
 
-	ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k')
+	# Common elements
+	ax[0,0].set_xlabel(r'$k$',size=font_size)
+	ax[0,0].set_ylabel(r'$\sigma$',size=font_size)
+	ax[0,0].set_title(r'$\sigma = \mathbf{Im}\{c\}.k$',size=font_size)
+	ax[0,0].tick_params(top=True,right=True,direction='in', size=4, width=1)
 
+	if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
+		ax[0,0].set_ylim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
+	else:
+		ax[0,0].set_ylim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
+
+	ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k')
+	ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
+	ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega\}$',size=font_size)
+	ax[0,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
+	ax[0,1].axhline(0, color='gray', linestyle=':')
+	ax[0,1].axvline(0, color='gray', linestyle=':')
+	ax[0,1].set_title(r'Eigenfrequencies $\omega = c.k$')
+	# Make the axes (spines) bold
+	for spine in ax[0,1].spines.values():
+	    spine.set_linewidth(2)
 
 
 
@@ -685,24 +730,49 @@ elif choice_plot == 2:
 	Nfourier = len(sigma_big_img)
 	kmax = k[-1] - k[0]
 	Fs = Nfourier/kmax
-	fourier11 = np.fft.fft(sigma_big_img)/(Nfourier/2)
+	fourier11 = np.fft.fft(sigma_big_img,len_fft)/(Nfourier/2)
 	freq11 = np.fft.fftfreq(Nfourier,1/Fs)
 
 
-	ax[1,0].plot(freq11[0:Nfourier//2],np.abs(fourier11[0:Nfourier//2]))
+	ax[1,0].plot(freq11[0:Nfourier//2],np.abs(fourier11[0:Nfourier//2]),color='r',label=r'DFT of $\sigma$')
+	ax[1,0].tick_params(right=True,top=True,direction='in',size=4,width=1)
+	ax[1,0].axhline(0, color='gray', linestyle=':')
+	ax[1,0].axvline(0, color='gray', linestyle=':')
+	ax[1,0].set_xlabel('Frequency',size=font_size)
+	ax[1,0].set_ylabel('Amplitude',size=font_size)
+	
+	ax[1,0].set_ylim(0,np.max(np.abs(fourier11[0:Nfourier//2])))
+	ax[1,0].legend(loc='best',fancybox=False,title='Lenght FFT : '+str(len_fft))
+	
+	
+	for spine in ax[1,0].spines.values():
+	    spine.set_linewidth(2)
+	
 
 	# pour  np.real(omega_big_c),np.imag(omega_big_c)
 	Nfourier = len(omega_big_c)
 	x_max = np.real(omega_big_c)[-1] - np.real(omega_big_c)[0]
 	Fs = Nfourier/x_max
-	fourier12 = np.fft.fft(np.imag(omega_big_c))/(Nfourier/2)
+	fourier12 = np.fft.fft(np.imag(omega_big_c),len_fft)/(Nfourier/2)
 	freq12 = np.fft.fftfreq(Nfourier,1/Fs)
 
 
-	ax[1,1].plot(freq12[0:Nfourier//2],np.abs(fourier12[0:Nfourier//2]))'''
+	ax[1,1].plot(freq12[0:Nfourier//2],np.abs(fourier12[0:Nfourier//2]),color='green',label=r'DFT of $\omega$')
+	
+	ax[1,1].tick_params(labelleft=False,right=True,top=True,direction='in',size=4,width=1)
+	ax[1,1].axhline(0, color='gray', linestyle=':')
+	ax[1,1].axvline(0, color='gray', linestyle=':')
+	ax[1,1].set_xlabel('Frequency',size=font_size)
+		
+	ax[1,1].legend(loc='best',fancybox=False,title='Lenght FFT : '+str(len_fft))
+	ax[1,1].set_ylim(0,np.max(np.abs(fourier11[0:Nfourier//2])))
+	
+	for spine in ax[1,1].spines.values():
+	    spine.set_linewidth(2)
 
 
-
+	plt.tight_layout()
+	plt.savefig('im_para/'+name_exp+'/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 
 
