@@ -1,7 +1,7 @@
 import os
 import warnings
 import numpy as np
-import seaborn as sns
+import seaborn as sns                                         
 import matplotlib as mpl
 #import numpy.linalg as npl
 import scipy.linalg as spl
@@ -28,6 +28,7 @@ print('-----------------------------------------------------')
 # if 1 : it will plot the 2 varibale phi and theta
 # if 2 : it will only plot the part where Im(c) is important
 choice_plot = 2
+save_png = False
 nb_bins = 50
 figsize_tuple = (15,6.5)
 font_size = 17
@@ -71,32 +72,34 @@ G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un+beta - G12
 F11 = G11*dy**2
 
 
-print('/////////////////////////////////////////////////////')
+if save_png == True:
+
+	print('/////////////////////////////////////////////////////')
 
 
-# Create the full directory path
-folder_path = os.path.join("im_para", name_exp)
-os.makedirs(folder_path, exist_ok=True)  # Create directories if they don't exist
+	# Create the full directory path
+	folder_path = os.path.join("im_para", name_exp)
+	os.makedirs(folder_path, exist_ok=True)  # Create directories if they don't exist
 
-# Create full file path
-file_path = os.path.join(folder_path, 'variables_used_' + name_exp + '.txt')
+	# Create full file path
+	file_path = os.path.join(folder_path, 'variables_used_' + name_exp + '.txt')
 
-# Open a file in write mode
-with open('im_para/'+name_exp+'/variables_used_'+name_exp+'.txt', 'w') as file:
-    file.write('Used variables for : '+name_exp+'\n')
-    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
-    file.write(f"Ny = {Ny}\n")
-    file.write(f"Nk = {Nk}\n")
-    file.write(f"Ly = {Ly}\n")
-    file.write(f"Lk = {Lk}\n")
-    file.write(f"F1star = {F1star}\n")
-    file.write(f"beta = {beta}\n")
-    file.write(f"Rd = {Rd}\n")
-    file.write(f"U0 = {U0}\n")
-    file.write(f"Theta0 = {Theta0}\n")
-    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+	# Open a file in write mode
+	with open('im_para/'+name_exp+'/variables_used_'+name_exp+'.txt', 'w') as file:
+	    file.write('Used variables for : '+name_exp+'\n')
+	    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+	    file.write(f"Ny = {Ny}\n")
+	    file.write(f"Nk = {Nk}\n")
+	    file.write(f"Ly = {Ly}\n")
+	    file.write(f"Lk = {Lk}\n")
+	    file.write(f"F1star = {F1star}\n")
+	    file.write(f"beta = {beta}\n")
+	    file.write(f"Rd = {Rd}\n")
+	    file.write(f"U0 = {U0}\n")
+	    file.write(f"Theta0 = {Theta0}\n")
+	    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
-print('Variables stored into : variables_used_'+name_exp+'.txt')
+	print('Variables stored into : variables_used_'+name_exp+'.txt')
 
 
 
@@ -250,7 +253,8 @@ if choice_plot == 1:
 
 	plt.tight_layout()
 
-	plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
+	if save_png==True:
+		plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 	##################################
 	# Plot 2
@@ -353,8 +357,8 @@ if choice_plot == 1:
 
 	plt.tight_layout()
 
-
-	plt.savefig('im_para/'+name_exp+'/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
+	if save_png == True:
+		plt.savefig('im_para/'+name_exp+'/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 
 
@@ -484,7 +488,9 @@ if choice_plot == 1:
 
 
 	plt.tight_layout()
-	plt.savefig('im_para/'+name_exp+'/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
+	
+	if save_png == True:
+		plt.savefig('im_para/'+name_exp+'/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
 	
 
 
@@ -606,7 +612,8 @@ elif choice_plot == 2:
 	plt.tight_layout()
 
 
-	plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
+	if save_png == True:
+		plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 	
 	##################################
@@ -671,7 +678,9 @@ elif choice_plot == 2:
 
 
 	plt.tight_layout()
-	plt.savefig('im_para/'+name_exp+'/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
+	
+	if save_png == True:
+		plt.savefig('im_para/'+name_exp+'/fig2_'+name_exp+choice_plot_name+'.png',dpi=300)
 	
 	
 	
@@ -771,7 +780,9 @@ elif choice_plot == 2:
 
 
 	plt.tight_layout()
-	plt.savefig('im_para/'+name_exp+'/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
+	
+	if save_png == True:
+		plt.savefig('im_para/'+name_exp+'/fig3_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 
 
