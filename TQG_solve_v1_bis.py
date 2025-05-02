@@ -29,6 +29,7 @@ print('-----------------------------------------------------')
 # if 2 : it will only plot the part where Im(c) is important
 choice_plot = 2
 save_png = False
+partie_pos = True # pour n'affichier que la partire positive des k.c_i
 nb_bins = 50
 figsize_tuple = (15,6.5)
 font_size = 17
@@ -48,8 +49,9 @@ y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
 dk = Lk/Nk
 
 
-beta, Rd = 0, 1 #1e-11
+beta = 0 #1e-11
 F1star = 0 #1/Rd**2
+#F1star = -100
 K2 = (k**2 + F1star)*dy**2
 #K2 = 0
 U0= 1
@@ -94,7 +96,7 @@ if save_png == True:
 	    file.write(f"Lk = {Lk}\n")
 	    file.write(f"F1star = {F1star}\n")
 	    file.write(f"beta = {beta}\n")
-	    file.write(f"Rd = {Rd}\n")
+	    #file.write(f"Rd = {Rd}\n")
 	    file.write(f"U0 = {U0}\n")
 	    file.write(f"Theta0 = {Theta0}\n")
 	    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
@@ -389,7 +391,7 @@ if choice_plot == 1:
 	ax1 = ax[0].twiny()
 	sns.histplot(sigma2,bins=nb_bins,ax=ax1,kde=True,stat='percent',color='r',label=r'$\Theta$')
 	#ax[0].set_ylim(0,40)
-	ax[0].set_xlabel(r'$\sigma_\phi$',color='blue',size=font_size)
+	ax[0].set_xlabel(r'$\sigma_\phi$',size=font_size)
 	ax1.set_xlabel(r'$\sigma_\Theta$',color='red',size=font_size)
 
 	ax[0].set_ylim(0,100)
@@ -514,6 +516,7 @@ elif choice_plot == 2:
 	
 	
 	sigma_big_img = k*np.imag(big_img_part_c)
+	sigma_big_ree = k*np.real(big_img_part_c) 
 	omega_big_c = big_img_part_c*k
 
 	##################################
@@ -529,8 +532,44 @@ elif choice_plot == 2:
 
 	ax[0,0].axhline(0, color='gray', linestyle=':')
 	ax[0,0].axvline(0, color='gray', linestyle=':')
-	ax[0,0].plot(k,sigma_big_img,'b:',alpha=0.15)
-	ax[0,0].scatter(k, sigma_big_img, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+	
+	
+	if partie_pos==False:
+		ax[0,0].plot(k,sigma_big_img,'b:',alpha=0.15)
+		ax[0,0].scatter(k, sigma_big_img, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+		
+		ax[0,0].plot(k,sigma_big_ree,'r:',alpha=0.15)
+		ax[0,0].scatter(k, sigma_big_ree, marker='o', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+		
+		if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
+			ax[0,0].set_ylim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
+		else:
+			ax[0,0].set_ylim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
+		
+			
+	else:
+		ax[0,0].plot(k[sigma_big_img>=0],sigma_big_img[sigma_big_img>=0],'b:',alpha=0.15)
+		ax[0,0].scatter(k[sigma_big_img>=0], sigma_big_img[sigma_big_img>=0], marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+		
+		ax1 = ax[0,0].twinx()
+		
+		ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r:',alpha=0.15)
+		ax1.scatter(k[sigma_big_img>=0], sigma_big_ree[sigma_big_img>=0], marker='o', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+		ax1.tick_params(right=True,direction='in', size=4, width=1,color='red',labelcolor='red')
+		ax1.set_ylabel(r'$\sigma_\mathbf{Re} = \mathbf{Re}\{c\}.k ~\geq~ 0$',size=font_size,color='red')
+		
+		ax1.spines['right'].set_color('red')                         # spine
+		ax1.yaxis.label.set_color('red')
+		ax1.spines['right'].set_linewidth(2.25)  # Adjust thickness here   
+		
+		ax1.set_ylim(0,np.max(sigma_big_ree[sigma_big_img>=0]))
+		
+		
+		if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
+			ax[0,0].set_ylim(0, np.abs(np.min(sigma_big_img)))
+		else:
+			ax[0,0].set_ylim(0, np.abs(np.max(sigma_big_img)))
+		
 	ax[0,0].axhline(0, color='gray', linestyle=':')
 	ax[0,0].axvline(0, color='gray', linestyle=':')
 	
@@ -542,14 +581,14 @@ elif choice_plot == 2:
 
 	# Common elements
 	ax[0,0].set_xlabel(r'$k$',size=font_size)
-	ax[0,0].set_ylabel(r'$\sigma$',size=font_size)
-	ax[0,0].set_title(r'$\sigma = \mathbf{Im}\{c\}.k$',size=font_size)
-	ax[0,0].tick_params(top=True,right=True,direction='in', size=4, width=1)
+	ax[0,0].set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$',size=font_size,color='blue')
+	ax[0,0].set_title(r'$\sigma_\mathbf{Im}$ and $\sigma_\mathbf{Re}$',size=font_size)
+	ax[0,0].tick_params(top=True,right=False,direction='in', size=4, width=1,color='blue',labelcolor='blue')
+	ax[0,0].spines['left'].set_color('blue')                         # spine
+	ax[0,0].yaxis.label.set_color('blue')
+	ax[0,0].spines['left'].set_linewidth(2.25)  # Adjust thickness here      
 
-	if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
-		ax[0,0].set_ylim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
-	else:
-		ax[0,0].set_ylim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
+	
 	
 
 	
@@ -685,7 +724,8 @@ elif choice_plot == 2:
 	
 	
 	
-	# temporaire
+	##################################
+	# Plot 3
 
 	fig, (ax) = plt.subplots(2,2,figsize=(15,10))
 	
@@ -697,8 +737,32 @@ elif choice_plot == 2:
 
 	ax[0,0].axhline(0, color='gray', linestyle=':')
 	ax[0,0].axvline(0, color='gray', linestyle=':')
-	ax[0,0].plot(k,sigma_big_img,'b:',alpha=0.15)
-	ax[0,0].scatter(k, sigma_big_img, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+	if partie_pos==False:
+		ax[0,0].plot(k,sigma_big_img,'b:',alpha=0.15)
+		ax[0,0].scatter(k, sigma_big_img, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+		
+		if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
+			ax[0,0].set_ylim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
+		else:
+			ax[0,0].set_ylim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
+		
+			
+	else:
+		ax[0,0].plot(k[sigma_big_img>=0],sigma_big_img[sigma_big_img>=0],'b:',alpha=0.15)
+		ax[0,0].scatter(k[sigma_big_img>=0], sigma_big_img[sigma_big_img>=0], marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+		if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
+			ax[0,0].set_ylim(0, np.abs(np.min(sigma_big_img)))
+		else:
+			ax[0,0].set_ylim(0, np.abs(np.max(sigma_big_img)))
+			
+		ax1 = ax[0,0].twinx()
+		
+		ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r:',alpha=0.15)
+		ax1.scatter(k[sigma_big_img>=0], sigma_big_ree[sigma_big_img>=0], marker='o', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+		ax1.tick_params(right=True,direction='in', size=4, width=1,color='red')
+		ax1.set_ylabel(r'$\sigma_\mathbf{Re} = \mathbf{Re}\{c\}.k ~\geq~ 0$',size=font_size,color='red')
+		ax1.set_ylim(0,np.max(sigma_big_ree[sigma_big_img>=0]))
+		
 	ax[0,0].axhline(0, color='gray', linestyle=':')
 	ax[0,0].axvline(0, color='gray', linestyle=':')
 	
@@ -710,14 +774,10 @@ elif choice_plot == 2:
 
 	# Common elements
 	ax[0,0].set_xlabel(r'$k$',size=font_size)
-	ax[0,0].set_ylabel(r'$\sigma$',size=font_size)
-	ax[0,0].set_title(r'$\sigma = \mathbf{Im}\{c\}.k$',size=font_size)
-	ax[0,0].tick_params(top=True,right=True,direction='in', size=4, width=1)
+	ax[0,0].set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$',size=font_size,color='blue')
+	ax[0,0].set_title(r'$\sigma_\mathbf{Im}$ and $\sigma_\mathbf{Re}$',size=font_size)
+	ax[0,0].tick_params(top=True,right=False,direction='in', size=4, width=1,color='blue')
 
-	if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
-		ax[0,0].set_ylim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
-	else:
-		ax[0,0].set_ylim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
 
 	ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k')
 	ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
