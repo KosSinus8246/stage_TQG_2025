@@ -208,10 +208,9 @@ omega_NT = c_NT*k
 ##################################
 
 
-
 print('/////////////////////////////////////////////////////')
 
-'''
+
 print('PLOT...')
 
 
@@ -250,10 +249,26 @@ else:
 	ax[0,0].plot(k[sigma_big_img>=0],sigma_big_img[sigma_big_img>=0],'b:',alpha=0.15)
 	ax[0,0].scatter(k[sigma_big_img>=0], sigma_big_img[sigma_big_img>=0], marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
 	
+	ax[0,0].plot(k[sigma_img_NT>=0],sigma_img_NT[sigma_img_NT>=0],'b:',alpha=0.15)
+	ax[0,0].scatter(k[sigma_img_NT>=0], sigma_img_NT[sigma_img_NT>=0], marker='X', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+	
+	ax[0,0].set_yscale('log')
+	
+	
 	ax1 = ax[0,0].twinx()
+	
+	ax1.set_yscale('log')
 	
 	ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r:',alpha=0.15)
 	ax1.scatter(k[sigma_big_img>=0], sigma_big_ree[sigma_big_img>=0], marker='o', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+	
+	
+	ax1.plot(k[sigma_img_NT>=0],sigma_ree_NT[sigma_img_NT>=0],'r:',alpha=0.15)
+	ax1.scatter(k[sigma_img_NT>=0], sigma_ree_NT[sigma_img_NT>=0], marker='X', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+	
+	
+	
+	
 	ax1.tick_params(right=True,direction='in', size=4, width=1,color='red',labelcolor='red')
 	ax1.set_ylabel(r'$\sigma_\mathbf{Re} = \mathbf{Re}\{c\}.k ~\geq~ 0$',size=font_size,color='red')
 	
@@ -305,6 +320,8 @@ ax[1,0].axvline(0, color='gray', linestyle=':')
 
 
 ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k')
+ax[0,1].scatter(np.real(omega_NT),np.imag(omega_NT),color='b',marker='+',s=50,alpha=0.6,edgecolor='k')
+
 ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
 ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega\}$',size=font_size)
 ax[0,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
@@ -354,7 +371,7 @@ plt.tight_layout()
 if save_png == True:
 	plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
-
+'''
 ##################################
 # Plot 2
 

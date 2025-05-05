@@ -3,7 +3,6 @@ import warnings
 import numpy as np
 import seaborn as sns                                         
 import matplotlib as mpl
-#import numpy.linalg as npl
 import scipy.linalg as spl
 import matplotlib.pyplot as plt
 
@@ -20,12 +19,12 @@ print('-----------------------------------------------------')
 
 
 
-# cf TQG notes : A.X = c.B.X
+# cf TQG notes : A.X = c.B.X is the system that is solved here
 # @uthor : dimitri moreau 05/05/2025
 
 
-save_png = True
-partie_pos = True # pour n'affichier que la partire positive des k.c_i
+save_png = False
+partie_pos = True # pour n'affichier que la partie positive des k.c_i
 nb_bins = 50
 figsize_tuple = (15,6.5)
 font_size = 17
@@ -51,8 +50,6 @@ F1star = 4
 K2 = (k**2 + F1star)*dy**2
 U0= 1
 
-
-#phi, theta = np.zeros((Ny, Nk)), np.zeros((Ny, Nk))
 
 Un = U0*np.exp(-y_l**2)
 #Un = 1/(1+np.exp(-y_l)) # sigmoide
