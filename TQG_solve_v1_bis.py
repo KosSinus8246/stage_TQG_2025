@@ -21,13 +21,10 @@ print('-----------------------------------------------------')
 
 
 # cf TQG notes : A.X = c.B.X
-# @uthor : dimitri moreau 29/04/2025
+# @uthor : dimitri moreau 05/05/2025
 
 
-
-# if 1 : it will plot the 2 varibale phi and theta
-# if 2 : it will only plot the part where Im(c) is important
-save_png = True
+save_png = False
 partie_pos = True # pour n'affichier que la partire positive des k.c_i
 nb_bins = 50
 figsize_tuple = (15,6.5)
@@ -42,18 +39,16 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 300, 300
-Ly, Lk = np.pi, 100 #40
+Ly, Lk = np.pi, 100
 dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
 dk = Lk/Nk
 
 
 beta = 0 #1e-11
-F1star = 0 #1/Rd**2
-#F1star = 0.25
-#F1star = -100
+#F1star = 0 #1/Rd**2
+F1star = 1
 K2 = (k**2 + F1star)*dy**2
-#K2 = 0
 U0= 1
 
 
@@ -515,7 +510,7 @@ ax[1,0].set_xlabel('Frequency',size=font_size)
 ax[1,0].set_ylabel('Amplitude',size=font_size)
 
 ax[1,0].set_ylim(0,np.max(np.abs(fourier11[0:Nfourier//2])))
-ax[1,0].legend(loc='best',fancybox=False,title='Lenght FFT : '+str(len_fft))
+ax[1,0].legend(loc='best',fancybox=False,title='Zero-padding : '+str(len_fft-Nfourier))
 
 
 for spine in ax[1,0].spines.values():
@@ -537,7 +532,7 @@ ax[1,1].axhline(0, color='gray', linestyle=':')
 ax[1,1].axvline(0, color='gray', linestyle=':')
 ax[1,1].set_xlabel('Frequency',size=font_size)
 	
-ax[1,1].legend(loc='best',fancybox=False,title='Lenght FFT : '+str(len_fft))
+ax[1,1].legend(loc='best',fancybox=False,title='Zero-padding : '+str(len_fft-Nfourier))
 ax[1,1].set_ylim(0,np.max(np.abs(fourier11[0:Nfourier//2])))
 
 for spine in ax[1,1].spines.values():
