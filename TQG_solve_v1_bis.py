@@ -24,7 +24,7 @@ print('-----------------------------------------------------')
 # @uthor : dimitri moreau 05/05/2025
 
 
-save_png = False
+save_png = True
 partie_pos = True # pour n'affichier que la partire positive des k.c_i
 nb_bins = 50
 figsize_tuple = (15,6.5)
@@ -47,7 +47,7 @@ dk = Lk/Nk
 
 beta = 0 #1e-11
 #F1star = 0 #1/Rd**2
-F1star = 1
+F1star = 4
 K2 = (k**2 + F1star)*dy**2
 U0= 1
 
@@ -164,12 +164,7 @@ print('MATRIX A : OK')
 ##################################
 # A.X = c.B.X   =>  B^(-1).A.X = c.X 
 
-
-
-# c, X = npl.eig(npl.inv(B) @ A)
-# Ou bien utiliser scipy si c'est trop lourd à inverser
 c, X = spl.eig(A,B)
-
 
 
 ##################################
