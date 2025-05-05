@@ -27,8 +27,7 @@ print('-----------------------------------------------------')
 
 # if 1 : it will plot the 2 varibale phi and theta
 # if 2 : it will only plot the part where Im(c) is important
-choice_plot = 2
-save_png = False
+save_png = True
 partie_pos = True # pour n'affichier que la partire positive des k.c_i
 nb_bins = 50
 figsize_tuple = (15,6.5)
@@ -51,6 +50,7 @@ dk = Lk/Nk
 
 beta = 0 #1e-11
 F1star = 0 #1/Rd**2
+#F1star = 0.25
 #F1star = -100
 K2 = (k**2 + F1star)*dy**2
 #K2 = 0
