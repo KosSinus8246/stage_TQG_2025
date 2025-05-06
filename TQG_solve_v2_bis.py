@@ -39,7 +39,7 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 300, 300
-Ly, Lk = np.pi, 100
+Ly, Lk = np.pi, 6
 dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
 dk = Lk/Nk
@@ -124,6 +124,10 @@ bottom = np.concatenate((B21, B22), axis=1)
 B = np.concatenate((top, bottom), axis=0)
 print('MATRIX B : OK')
 
+# BC's
+B[0,1] = 2*B[0,1]
+#B[0,1] = 0
+B[Ny,Ny-1] = 0
 
 
 ##################################
@@ -155,6 +159,10 @@ bottom_A = np.concatenate((A21, A22), axis=1)
 A = np.concatenate((top_A, bottom_A), axis=0)
 print('MATRIX A : OK')
 
+# BC's
+A[0,1] = 2*A[0,1]
+#A[0,1] = 0
+A[Ny,Ny-1] = 0
 
 
 ##################################
@@ -231,58 +239,48 @@ fig.suptitle('Experience : '+name_exp)
 ax[0,0].axhline(0, color='gray', linestyle=':')
 ax[0,0].axvline(0, color='gray', linestyle=':')
 
-
-if partie_pos==False:
-	ax[0,0].plot(k,sigma_big_img,'b:',alpha=0.15)
-	ax[0,0].scatter(k, sigma_big_img, marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-	
-	ax[0,0].plot(k,sigma_big_ree,'r:',alpha=0.15)
-	ax[0,0].scatter(k, sigma_big_ree, marker='o', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-	
-	if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
-		ax[0,0].set_ylim(-np.abs(np.min(sigma_big_img)), np.abs(np.min(sigma_big_img)))
-	else:
-		ax[0,0].set_ylim(-np.abs(np.max(sigma_big_img)), np.abs(np.max(sigma_big_img)))
 	
 		
+#ax[0,0].plot(k[sigma_big_img>=0],sigma_big_img[sigma_big_img>=0],'b:',alpha=0.15)
+#ax[0,0].scatter(k[sigma_big_img>=0], sigma_big_img[sigma_big_img>=0], marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+ax[0,0].plot(k[sigma_big_img>=0],sigma_big_img[sigma_big_img>=0],'b-',label='TQG')
+
+#ax[0,0].plot(k[sigma_img_NT>=0],sigma_img_NT[sigma_img_NT>=0],'b:',alpha=0.15)
+#ax[0,0].scatter(k[sigma_img_NT>=0], sigma_img_NT[sigma_img_NT>=0], marker='X', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+ax[0,0].plot(k[sigma_img_NT>=0], sigma_img_NT[sigma_img_NT>=0],'b--',label='Non-TQG')
+ax[0,0].legend(fancybox=False,loc='upper left')
+
+
+ax1 = ax[0,0].twinx()
+
+
+#ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r:',alpha=0.15)
+#ax1.scatter(k[sigma_big_img>=0], sigma_big_ree[sigma_big_img>=0], marker='o', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r-',label='TQG')
+
+
+
+#ax1.plot(k[sigma_img_NT>=0],sigma_ree_NT[sigma_img_NT>=0],'r:',alpha=0.15)
+#ax1.scatter(k[sigma_img_NT>=0], sigma_ree_NT[sigma_img_NT>=0], marker='X', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
+ax1.plot(k[sigma_img_NT>=0],sigma_ree_NT[sigma_img_NT>=0],'r--',label='Non-TQG')
+ax1.legend(fancybox=False,loc='upper right')
+
+
+
+ax1.tick_params(right=True,direction='in', size=4, width=1,color='red',labelcolor='red')
+ax1.set_ylabel(r'$\sigma_\mathbf{Re} = \mathbf{Re}\{c\}.k ~\geq~ 0$',size=font_size,color='red')
+
+ax1.spines['right'].set_color('red')                         # spine
+ax1.yaxis.label.set_color('red')
+ax1.spines['right'].set_linewidth(2.25)  # Adjust thickness here   
+
+ax1.set_ylim(0,np.max(sigma_big_ree[sigma_big_img>=0]))
+
+
+if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
+	ax[0,0].set_ylim(0, np.abs(np.min(sigma_big_img)))
 else:
-	ax[0,0].plot(k[sigma_big_img>=0],sigma_big_img[sigma_big_img>=0],'b:',alpha=0.15)
-	ax[0,0].scatter(k[sigma_big_img>=0], sigma_big_img[sigma_big_img>=0], marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-	
-	ax[0,0].plot(k[sigma_img_NT>=0],sigma_img_NT[sigma_img_NT>=0],'b:',alpha=0.15)
-	ax[0,0].scatter(k[sigma_img_NT>=0], sigma_img_NT[sigma_img_NT>=0], marker='X', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-	
-	ax[0,0].set_yscale('log')
-	
-	
-	ax1 = ax[0,0].twinx()
-	
-	ax1.set_yscale('log')
-	
-	ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r:',alpha=0.15)
-	ax1.scatter(k[sigma_big_img>=0], sigma_big_ree[sigma_big_img>=0], marker='o', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-	
-	
-	ax1.plot(k[sigma_img_NT>=0],sigma_ree_NT[sigma_img_NT>=0],'r:',alpha=0.15)
-	ax1.scatter(k[sigma_img_NT>=0], sigma_ree_NT[sigma_img_NT>=0], marker='X', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-	
-	
-	
-	
-	ax1.tick_params(right=True,direction='in', size=4, width=1,color='red',labelcolor='red')
-	ax1.set_ylabel(r'$\sigma_\mathbf{Re} = \mathbf{Re}\{c\}.k ~\geq~ 0$',size=font_size,color='red')
-	
-	ax1.spines['right'].set_color('red')                         # spine
-	ax1.yaxis.label.set_color('red')
-	ax1.spines['right'].set_linewidth(2.25)  # Adjust thickness here   
-	
-	ax1.set_ylim(0,np.max(sigma_big_ree[sigma_big_img>=0]))
-	
-	
-	if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
-		ax[0,0].set_ylim(0, np.abs(np.min(sigma_big_img)))
-	else:
-		ax[0,0].set_ylim(0, np.abs(np.max(sigma_big_img)))
+	ax[0,0].set_ylim(0, np.abs(np.max(sigma_big_img)))
 	
 ax[0,0].axhline(0, color='gray', linestyle=':')
 ax[0,0].axvline(0, color='gray', linestyle=':')
@@ -315,12 +313,14 @@ ax[1,0].set_xlabel(r'$\overline{U}$',size=font_size)
 ax[1,0].set_title('Velocity profile',size=font_size)
 ax[1,0].axhline(0, color='gray', linestyle=':')
 ax[1,0].axvline(0, color='gray', linestyle=':')
+ax[1,0].set_ylim(np.min(y_l), np.max(y_l))
 
 
 
 
-ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k')
-ax[0,1].scatter(np.real(omega_NT),np.imag(omega_NT),color='b',marker='+',s=50,alpha=0.6,edgecolor='k')
+ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label='TQG')
+ax[0,1].scatter(np.real(omega_NT),np.imag(omega_NT),color='b',marker='+',s=50,alpha=0.6,edgecolor='k',label='Non-TQG')
+ax[0,1].legend()
 
 ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
 ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega\}$',size=font_size)
@@ -350,14 +350,16 @@ print('-----------------------------------------------------')
 
 ax[1,1].axhline(0, color='gray', linestyle=':')
 ax[1,1].axvline(0, color='gray', linestyle=':')
-ax[1,1].plot(y_l,borne,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
-ax[1,1].plot(y_l,test_crit,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
-ax[1,1].fill_between(y_l,borne,test_crit,color='orange',alpha=0.3)
-ax[1,1].tick_params(left=True,right=True,top=True,bottom=True,direction='in',size=4,width=1)
-ax[1,1].set_xlabel(r'$y$',size=font_size)
-ax[1,1].set_ylabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
+ax[1,1].plot(borne,y_l,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
+ax[1,1].plot(test_crit,y_l,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+ax[1,1].fill_between(borne,test_crit,y_l,color='orange',alpha=0.3)
+ax[1,1].fill_between(test_crit,borne,y_l,color='orange',alpha=0.3)
+ax[1,1].tick_params(left=True,right=True,top=True,bottom=True,labelleft=False,direction='in',size=4,width=1)
+ax[1,1].set_xlabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
 ax[1,1].legend(loc='best',fancybox=False)
 ax[1,1].set_title('Stability',size=font_size)
+ax[1,1].set_ylim(np.min(y_l), np.max(y_l))
+
 
 # Make the axes (spines) bold
 for spine in ax[1,1].spines.values():
