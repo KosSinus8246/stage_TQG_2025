@@ -43,7 +43,7 @@ dk = Lk/Nk
 
 beta = 0 #1e-11
 #F1star = 0 #1/Rd**2
-F1star = 0
+F1star = 1
 K2 = (k**2 + F1star)*dy**2
 U0= 1
 
@@ -120,11 +120,6 @@ bottom = np.concatenate((B21, B22), axis=1)
 B = np.concatenate((top, bottom), axis=0)
 print('MATRIX B : OK')
 
-# BC's
-B[0,1] = 2*B[0,1]
-#B[0,1] = 0
-B[Ny,Ny-1] = 0
-
 
 ##################################
 # CONSTRUCTION OF THE A MATRIX
@@ -155,16 +150,25 @@ bottom_A = np.concatenate((A21, A22), axis=1)
 A = np.concatenate((top_A, bottom_A), axis=0)
 print('MATRIX A : OK')
 
+
+
 # BC's
-A[0,1] = 2*A[0,1]
-#A[0,1] = 0
-A[Ny,Ny-1] = 0
+
+A[0,1]=2.0*A[0,1]
+B[0,1]=2.0*B[0,1]
+
+A[1,2]=0.0
+B[1,2]=0.0
+
+A[Ny,Ny-1]=0.0
+B[Ny,Ny-1]=0.0
+
 
 
 ##################################
 # SOLUTION
 ##################################
-# A.X = c.B.X   =>  B^(-1).A.X = c.X 
+# A.X = c.B.X 
 
 c, X = spl.eig(A,B)
 
