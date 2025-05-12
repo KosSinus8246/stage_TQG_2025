@@ -9,7 +9,7 @@ mpl.rcParams['font.size'] = 14
 mpl.rcParams['mathtext.fontset'] = 'stix'
 mpl.rcParams['font.family'] = 'STIXGeneral'
 mpl.rcParams['legend.edgecolor'] = '0'
-warnings.filterwarnings("ignore")
+#warnings.filterwarnings("ignore")
 
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_2_BIS~~~~~~~~~~~~~~~~~~~~')
@@ -24,8 +24,6 @@ print('-----------------------------------------------------')
 
 
 save_png = False
-nb_bins = 50
-figsize_tuple = (15,6.5)
 font_size = 17
 
 name_exp = input('Name of the experience ?')
@@ -238,35 +236,33 @@ ax[0,0].axhline(0, color='gray', linestyle=':')
 ax[0,0].axvline(0, color='gray', linestyle=':')
 
 	
-		
-#ax[0,0].plot(k[sigma_big_img>=0],sigma_big_img[sigma_big_img>=0],'b:',alpha=0.15)
-#ax[0,0].scatter(k[sigma_big_img>=0], sigma_big_img[sigma_big_img>=0], marker='o', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-ax[0,0].plot(k[sigma_big_img>=0],sigma_big_img[sigma_big_img>=0],'b-',label='TQG')
+	
+#ax[0,0].plot(k[sigma_big_img>=0],sigma_big_img[sigma_big_img>=0],'b-',label='TQG')
+#ax[0,0].plot(k[sigma_img_NT>=0], sigma_img_NT[sigma_img_NT>=0],'b--',label='Non-TQG')
 
-#ax[0,0].plot(k[sigma_img_NT>=0],sigma_img_NT[sigma_img_NT>=0],'b:',alpha=0.15)
-#ax[0,0].scatter(k[sigma_img_NT>=0], sigma_img_NT[sigma_img_NT>=0], marker='X', color='b', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-ax[0,0].plot(k[sigma_img_NT>=0], sigma_img_NT[sigma_img_NT>=0],'b--',label='Non-TQG')
+ax[0,0].plot(k[sigma_big_img>0],sigma_big_img[sigma_big_img>0],'b-',label='TQG')
+ax[0,0].plot(k[sigma_img_NT>0], sigma_img_NT[sigma_img_NT>0],'b--',label='Non-TQG')
+
 ax[0,0].legend(fancybox=False,loc='upper left')
 
 
 ax1 = ax[0,0].twinx()
 
+#ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r-',label='TQG')
+#ax1.plot(k[sigma_img_NT>=0],sigma_ree_NT[sigma_img_NT>=0],'r--',label='Non-TQG')
 
-#ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r:',alpha=0.15)
-#ax1.scatter(k[sigma_big_img>=0], sigma_big_ree[sigma_big_img>=0], marker='o', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r-',label='TQG')
+ax1.plot(k[sigma_big_img>0],sigma_big_ree[sigma_big_img>0],'r-',label='TQG')
+ax1.plot(k[sigma_img_NT>0],sigma_ree_NT[sigma_img_NT>0],'r--',label='Non-TQG')
 
 
-
-#ax1.plot(k[sigma_img_NT>=0],sigma_ree_NT[sigma_img_NT>=0],'r:',alpha=0.15)
-#ax1.scatter(k[sigma_img_NT>=0], sigma_ree_NT[sigma_img_NT>=0], marker='X', color='r', edgecolor='k', alpha=0.6,s=50, label=r'$\phi$')
-ax1.plot(k[sigma_img_NT>=0],sigma_ree_NT[sigma_img_NT>=0],'r--',label='Non-TQG')
 ax1.legend(fancybox=False,loc='upper right')
 
 
 
 ax1.tick_params(right=True,direction='in', size=4, width=1,color='red',labelcolor='red')
-ax1.set_ylabel(r'$\sigma_\mathbf{Re} = \mathbf{Re}\{c\}.k ~\geq~ 0$',size=font_size,color='red')
+ax1.set_ylabel(r'$\sigma_\mathbf{Re} = \mathbf{Re}\{c\}.k ~>~ 0$',size=font_size,color='red')
+
+# \geq
 
 ax1.spines['right'].set_color('red')                         # spine
 ax1.yaxis.label.set_color('red')
@@ -291,7 +287,7 @@ for spine in ax[0,0].spines.values():
 
 # Common elements
 ax[0,0].set_xlabel(r'$k$',size=font_size)
-ax[0,0].set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$',size=font_size,color='blue')
+ax[0,0].set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~>~ 0$',size=font_size,color='blue')
 ax[0,0].set_title(r'$\sigma_\mathbf{Im}$ and $\sigma_\mathbf{Re}$',size=font_size)
 ax[0,0].tick_params(top=True,right=False,direction='in', size=4, width=1,color='blue',labelcolor='blue')
 ax[0,0].spines['left'].set_color('blue')                         # spine
