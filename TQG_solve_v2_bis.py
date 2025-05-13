@@ -35,6 +35,7 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 300, 300
+#Ny, Nk = 3,3
 Ly, Lk = np.pi, 6
 dy = Ly/Ny
 y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
@@ -45,7 +46,7 @@ beta = 0 #1e-11
 #F1star = 0 #1/Rd**2
 F1star = 0
 K2 = (k**2 + F1star)*dy**2
-U0 = 10
+U0 = 1
 
 
 Un = U0*np.exp(-y_l**2)
@@ -105,7 +106,7 @@ print('PARAMS : OK')
 
 
 
-# Diagonale principale
+# Main diagonal
 main_diag = -(2 + K2) * np.ones(Ny)
 off_diag = np.ones(Ny-1)
 # Construct tridiagonal B11 using np.diag
@@ -154,11 +155,14 @@ print('MATRIX A : OK')
 
 # BC's
 
+# velocity odd
 A[0,1]=2.0*A[0,1]
 B[0,1]=2.0*B[0,1]
 
-A[1,2]=0.0
-B[1,2]=0.0
+'''
+# velocity not odd
+A[0,1]=0.0
+B[0,1]=0.0'''
 
 A[Ny,Ny-1]=0.0
 B[Ny,Ny-1]=0.0
@@ -175,11 +179,13 @@ B[Ny,Ny-1]=0.0
 ##################################
 # A.X = c.B.X 
 
+###### THERMAL SOLVING (TQG)
+
 c, X = spl.eig(A,B)
 
 print('THERMAL COMPUTATION : OK')
 
-###### NON THERMAL SOLVING
+###### NON THERMAL SOLVING (QG)
 
 c_NT, X_NT = spl.eig(A11,B11)
 
@@ -250,7 +256,7 @@ ax[0,0].axvline(0, color='gray', linestyle=':')
 #ax[0,0].plot(k[sigma_img_NT>=0], sigma_img_NT[sigma_img_NT>=0],'b--',label='Non-TQG')
 
 ax[0,0].plot(k[sigma_big_img>0],sigma_big_img[sigma_big_img>0],'b-',label='TQG')
-ax[0,0].plot(k[sigma_img_NT>0], sigma_img_NT[sigma_img_NT>0],'b--',label='Non-TQG')
+ax[0,0].plot(k[sigma_img_NT>0], sigma_img_NT[sigma_img_NT>0],'b--',label='QG')
 
 ax[0,0].legend(fancybox=False,loc='upper left')
 
@@ -260,8 +266,8 @@ ax1 = ax[0,0].twinx()
 #ax1.plot(k[sigma_big_img>=0],sigma_big_ree[sigma_big_img>=0],'r-',label='TQG')
 #ax1.plot(k[sigma_img_NT>=0],sigma_ree_NT[sigma_img_NT>=0],'r--',label='Non-TQG')
 
-ax1.plot(k[sigma_big_img>0],sigma_big_ree[sigma_big_img>0],'r-',label='TQG')
-ax1.plot(k[sigma_ree_NT>0],sigma_ree_NT[sigma_ree_NT>0],'r--',label='Non-TQG')
+ax1.plot(k[sigma_big_ree>0],sigma_big_ree[sigma_big_ree>0],'r-',label='TQG')
+ax1.plot(k[sigma_ree_NT>0],sigma_ree_NT[sigma_ree_NT>0],'r--',label='QG')
 
 
 ax1.legend(fancybox=False,loc='upper right')
@@ -322,7 +328,7 @@ ax[1,0].set_ylim(np.min(y_l), np.max(y_l))
 
 
 ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label='TQG')
-ax[0,1].scatter(np.real(omega_NT),np.imag(omega_NT),color='b',marker='+',s=50,alpha=0.6,label='Non-TQG')
+ax[0,1].scatter(np.real(omega_NT),np.imag(omega_NT),color='b',marker='+',s=50,alpha=0.6,label='QG')
 ax[0,1].legend()
 
 ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
@@ -345,7 +351,7 @@ test_crit = Un * G12
 
 print('Stability analysis : ')
 if (test_crit < borne).all() == True:
-	print('Totally unstable')
+	print('Globally unstable')
 else:
 	print('Stable ?')
 print('-----------------------------------------------------')
