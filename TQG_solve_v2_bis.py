@@ -43,9 +43,9 @@ dk = Lk/Nk
 
 beta = 0 #1e-11
 #F1star = 0 #1/Rd**2
-F1star = 1
+F1star = 0
 K2 = (k**2 + F1star)*dy**2
-U0= 1
+U0 = 1
 
 
 Un = U0*np.exp(-y_l**2)
@@ -165,6 +165,11 @@ B[Ny,Ny-1]=0.0
 
 
 
+
+
+
+
+
 ##################################
 # SOLUTION
 ##################################
@@ -256,7 +261,7 @@ ax1 = ax[0,0].twinx()
 #ax1.plot(k[sigma_img_NT>=0],sigma_ree_NT[sigma_img_NT>=0],'r--',label='Non-TQG')
 
 ax1.plot(k[sigma_big_img>0],sigma_big_ree[sigma_big_img>0],'r-',label='TQG')
-ax1.plot(k[sigma_img_NT>0],sigma_ree_NT[sigma_img_NT>0],'r--',label='Non-TQG')
+ax1.plot(k[sigma_ree_NT>0],sigma_ree_NT[sigma_ree_NT>0],'r--',label='Non-TQG')
 
 
 ax1.legend(fancybox=False,loc='upper right')
@@ -317,7 +322,7 @@ ax[1,0].set_ylim(np.min(y_l), np.max(y_l))
 
 
 ax[0,1].scatter(np.real(omega_big_c),np.imag(omega_big_c),color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label='TQG')
-ax[0,1].scatter(np.real(omega_NT),np.imag(omega_NT),color='b',marker='+',s=50,alpha=0.6,edgecolor='k',label='Non-TQG')
+ax[0,1].scatter(np.real(omega_NT),np.imag(omega_NT),color='b',marker='+',s=50,alpha=0.6,label='Non-TQG')
 ax[0,1].legend()
 
 ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
@@ -372,8 +377,8 @@ if save_png == True:
 	plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
 
-
 plt.show()
+
 
 print('END')
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
