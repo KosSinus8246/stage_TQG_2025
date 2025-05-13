@@ -45,7 +45,7 @@ beta = 0 #1e-11
 #F1star = 0 #1/Rd**2
 F1star = 0
 K2 = (k**2 + F1star)*dy**2
-U0 = 1
+U0 = 10
 
 
 Un = U0*np.exp(-y_l**2)
@@ -57,9 +57,9 @@ Theta0 = 1
 Vn = Un * dy**2
 G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
 
-#G12 = np.zeros_like(y_l) # ondes de rossby (stable)
-
+#G11 = Un/(1/F1star + beta) - G12
 G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un+beta - G12
+
 F11 = G11*dy**2
 
 
@@ -355,8 +355,7 @@ ax[1,1].axhline(0, color='gray', linestyle=':')
 ax[1,1].axvline(0, color='gray', linestyle=':')
 ax[1,1].plot(borne,y_l,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
 ax[1,1].plot(test_crit,y_l,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
-ax[1,1].fill_between(borne,test_crit,y_l,color='orange',alpha=0.3)
-ax[1,1].fill_between(test_crit,borne,y_l,color='orange',alpha=0.3)
+ax[1,1].fill_betweenx(y_l,borne,test_crit,color='orange',alpha=0.3)
 ax[1,1].tick_params(left=True,right=True,top=True,bottom=True,labelleft=False,direction='in',size=4,width=1)
 ax[1,1].set_xlabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
 ax[1,1].legend(loc='best',fancybox=False)
