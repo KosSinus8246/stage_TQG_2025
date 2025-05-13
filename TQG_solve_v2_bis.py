@@ -20,7 +20,7 @@ print('-----------------------------------------------------')
 
 # cf TQG notes : A.X = c.B.X is the system that is solved here
 # and also the non thermal system !!
-# @uthor : dimitri moreau 05/05/2025
+# @uthor : dimitri moreau 13/05/2025
 
 
 save_png = False
