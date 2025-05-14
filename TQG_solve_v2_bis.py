@@ -193,9 +193,7 @@ print('NON-THERMAL COMPUTATION : OK')
 
 
 
-# THERMAL
-#################### for only the 1 imaginary part 
-
+# THERMAL (TQG)
 
 choice_plot_name = '_max_imag'
 print('-----------------------------------------------------')
@@ -214,7 +212,7 @@ sigma_big_img = k*np.imag(big_img_part_c)
 sigma_big_ree = k*np.real(big_img_part_c) 
 omega_big_c = big_img_part_c*k
 
-# NON-THERMAL
+# NON-THERMAL (QG)
 
 sigma_img_NT = k*np.imag(c_NT)
 sigma_ree_NT = k*np.real(c_NT) 
@@ -309,6 +307,8 @@ ax[0,0].spines['left'].set_color('blue')                         # spine
 ax[0,0].yaxis.label.set_color('blue')
 ax[0,0].spines['left'].set_linewidth(2.25)  # Adjust thickness here      
 ax[0,0].tick_params(axis='x', colors='black', direction='in', size=4, width=1)
+ax[0,0].set_xlim(0,np.max(k))
+ax1.set_xlim(0,np.max(k))
 
 
 
@@ -380,6 +380,9 @@ plt.tight_layout()
 
 if save_png == True:
 	plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
+
+
+
 
 
 plt.show()
