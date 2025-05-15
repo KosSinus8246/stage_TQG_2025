@@ -1,9 +1,9 @@
 import os
-import warnings
+#import warnings
 import numpy as np                                         
 import matplotlib as mpl
 import scipy.linalg as spl
-import numpy.linalg as npl
+#from scipy.sparse.linalg import eigs
 import matplotlib.pyplot as plt
 
 mpl.rcParams['font.size'] = 14
@@ -21,7 +21,7 @@ print('-----------------------------------------------------')
 
 # cf TQG notes : A.X = c.B.X is the system that is solved here
 # and also the non thermal system !!
-# @uthor : dimitri moreau 13/05/2025
+# @uthor : dimitri moreau 15/05/2025
 
 
 save_png = False
@@ -36,6 +36,7 @@ print('-----------------------------------------------------')
 # VARIABLES, SPACE ...
 ##################################
 
+Ny, Nk = 100, 100	
 
 if debug_mode == True:
 	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
@@ -44,10 +45,10 @@ if debug_mode == True:
 	
 	Ny, Nk = 3,3
 
-Ny, Nk = 300, 300	
+
 Ly, Lk = np.pi, 6
 dy = Ly/Ny
-y_l, k = np.linspace(0,Ly,Ny), np.linspace(0,Lk,Nk)
+y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
 dk = Lk/Nk
 
 
@@ -55,21 +56,22 @@ beta = 0 #1e-11
 #F1star = 0 #1/Rd**2
 F1star = 0
 K2 = (k**2 + F1star)*dy**2
+
 U0 = 1
+Theta0_U0 = 1 # ratio
+Theta0 = Theta0_U0 *U0
 
 
 Un = U0*np.exp(-y_l**2)
-#Un = 1/(1+np.exp(-y_l)) # sigmoide
-
-
-# V/G/Mn
-Theta0 = 1
-Vn = Un * dy**2
+Vn = Un*(dy**2)
 G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
 
-#G11 = Un/(1/F1star + beta) - G12
-G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un+beta - G12
 
+
+
+
+#Un = 1/(1+np.exp(-y_l)) # sigmoide
+G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un + beta - G12
 F11 = G11*dy**2
 
 
@@ -125,15 +127,18 @@ B12 = np.zeros((Ny, Ny))
 B21 = np.zeros((Ny, Ny))
 B22 = np.eye(Ny, Ny)
 
+
+B = np.block([[B11,B12],[B21,B22]])
+
 '''
 # Combine them into full block matrix B
 top = np.concatenate((B11, B12), axis=1)
 bottom = np.concatenate((B21, B22), axis=1)
-B = np.concatenate((top, bottom), axis=0)'''
+B = np.concatenate((top, bottom), axis=0)
 
 top = np.concatenate((B11, B12), axis=0)
 bottom = np.concatenate((B21, B22), axis=0)
-B = np.concatenate((top, bottom), axis=1)
+B = np.concatenate((top, bottom), axis=1)'''
 
 
 print('MATRIX B : OK')
@@ -146,12 +151,12 @@ print('MATRIX B : OK')
 
 
 # Block A11
-main_diag_A11 = (-Un*(2 + K2) + F11)  # shape (3,)
+main_diag_A11 = -Un*(2 + K2) + F11  # shape (3,)
 A11 = np.zeros((Ny,Ny))
 np.fill_diagonal(A11, main_diag_A11)
 
 for i in range(Ny - 1):
-    A11[i,i+1] = Un[i]
+    A11[i,i+1] = Un[i] # i initialement
     A11[i+1,i] = Un[i]
     
 
@@ -163,14 +168,18 @@ A21 = np.diag(G12)
 A22 = np.diag(Un)
 
 # Final block matrix A
+
+A = np.block([[A11,A12],[A21,A22]])
+
 '''
 top_A = np.concatenate((A11, A12), axis=1)
 bottom_A = np.concatenate((A21, A22), axis=1)
-A = np.concatenate((top_A, bottom_A), axis=0)'''
+A = np.concatenate((top_A, bottom_A), axis=0)
+
 
 top_A = np.concatenate((A11, A12), axis=0)
 bottom_A = np.concatenate((A21, A22), axis=0)
-A = np.concatenate((top_A, bottom_A), axis=1)
+A = np.concatenate((top_A, bottom_A), axis=1)'''
 
 
 print('MATRIX A : OK')
@@ -195,9 +204,11 @@ B[Ny,Ny-1]=0.0
 ##################################
 # A.X = c.B.X 
 
+
 ###### THERMAL SOLVING (TQG)
 
 c, X = spl.eig(A,B)
+
 
 print('THERMAL COMPUTATION : OK')
 
@@ -213,28 +224,17 @@ print('NON-THERMAL COMPUTATION : OK')
 # THERMAL (TQG)
 
 choice_plot_name = '_max_imag'
-print('-----------------------------------------------------')
-print('You have chosen the **'+choice_plot_name+'** plot')
+
 ###############################
 # prendre la partie im de c la plus importante
 
 if np.max(np.imag(c[:Ny])) > np.max(np.imag(c[Ny:])):
 	big_img_part_c = c[:Ny]
+	print('111')
 else:
 	big_img_part_c = c[Ny:]
-	
-	
+	print('222')
 
-'''
-###############################
-# ALTERNATIF
-machine = np.zeros(Ny)
-for j in range(Ny):
-	if np.imag(c[:Ny])[j] > np.imag(c[Ny:])[j]:
-		machine[j] = np.imag(c[:Ny])[j]
-	else:
-		machine[j] = np.imag(c[Ny:])[j]
-'''	
 	
 
 
@@ -247,7 +247,6 @@ omega_big_c = big_img_part_c*k
 sigma_img_NT = k*np.imag(c_NT)
 sigma_ree_NT = k*np.real(c_NT) 
 omega_NT = c_NT*k
-
 
 
 
