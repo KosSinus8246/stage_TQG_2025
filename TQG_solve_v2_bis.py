@@ -25,7 +25,7 @@ print('-----------------------------------------------------')
 
 
 save_png = False
-debug_mode = False
+debug_mode = True
 font_size = 17
 
 name_exp = input('Name of the experience ?')
