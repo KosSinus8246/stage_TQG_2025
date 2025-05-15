@@ -3,6 +3,7 @@ import warnings
 import numpy as np                                         
 import matplotlib as mpl
 import scipy.linalg as spl
+import numpy.linalg as npl
 import matplotlib.pyplot as plt
 
 mpl.rcParams['font.size'] = 14
@@ -24,6 +25,7 @@ print('-----------------------------------------------------')
 
 
 save_png = False
+debug_mode = False
 font_size = 17
 
 name_exp = input('Name of the experience ?')
@@ -34,11 +36,18 @@ print('-----------------------------------------------------')
 # VARIABLES, SPACE ...
 ##################################
 
-Ny, Nk = 300, 300
-#Ny, Nk = 3,3
+
+if debug_mode == True:
+	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+	print('!!!!!!!!!!!!!!!! DEBUG MODE ACTIVATED !!!!!!!!!!!!!!!')
+	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+	
+	Ny, Nk = 3,3
+
+Ny, Nk = 300, 300	
 Ly, Lk = np.pi, 6
 dy = Ly/Ny
-y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
+y_l, k = np.linspace(0,Ly,Ny), np.linspace(0,Lk,Nk)
 dk = Lk/Nk
 
 
@@ -115,10 +124,18 @@ B11 = np.diag(main_diag) + np.diag(off_diag, k=1) + np.diag(off_diag, k=-1)
 B12 = np.zeros((Ny, Ny))
 B21 = np.zeros((Ny, Ny))
 B22 = np.eye(Ny, Ny)
+
+'''
 # Combine them into full block matrix B
 top = np.concatenate((B11, B12), axis=1)
 bottom = np.concatenate((B21, B22), axis=1)
-B = np.concatenate((top, bottom), axis=0)
+B = np.concatenate((top, bottom), axis=0)'''
+
+top = np.concatenate((B11, B12), axis=0)
+bottom = np.concatenate((B21, B22), axis=0)
+B = np.concatenate((top, bottom), axis=1)
+
+
 print('MATRIX B : OK')
 
 
@@ -146,12 +163,17 @@ A21 = np.diag(G12)
 A22 = np.diag(Un)
 
 # Final block matrix A
+'''
 top_A = np.concatenate((A11, A12), axis=1)
 bottom_A = np.concatenate((A21, A22), axis=1)
-A = np.concatenate((top_A, bottom_A), axis=0)
+A = np.concatenate((top_A, bottom_A), axis=0)'''
+
+top_A = np.concatenate((A11, A12), axis=0)
+bottom_A = np.concatenate((A21, A22), axis=0)
+A = np.concatenate((top_A, bottom_A), axis=1)
+
+
 print('MATRIX A : OK')
-
-
 
 # BC's
 
@@ -168,12 +190,6 @@ A[Ny,Ny-1]=0.0
 B[Ny,Ny-1]=0.0
 
 
-
-
-
-
-
-
 ##################################
 # SOLUTION
 ##################################
@@ -184,6 +200,7 @@ B[Ny,Ny-1]=0.0
 c, X = spl.eig(A,B)
 
 print('THERMAL COMPUTATION : OK')
+
 
 ###### NON THERMAL SOLVING (QG)
 
@@ -206,6 +223,19 @@ if np.max(np.imag(c[:Ny])) > np.max(np.imag(c[Ny:])):
 else:
 	big_img_part_c = c[Ny:]
 	
+	
+
+'''
+###############################
+# ALTERNATIF
+machine = np.zeros(Ny)
+for j in range(Ny):
+	if np.imag(c[:Ny])[j] > np.imag(c[Ny:])[j]:
+		machine[j] = np.imag(c[:Ny])[j]
+	else:
+		machine[j] = np.imag(c[Ny:])[j]
+'''	
+	
 
 
 sigma_big_img = k*np.imag(big_img_part_c)
@@ -220,12 +250,30 @@ omega_NT = c_NT*k
 
 
 
+
+if debug_mode==True:
+	print('Matrice A')
+	print(A)
+	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+	print('Matrice B')
+	print(B)
+	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+	print('Eigenvalues c for TQG')
+	print(c)
+	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+	print('Eigenvalues c for QG')
+	print(c_NT)
+	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+
+
+
 ##################################
 # PLOT
 ##################################
 
 
 print('/////////////////////////////////////////////////////')
+
 
 
 print('PLOT...')
@@ -281,13 +329,13 @@ ax1.spines['right'].set_color('red')                         # spine
 ax1.yaxis.label.set_color('red')
 ax1.spines['right'].set_linewidth(2.25)  # Adjust thickness here   
 
-ax1.set_ylim(0,np.max(sigma_big_ree[sigma_big_img>=0]))
+#ax1.set_ylim(0,np.max(sigma_big_ree[sigma_big_img>=0]))
 
-
+'''
 if np.abs(np.max(sigma_big_img)) - np.abs(np.min(sigma_big_img)) < 0:
 	ax[0,0].set_ylim(0, np.abs(np.min(sigma_big_img)))
 else:
-	ax[0,0].set_ylim(0, np.abs(np.max(sigma_big_img)))
+	ax[0,0].set_ylim(0, np.abs(np.max(sigma_big_img)))'''
 	
 ax[0,0].axhline(0, color='gray', linestyle=':')
 ax[0,0].axvline(0, color='gray', linestyle=':')
@@ -307,8 +355,8 @@ ax[0,0].spines['left'].set_color('blue')                         # spine
 ax[0,0].yaxis.label.set_color('blue')
 ax[0,0].spines['left'].set_linewidth(2.25)  # Adjust thickness here      
 ax[0,0].tick_params(axis='x', colors='black', direction='in', size=4, width=1)
-ax[0,0].set_xlim(0,np.max(k))
-ax1.set_xlim(0,np.max(k))
+#ax[0,0].set_xlim(0,np.max(k))
+#ax1.set_xlim(0,np.max(k))
 
 
 
@@ -349,13 +397,6 @@ print('-----------------------------------------------------')
 borne = (1/4)*(Un*y_l)**2
 test_crit = Un * G12
 
-print('Stability analysis : ')
-if (test_crit < borne).all() == True:
-	print('Globally unstable')
-else:
-	print('Stable ?')
-print('-----------------------------------------------------')
-
 
 ax[1,1].axhline(0, color='gray', linestyle=':')
 ax[1,1].axvline(0, color='gray', linestyle=':')
@@ -386,7 +427,6 @@ if save_png == True:
 
 
 plt.show()
-
 
 print('END')
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
