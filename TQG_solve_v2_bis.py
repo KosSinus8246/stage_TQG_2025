@@ -25,7 +25,7 @@ print('-----------------------------------------------------')
 
 
 save_png = False
-debug_mode = True
+debug_mode = False
 font_size = 17
 
 name_exp = input('Name of the experience ?')
@@ -421,6 +421,31 @@ plt.tight_layout()
 if save_png == True:
 	plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
 
+
+
+
+
+val = c
+
+plt.figure()
+plt.title('Raw')
+plt.plot(np.imag(val),'k',label='im')
+plt.legend(loc='upper left')
+plt.twinx()
+plt.plot(np.real(val),'orange',label='re')
+plt.plot(np.abs(val),'b',label='abs')
+plt.legend(loc='upper right')
+
+
+
+plt.figure()
+plt.title('np.sort()')
+plt.plot(np.sort(np.imag(val)),'k',label='im')
+plt.legend(loc='upper left')
+plt.twinx()
+plt.plot(np.sort(np.real(val)),'orange',label='re')
+plt.plot(np.sort(np.abs(val)),'b',label='abs')
+plt.legend(loc='upper right')
 
 
 
