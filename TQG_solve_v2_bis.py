@@ -20,12 +20,12 @@ print('-----------------------------------------------------')
 
 # cf TQG notes : A.X = c.B.X is the system that is solved here
 # and also the non thermal system !!
-# @uthor : dimitri moreau 15/05/2025
+# @uthor : dimitri moreau 19/05/2025
 
 
 save_png = False
-debug_mode = False
 font_size = 17
+choice_plot_name = 'max_sigma_im'
 
 name_exp = input('Name of the experience ?')
 
@@ -274,13 +274,13 @@ print('PLOT...')
 
 
 
-
+'''
 plt.plot(k, val_c, 'k--', label='TQG')
 plt.plot(k, val_cNT, 'k-', label='QG')
 plt.xlabel(r'$k$')
 plt.ylabel(r'$\sigma_\mathbf{Im}$')
 plt.legend()
-
+'''
 
 
 ##################################
@@ -333,11 +333,9 @@ ax[1,0].set_ylim(np.min(y_l), np.max(y_l))
 
 
 
-'''
 ax[0,1].scatter(val_c_ree,val_c,color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label='TQG')
 ax[0,1].scatter(val_cNT_ree,val_cNT,color='b',marker='+',s=50,alpha=0.6,label='QG')
 ax[0,1].legend()
-
 ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
 ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega\}$',size=font_size)
 ax[0,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
@@ -346,7 +344,7 @@ ax[0,1].axvline(0, color='gray', linestyle=':')
 ax[0,1].set_title(r'Eigenfrequencies $\omega = c.k$')
 # Make the axes (spines) bold
 for spine in ax[0,1].spines.values():
-    spine.set_linewidth(2)'''
+    spine.set_linewidth(2)
     
     
     
@@ -385,15 +383,15 @@ if save_png == True:
 
 
 # save outputs
-np.savetxt("eigen_TQG.txt", 
-           np.column_stack([k, val_c]),
-           fmt="%.18e", 
-           header="k	sigmaIm")
+np.savetxt('im_para/'+name_exp+'/sigma_TQG.txt', 
+           np.column_stack([k, val_c, val_c_ree]),
+           fmt='%.18e', 
+           header='k	sigmaIm		sigmaRe')
            
-np.savetxt("eigen_QG.txt", 
-           np.column_stack([k, val_cNT]),
-           fmt="%.18e", 
-           header="k	sigmaIm")
+np.savetxt('im_para/'+name_exp+'/sigma_QG.txt', 
+           np.column_stack([k, val_cNT, val_cNT_ree]),
+           fmt='%.18e', 
+           header='k	sigmaIm		sigmaRe')
 
 
 
