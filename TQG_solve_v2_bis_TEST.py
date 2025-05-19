@@ -105,12 +105,17 @@ print('/////////////////////////////////////////////////////')
 print('PARAMS : OK')
 
 
-val_c = []
-val_cNT = []
+#val_c = []
+#val_cNT = []
 sigma_matrix = np.zeros((len(k),2*Ny))
 sigmaNT_matrix = np.zeros((len(k),Ny))
 
+sigma_matrix_ree = np.zeros((len(k),2*Ny))
+sigmaNT_matrix_ree = np.zeros((len(k),Ny))
+
 for ik in tqdm(range(len(k))):
+
+
 	K2 = (k[ik]**2 + F1star)*dy**2
 
 
@@ -120,12 +125,6 @@ for ik in tqdm(range(len(k))):
 
 	
 	B11 = np.zeros((Ny, Ny))
-
-	'''
-	for i in range(1, Ny - 1):
-	    B11[i, i - 1] = 1.0
-	    B11[i, i]     = -(2 + K2)
-	    B11[i, i + 1] = 1.0'''
 	
 	
 	for i in range(Ny):
@@ -165,9 +164,9 @@ for ik in tqdm(range(len(k))):
 		#A22[i,i] = Un[i]
 	
 		A11[i, i] = -Un[i] * (2 + K2) + F11[i]
-		if i > 0:
+		if i>0:
 			A11[i,i-1] = Un[i]
-		if i < Ny - 1:
+		if i<Ny-1:
 			A11[i,i+1] = Un[i]
     
 
@@ -187,17 +186,26 @@ for ik in tqdm(range(len(k))):
 
 	
 	# velocity odd
-	A[0,1]=2.0*A[0,1]
-	B[0,1]=2.0*B[0,1]
+	A[0,1] = 2.0*A[0,1]
+	B[0,1] = 2.0*B[0,1]
 	
-	'''
+	
 	# velocity not odd
-	A[0,1]=0.0
-	B[0,1]=0.0'''
+	#A[0,1]=0.0
+	#B[0,1]=0.0
 
-	A[Ny,Ny-1]=0.0
-	B[Ny,Ny-1]=0.0
-
+	A[2*Ny-1,2*Ny-1] = 0.0
+	B[2*Ny-1,2*Ny-1] = 0.0
+	
+	
+	
+	A11[0,1] = 2.0*A11[0,1]
+	B11[0,1] = 2.0*B11[0,1]
+	
+	A11[Ny-1,Ny-1] = 0.0
+	B11[Ny-1,Ny-1] = 0.0
+	
+	
 
 
 
@@ -213,8 +221,13 @@ for ik in tqdm(range(len(k))):
 
 	c, _ = spl.eig(A,B)
 
+
+
 	sigma = np.imag(c) * k[ik]
 	sigma_matrix[ik,:] = sigma
+	
+	sigma_ree = np.real(c) * k[ik]
+	sigma_matrix_ree[ik,:] = sigma_ree
 
 
 
@@ -224,8 +237,42 @@ for ik in tqdm(range(len(k))):
 
 	sigma_NT = np.imag(c_NT) * k[ik]
 	sigmaNT_matrix[ik,:] = sigma_NT
+	
+	sigma_NT_ree = np.real(c_NT) * k[ik]
+	sigmaNT_matrix_ree[ik,:] = sigma_NT_ree
 
 	
+
+
+
+
+val_c = np.max(sigma_matrix, axis=1)       
+val_cNT = np.max(sigmaNT_matrix, axis=1)
+
+val_c_ree = np.max(sigma_matrix_ree, axis=1)       
+val_cNT_ree = np.max(sigmaNT_matrix_ree, axis=1)  
+
+
+##################################
+# PLOT
+##################################
+
+
+print('/////////////////////////////////////////////////////')
+
+
+'''
+
+
+plt.plot(k, val_c, 'k--', label='TQG')
+plt.plot(k, val_cNT, 'k-', label='QG')
+plt.xlabel(r'$k$')
+plt.ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$')
+plt.legend(fancybox=False)'''
+
+
+
+
 
 
 
@@ -240,14 +287,110 @@ print('/////////////////////////////////////////////////////')
 
 
 
-val_c = np.max(sigma_matrix, axis=1)       
-val_cNT = np.max(sigmaNT_matrix, axis=1)  
+print('PLOT...')
 
-plt.plot(k[val_c>0], val_c[val_c>0], 'b-', label='TQG')
-plt.plot(k[val_cNT>0], val_cNT[val_cNT>0], 'r--', label='QG')
-plt.xlabel(r'$k$')
-plt.ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~>~ 0$')
-plt.legend(fancybox=False)
+
+
+
+
+##################################
+# Plot 1
+
+
+
+fig, (ax) = plt.subplots(2,2,figsize=(15,10))
+
+
+fig.suptitle('Experience : '+name_exp)
+
+
+ax[0,0].axhline(0, color='gray', linestyle=':')
+ax[0,0].axvline(0, color='gray', linestyle=':')
+ax[0,0].tick_params(top=True,right=True,direction='in',size=4,width=1)
+
+ax[0,0].plot(k, val_c, 'k--', label='TQG')
+ax[0,0].plot(k, val_cNT, 'k-', label='QG')
+
+
+ax[0,0].legend(fancybox=False,loc='upper left')
+
+
+
+
+for spine in ax[0,0].spines.values():
+    spine.set_linewidth(2)
+    
+ax[0,0].set_xlabel(r'$k$',size=font_size)
+ax[0,0].set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$',size=font_size)
+ax[0,0].set_title(r'Groth rates',size=font_size)
+
+
+
+
+
+
+
+
+ax[1,0].plot(Un,y_l,'b')
+ax[1,0].tick_params(right=True, top=True,size=4,width=1,direction='in')
+ax[1,0].spines[['top','bottom','right','left']].set_linewidth(2)
+ax[1,0].set_ylabel(r'$y$',size=font_size)
+ax[1,0].set_xlabel(r'$\overline{U}$',size=font_size)
+ax[1,0].set_title('Velocity profile',size=font_size)
+ax[1,0].axhline(0, color='gray', linestyle=':')
+ax[1,0].axvline(0, color='gray', linestyle=':')
+ax[1,0].set_ylim(np.min(y_l), np.max(y_l))
+
+
+
+
+ax[0,1].scatter(val_c_ree,val_c,color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label='TQG')
+ax[0,1].scatter(val_cNT_ree,val_cNT,color='b',marker='+',s=50,alpha=0.6,label='QG')
+ax[0,1].legend()
+
+ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
+ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega\}$',size=font_size)
+ax[0,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
+ax[0,1].axhline(0, color='gray', linestyle=':')
+ax[0,1].axvline(0, color='gray', linestyle=':')
+ax[0,1].set_title(r'Eigenfrequencies $\omega = c.k$')
+# Make the axes (spines) bold
+for spine in ax[0,1].spines.values():
+    spine.set_linewidth(2)
+    
+    
+    
+print('-----------------------------------------------------')
+
+
+borne = (1/4)*(Un*y_l)**2
+test_crit = Un * G12
+
+
+ax[1,1].axhline(0, color='gray', linestyle=':')
+ax[1,1].axvline(0, color='gray', linestyle=':')
+ax[1,1].plot(borne,y_l,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
+ax[1,1].plot(test_crit,y_l,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
+ax[1,1].fill_betweenx(y_l,borne,test_crit,color='orange',alpha=0.3)
+ax[1,1].tick_params(left=True,right=True,top=True,bottom=True,labelleft=False,direction='in',size=4,width=1)
+ax[1,1].set_xlabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
+ax[1,1].legend(loc='best',fancybox=False)
+ax[1,1].set_title('Stability',size=font_size)
+ax[1,1].set_ylim(np.min(y_l), np.max(y_l))
+
+
+# Make the axes (spines) bold
+for spine in ax[1,1].spines.values():
+    spine.set_linewidth(2)
+
+
+
+plt.tight_layout()
+
+
+if save_png == True:
+	plt.savefig('im_para/'+name_exp+'/fig1_'+name_exp+choice_plot_name+'.png',dpi=300)
+
 
 
 
