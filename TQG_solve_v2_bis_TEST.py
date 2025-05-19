@@ -38,10 +38,11 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 60, 51
+#Ny, Nk = 4, 51
 
 
 
-Ly, Lk = np.pi, 6
+Ly, Lk = np.pi, 5
 dy = Ly/Ny
 y_l, k = np.linspace(0,Ly,Ny), np.linspace(0,Lk,Nk)
 dk = Lk/Nk
@@ -117,20 +118,22 @@ for ik in tqdm(range(len(k))):
 	# CONSTRUCTION OF THE B MATRIX
 	##################################
 
-
-	'''
-	# Main diagonal
-	main_diag = -(2 + K2) * np.ones(Ny)
-	off_diag = np.ones(Ny-1)
-	# Construct tridiagonal B11 using np.diag
-	B11 = np.diag(main_diag) + np.diag(off_diag, k=1) + np.diag(off_diag, k=-1)'''
 	
 	B11 = np.zeros((Ny, Ny))
 
+	'''
 	for i in range(1, Ny - 1):
 	    B11[i, i - 1] = 1.0
 	    B11[i, i]     = -(2 + K2)
-	    B11[i, i + 1] = 1.0
+	    B11[i, i + 1] = 1.0'''
+	
+	
+	for i in range(Ny):
+		B11[i,i] = -(2 + K2)
+		if i > 0:
+			B11[i,i-1] = 1.
+		if i < Ny-1:
+			B11[i,i+1] = 1.
 	
 	
 	# Construct other blocks
@@ -149,18 +152,26 @@ for ik in tqdm(range(len(k))):
 
 
 	A11 = np.zeros((Ny,Ny))
+	
+	#A12 = np.zeros_like(A11)
+	#A21 = np.zeros_like(A11)
+	#A22 = np.zeros_like(A11)
 
 	# Block A11
-
+	
 	for i in range(Ny):
+		#A12[i,i] = -Vn[i] # same than under
+		#A21[i,i] = G12[i]
+		#A22[i,i] = Un[i]
+	
 		A11[i, i] = -Un[i] * (2 + K2) + F11[i]
 		if i > 0:
-			A11[i, i - 1] = Un[i]
+			A11[i,i-1] = Un[i]
 		if i < Ny - 1:
-			A11[i, i + 1] = Un[i]
+			A11[i,i+1] = Un[i]
     
 
-
+	
 	# Block A12
 	A12 = np.diag(-Vn)
 	# Block A21
@@ -174,30 +185,19 @@ for ik in tqdm(range(len(k))):
 
 
 
-
-
-	# Top (y = 0)
-	A[0, :] = 0
-	A[0, 0] = 1
-	B[0, :] = 0
-	B[0, 0] = 1
-
-	# Bottom (y = π)
-	A[Ny-1, :] = 0
-	A[Ny-1, Ny-1] = 1
-	B[Ny-1, :] = 0
-	B[Ny-1, Ny-1] = 1
 	
+	# velocity odd
+	A[0,1]=2.0*A[0,1]
+	B[0,1]=2.0*B[0,1]
 	
-	A11[0, :] = 0
-	A11[0, 0] = 1
-	B11[0, :] = 0
-	B11[0, 0] = 1
+	'''
+	# velocity not odd
+	A[0,1]=0.0
+	B[0,1]=0.0'''
 
-	A11[-1, :] = 0
-	A11[-1, -1] = 1
-	B11[-1, :] = 0
-	B11[-1, -1] = 1
+	A[Ny,Ny-1]=0.0
+	B[Ny,Ny-1]=0.0
+
 
 
 
@@ -213,17 +213,17 @@ for ik in tqdm(range(len(k))):
 
 	c, _ = spl.eig(A,B)
 
-	sigma = c * k[ik]
-	sigma_matrix[ik,:] = np.imag(sigma)
+	sigma = np.imag(c) * k[ik]
+	sigma_matrix[ik,:] = sigma
 
 
 
 	###### NON THERMAL SOLVING (QG)
 
-	c_NT, _ = spl.eig(A11,B11)
+	c_NT, _NT = spl.eig(A11,B11)
 
-	sigma_NT = c_NT * k[ik]
-	sigmaNT_matrix[ik,:] = np.imag(sigma_NT)
+	sigma_NT = np.imag(c_NT) * k[ik]
+	sigmaNT_matrix[ik,:] = sigma_NT
 
 	
 
@@ -243,13 +243,24 @@ print('/////////////////////////////////////////////////////')
 val_c = np.max(sigma_matrix, axis=1)       
 val_cNT = np.max(sigmaNT_matrix, axis=1)  
 
-plt.plot(k, val_c, 'b-', label='TQG')
-plt.plot(k, val_cNT, 'r--', label='QG')
-plt.xlabel('k')
-plt.ylabel(r'$\sigma$')
-plt.legend()
+plt.plot(k[val_c>0], val_c[val_c>0], 'b-', label='TQG')
+plt.plot(k[val_cNT>0], val_cNT[val_cNT>0], 'r--', label='QG')
+plt.xlabel(r'$k$')
+plt.ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~>~ 0$')
+plt.legend(fancybox=False)
 
 
+
+# save outputs
+np.savetxt("eigen_TQG.txt", 
+           np.column_stack([k, val_c]),
+           fmt="%.18e", 
+           header="k	sigmaIm")
+           
+np.savetxt("eigen_QG.txt", 
+           np.column_stack([k, val_cNT]),
+           fmt="%.18e", 
+           header="k	sigmaIm")
 
 
 
