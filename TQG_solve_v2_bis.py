@@ -1,9 +1,7 @@
 import os
-#import warnings
 import numpy as np                                         
 import matplotlib as mpl
 import scipy.linalg as spl
-#from scipy.sparse.linalg import eigs
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 
@@ -38,13 +36,10 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 60, 51
-#Ny, Nk = 4, 51
-
-
 
 Ly, Lk = np.pi, 5
 dy = Ly/Ny
-y_l, k = np.linspace(0,Ly,Ny), np.linspace(0,Lk,Nk)
+y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
 dk = Lk/Nk
 
 
@@ -68,6 +63,9 @@ G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
 #Un = 1/(1+np.exp(-y_l)) # sigmoide
 G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un + beta - G12
 F11 = G11*dy**2
+
+print('/////////////////////////////////////////////////////')
+print('PARAMS : OK')
 
 
 if save_png == True:
@@ -101,9 +99,9 @@ if save_png == True:
 
 
 
-print('/////////////////////////////////////////////////////')
-print('PARAMS : OK')
 
+print('/////////////////////////////////////////////////////')
+print('COMPUTATION...')
 
 #val_c = []
 #val_cNT = []
@@ -151,6 +149,8 @@ for ik in tqdm(range(len(k))):
 
 
 	A11 = np.zeros((Ny,Ny))
+	A11_bis = np.zeros((Ny,Ny)) # same B11 without the thermal
+	# term that is F11 for the non-TQG solving
 	
 	#A12 = np.zeros_like(A11)
 	#A21 = np.zeros_like(A11)
@@ -163,11 +163,14 @@ for ik in tqdm(range(len(k))):
 		#A21[i,i] = G12[i]
 		#A22[i,i] = Un[i]
 	
-		A11[i, i] = -Un[i] * (2 + K2) + F11[i]
+		A11[i,i] = -Un[i] * (2 + K2) + F11[i]
+		A11_bis[i,i] = -Un[i] * (2 + K2) + F11[i] + G12[i]*dy**2
 		if i>0:
 			A11[i,i-1] = Un[i]
+			A11_bis[i,i-1] = Un[i]
 		if i<Ny-1:
 			A11[i,i+1] = Un[i]
+			A11_bis[i,i+1] = Un[i]
     
 
 	
@@ -200,9 +203,11 @@ for ik in tqdm(range(len(k))):
 	
 	
 	A11[0,1] = 2.0*A11[0,1]
+	A11_bis[0,1] = 2.0*A11_bis[0,1]
 	B11[0,1] = 2.0*B11[0,1]
 	
 	A11[Ny-1,Ny-1] = 0.0
+	A11_bis[Ny-1,Ny-1] = 0.0
 	B11[Ny-1,Ny-1] = 0.0
 	
 	
@@ -233,7 +238,7 @@ for ik in tqdm(range(len(k))):
 
 	###### NON THERMAL SOLVING (QG)
 
-	c_NT, _NT = spl.eig(A11,B11)
+	c_NT, _NT = spl.eig(A11_bis,B11)
 
 	sigma_NT = np.imag(c_NT) * k[ik]
 	sigmaNT_matrix[ik,:] = sigma_NT
@@ -253,29 +258,7 @@ val_c_ree = np.max(sigma_matrix_ree, axis=1)
 val_cNT_ree = np.max(sigmaNT_matrix_ree, axis=1)  
 
 
-##################################
-# PLOT
-##################################
-
-
-print('/////////////////////////////////////////////////////')
-
-
-'''
-
-
-plt.plot(k, val_c, 'k--', label='TQG')
-plt.plot(k, val_cNT, 'k-', label='QG')
-plt.xlabel(r'$k$')
-plt.ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$')
-plt.legend(fancybox=False)'''
-
-
-
-
-
-
-
+print('COMPUTATION : OK')
 
 
 ##################################
@@ -322,7 +305,7 @@ for spine in ax[0,0].spines.values():
     
 ax[0,0].set_xlabel(r'$k$',size=font_size)
 ax[0,0].set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$',size=font_size)
-ax[0,0].set_title(r'Groth rates',size=font_size)
+ax[0,0].set_title(r'Growth rates',size=font_size)
 
 
 
@@ -343,7 +326,7 @@ ax[1,0].set_ylim(np.min(y_l), np.max(y_l))
 
 
 
-
+'''
 ax[0,1].scatter(val_c_ree,val_c,color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label='TQG')
 ax[0,1].scatter(val_cNT_ree,val_cNT,color='b',marker='+',s=50,alpha=0.6,label='QG')
 ax[0,1].legend()
@@ -356,7 +339,7 @@ ax[0,1].axvline(0, color='gray', linestyle=':')
 ax[0,1].set_title(r'Eigenfrequencies $\omega = c.k$')
 # Make the axes (spines) bold
 for spine in ax[0,1].spines.values():
-    spine.set_linewidth(2)
+    spine.set_linewidth(2)'''
     
     
     
