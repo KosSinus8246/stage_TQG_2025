@@ -37,7 +37,7 @@ print('-----------------------------------------------------')
 # VARIABLES, SPACE ...
 ##################################
 
-Ny, Nk = 100, 100	
+Ny, Nk = 60, 51
 
 
 
@@ -106,12 +106,10 @@ print('PARAMS : OK')
 
 val_c = []
 val_cNT = []
-c_matrix = np.zeros((len(k),2*Ny))
-cNT_matrix = np.zeros((len(k),2*Ny))
+sigma_matrix = np.zeros((len(k),2*Ny))
+sigmaNT_matrix = np.zeros((len(k),Ny))
 
 for ik in tqdm(range(len(k))):
-
-
 	K2 = (k[ik]**2 + F1star)*dy**2
 
 
@@ -134,32 +132,33 @@ for ik in tqdm(range(len(k))):
 
 	B = np.block([[B11,B12],[B21,B22]])
 
-	'''
-	# Combine them into full block matrix B
-	top = np.concatenate((B11, B12), axis=1)
-	bottom = np.concatenate((B21, B22), axis=1)
-	B = np.concatenate((top, bottom), axis=0)
-
-	top = np.concatenate((B11, B12), axis=0)
-	bottom = np.concatenate((B21, B22), axis=0)
-	B = np.concatenate((top, bottom), axis=1)'''
-
 
 	##################################
 	# CONSTRUCTION OF THE A MATRIX
 	##################################
 
-
+	A11 = np.zeros((Ny,Ny))
 
 	# Block A11
+	'''
 	main_diag_A11 = -Un*(2 + K2) + F11  # shape (3,)
-	A11 = np.zeros((Ny,Ny))
+
 	np.fill_diagonal(A11, main_diag_A11)
 
 	for i in range(Ny-1):
 	    A11[i,i+1] = Un[i] # i initialement
-	    A11[i+1,i] = Un[i]
+	    A11[i+1,i] = Un[i]'''
 	    
+	for i in range(1, Ny-1):
+	    A11[i,i-1] = Un[i-1]
+	    A11[i,i]   = -Un[i-1] - Un[i] + F11[i]
+	    A11[i,i+1] = Un[i]
+
+	    
+
+	#A11[0,:] = 0; A11[0,0] = 1
+	#A11[-1,:] = 0; A11[-1,-1] = 1
+
 
 	# Block A12
 	A12 = np.diag(-Vn)
@@ -172,30 +171,21 @@ for ik in tqdm(range(len(k))):
 
 	A = np.block([[A11,A12],[A21,A22]])
 
-	'''
-	top_A = np.concatenate((A11, A12), axis=1)
-	bottom_A = np.concatenate((A21, A22), axis=1)
-	A = np.concatenate((top_A, bottom_A), axis=0)
-
-
-	top_A = np.concatenate((A11, A12), axis=0)
-	bottom_A = np.concatenate((A21, A22), axis=0)
-	A = np.concatenate((top_A, bottom_A), axis=1)'''
 
 
 	# BC's
-	
+	'''
 	# velocity odd
 	A[0,1]=2.0*A[0,1]
 	B[0,1]=2.0*B[0,1]
 
-	
-	
+
+
 
 	A[Ny,Ny-1]=0.0
 	B[Ny,Ny-1]=0.0
-	'''
-	
+
+
 	
 	# velocity not odd
 	A[0,1]=0.0
@@ -211,47 +201,23 @@ for ik in tqdm(range(len(k))):
 	###### THERMAL SOLVING (TQG)
 
 	c, _ = spl.eig(A,B)
-	c_matrix[ik,:] = np.imag(c)
-	
-	#val_c.append(np.max(np.imag(c)))
+
+	sigma = c * k[ik]
+	sigma_matrix[ik,:] = np.imag(sigma)
+
 
 
 	###### NON THERMAL SOLVING (QG)
 
 	c_NT, _ = spl.eig(A11,B11)
-	cNT_matrix[ik,:] = np.imag(c)
+
+	sigma_NT = c_NT * k[ik]
+	sigmaNT_matrix[ik,:] = np.imag(sigma_NT)
+
 	
-	#val_cNT.append(np.max(np.imag(c)))
 
 
 
-
-
-
-
-val_c = np.array(val_c)
-val_cNT = np.array(val_cNT)
-
-'''
-if np.max(np.imag(c_matrix[0,:Ny])) > np.max(np.imag(c_matrix[0,:Ny])):
-	big_img_part_c = c_matrix[0,:Ny]
-	print('111')
-else:
-	big_img_part_c = c_matrix[0,Ny:]
-	print('222')'''
-
-
-
-for j in range(len(k)):
-
-	if np.max(np.imag(c_matrix[j,:Ny])) > np.max(np.imag(c_matrix[j,:Ny])):
-		big_img_part_c = c_matrix[j,:Ny]
-		print('111')
-	else:
-		big_img_part_c = c_matrix[j,Ny:]
-		print('222')
-		
-	plt.plot(k[j],np.max(big_img_part_c[big_img_part_c>0]),'+')
 
 
 ##################################
@@ -260,6 +226,20 @@ for j in range(len(k)):
 
 
 print('/////////////////////////////////////////////////////')
+
+
+
+val_c = np.max(sigma_matrix, axis=1)       # max Im(ω) for TQG
+val_cNT = np.max(sigmaNT_matrix, axis=1)   # max Im(ω) for QG
+
+plt.plot(k, val_c, 'b-', label='TQG')
+plt.plot(k, val_cNT, 'r--', label='QG')
+plt.xlabel('k')
+plt.ylabel(r'$\sigma$')
+plt.legend()
+
+
+
 
 
 

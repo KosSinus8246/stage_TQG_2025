@@ -48,7 +48,7 @@ if debug_mode == True:
 
 Ly, Lk = np.pi, 6
 dy = Ly/Ny
-y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
+y_l, k = np.linspace(0,Ly,Ny), np.linspace(0,Lk,Nk)
 dk = Lk/Nk
 
 
@@ -423,29 +423,17 @@ if save_png == True:
 
 
 
+# save outputs
+np.savetxt("eigen_TQG.txt", 
+           np.column_stack([k,sigma_big_ree, sigma_big_img]),
+           fmt="%.18e", 
+           header="k	sigmaRe    sigmaIm")
+           
+np.savetxt("eigen_QG.txt", 
+           np.column_stack([k,sigma_ree_NT, sigma_img_NT]),
+           fmt="%.18e", 
+           header="k	sigmaRe    sigmaIm")
 
-
-val = c
-
-plt.figure()
-plt.title('Raw')
-plt.plot(np.imag(val),'k',label='im')
-plt.legend(loc='upper left')
-plt.twinx()
-plt.plot(np.real(val),'orange',label='re')
-plt.plot(np.abs(val),'b',label='abs')
-plt.legend(loc='upper right')
-
-
-
-plt.figure()
-plt.title('np.sort()')
-plt.plot(np.sort(np.imag(val)),'k',label='im')
-plt.legend(loc='upper left')
-plt.twinx()
-plt.plot(np.sort(np.real(val)),'orange',label='re')
-plt.plot(np.sort(np.abs(val)),'b',label='abs')
-plt.legend(loc='upper right')
 
 
 
