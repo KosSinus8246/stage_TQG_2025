@@ -275,6 +275,13 @@ print('PLOT...')
 
 
 
+plt.plot(k, val_c, 'k--', label='TQG')
+plt.plot(k, val_cNT, 'k-', label='QG')
+plt.xlabel(r'$k$')
+plt.ylabel(r'$\sigma_\mathbf{Im}$')
+plt.legend()
+
+
 
 ##################################
 # Plot 1
