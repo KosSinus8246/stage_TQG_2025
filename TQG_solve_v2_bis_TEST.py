@@ -118,12 +118,21 @@ for ik in tqdm(range(len(k))):
 	##################################
 
 
-
+	'''
 	# Main diagonal
 	main_diag = -(2 + K2) * np.ones(Ny)
 	off_diag = np.ones(Ny-1)
 	# Construct tridiagonal B11 using np.diag
-	B11 = np.diag(main_diag) + np.diag(off_diag, k=1) + np.diag(off_diag, k=-1)
+	B11 = np.diag(main_diag) + np.diag(off_diag, k=1) + np.diag(off_diag, k=-1)'''
+	
+	B11 = np.zeros((Ny, Ny))
+
+	for i in range(1, Ny - 1):
+	    B11[i, i - 1] = 1.0
+	    B11[i, i]     = -(2 + K2)
+	    B11[i, i + 1] = 1.0
+	
+	
 	# Construct other blocks
 	B12 = np.zeros((Ny, Ny))
 	B21 = np.zeros((Ny, Ny))
@@ -137,27 +146,19 @@ for ik in tqdm(range(len(k))):
 	# CONSTRUCTION OF THE A MATRIX
 	##################################
 
+
+
 	A11 = np.zeros((Ny,Ny))
 
 	# Block A11
-	'''
-	main_diag_A11 = -Un*(2 + K2) + F11  # shape (3,)
 
-	np.fill_diagonal(A11, main_diag_A11)
-
-	for i in range(Ny-1):
-	    A11[i,i+1] = Un[i] # i initialement
-	    A11[i+1,i] = Un[i]'''
-	    
-	for i in range(1, Ny-1):
-	    A11[i,i-1] = Un[i-1]
-	    A11[i,i]   = -Un[i-1] - Un[i] + F11[i]
-	    A11[i,i+1] = Un[i]
-
-	    
-
-	#A11[0,:] = 0; A11[0,0] = 1
-	#A11[-1,:] = 0; A11[-1,-1] = 1
+	for i in range(Ny):
+		A11[i, i] = -Un[i] * (2 + K2) + F11[i]
+		if i > 0:
+			A11[i, i - 1] = Un[i]
+		if i < Ny - 1:
+			A11[i, i + 1] = Un[i]
+    
 
 
 	# Block A12
@@ -173,23 +174,33 @@ for ik in tqdm(range(len(k))):
 
 
 
-	# BC's
-	'''
-	# velocity odd
-	A[0,1]=2.0*A[0,1]
-	B[0,1]=2.0*B[0,1]
 
 
+	# Top (y = 0)
+	A[0, :] = 0
+	A[0, 0] = 1
+	B[0, :] = 0
+	B[0, 0] = 1
 
-
-	A[Ny,Ny-1]=0.0
-	B[Ny,Ny-1]=0.0
-
-
+	# Bottom (y = π)
+	A[Ny-1, :] = 0
+	A[Ny-1, Ny-1] = 1
+	B[Ny-1, :] = 0
+	B[Ny-1, Ny-1] = 1
 	
-	# velocity not odd
-	A[0,1]=0.0
-	B[0,1]=0.0'''
+	
+	A11[0, :] = 0
+	A11[0, 0] = 1
+	B11[0, :] = 0
+	B11[0, 0] = 1
+
+	A11[-1, :] = 0
+	A11[-1, -1] = 1
+	B11[-1, :] = 0
+	B11[-1, -1] = 1
+
+
+
 
 
 	##################################
@@ -229,8 +240,8 @@ print('/////////////////////////////////////////////////////')
 
 
 
-val_c = np.max(sigma_matrix, axis=1)       # max Im(ω) for TQG
-val_cNT = np.max(sigmaNT_matrix, axis=1)   # max Im(ω) for QG
+val_c = np.max(sigma_matrix, axis=1)       
+val_cNT = np.max(sigmaNT_matrix, axis=1)  
 
 plt.plot(k, val_c, 'b-', label='TQG')
 plt.plot(k, val_cNT, 'r--', label='QG')
