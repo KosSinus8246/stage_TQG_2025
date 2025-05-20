@@ -10,7 +10,6 @@ mpl.rcParams['font.size'] = 14
 mpl.rcParams['mathtext.fontset'] = 'stix'
 mpl.rcParams['font.family'] = 'STIXGeneral'
 mpl.rcParams['legend.edgecolor'] = '0'
-#warnings.filterwarnings("ignore")
 
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_2_BIS~~~~~~~~~~~~~~~~~~~~')
@@ -51,7 +50,7 @@ beta = 0
 F1star = 0 # 1/Rd**2
 
 U0 = 1
-Theta0_U0 = 1 # ratio
+Theta0_U0 = 0.1 # ratio
 Theta0 = Theta0_U0 *U0
 
 
@@ -68,6 +67,8 @@ F11 = G11*dy**2
 print('/////////////////////////////////////////////////////')
 print('PARAMS : OK')
 
+
+# Save all parameters in a txt file
 
 if save_png == True:
 
@@ -115,6 +116,7 @@ sigmaNT_matrix = np.zeros((len(k),Ny))
 sigma_matrix_ree = np.zeros((len(k),2*Ny))
 sigmaNT_matrix_ree = np.zeros((len(k),Ny))
 
+# loop for each case of k
 for ik in tqdm(range(len(k))):
 
 
@@ -269,11 +271,16 @@ print('/////////////////////////////////////////////////////')
 
 print('PLOT...')
 
+fig, (ax) = plt.subplots(1,1)
 
-plt.plot(k, val_c, 'k--', label='TQG')
-plt.plot(k, val_cNT, 'k-', label='QG')
-plt.xlabel(r'$k$')
-plt.ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$')
+ax.plot(k, val_c, 'k--', label='TQG')
+ax.plot(k, val_cNT, 'k-', label='QG')
+ax.set_xlabel(r'$k$')
+ax.set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$')
+ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
+ax.legend(fancybox=False)
+for spine in ax.spines.values():
+    spine.set_linewidth(2)
 
 
 ##################################
