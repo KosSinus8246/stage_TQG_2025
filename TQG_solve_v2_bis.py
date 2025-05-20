@@ -20,11 +20,14 @@ print('-----------------------------------------------------')
 
 
 # cf TQG notes : A.X = c.B.X is the system that is solved here
-# and also the non thermal system !!
+# and also the non thermal system
 # @uthor : dimitri moreau 20/05/2025
 
 
-save_png = False
+save_png = True  # create a folder im_para and a folder per
+		 # experience with the "name_exp" variable
+		 # save also the used parameters and Real
+		 # and Imaginary sigma
 font_size = 17
 choice_plot_name = 'max_sigma_im'
 
@@ -41,26 +44,24 @@ dk = 0.1
 ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
 dy = (Ly - ymin)/Ny
 
-y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,Nk*dk,dk) #np.linspace(0.1,Lk,Nk)
+y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,Nk*dk,dk)
 
 
-beta = 0 #1e-11
-F1star = 0 #1/Rd**2
+beta = 0 
+F1star = 0 # 1/Rd**2
 
 U0 = 1
-Theta0_U0 = 0.1 # ratio
+Theta0_U0 = 1 # ratio
 Theta0 = Theta0_U0 *U0
 
 
 Un = U0*np.exp(-y_l**2)
+#Un = 1/(1+np.exp(-y_l)) # sigmoide
+
 Vn = Un*(dy**2)
 G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
 
 
-
-
-
-#Un = 1/(1+np.exp(-y_l)) # sigmoide
 G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un + beta - G12
 F11 = G11*dy**2
 
@@ -108,8 +109,6 @@ if save_png == True:
 print('/////////////////////////////////////////////////////')
 print('COMPUTATION...')
 
-#val_c = []
-#val_cNT = []
 sigma_matrix = np.zeros((len(k),2*Ny))
 sigmaNT_matrix = np.zeros((len(k),Ny))
 
@@ -132,9 +131,9 @@ for ik in tqdm(range(len(k))):
 	
 	for i in range(Ny):
 		B11[i,i] = -(2 + K2)
-		if i > 0:
+		if i>0:
 			B11[i,i-1] = 1.
-		if i < Ny-1:
+		if i<Ny-1:
 			B11[i,i+1] = 1.
 	
 	
@@ -154,28 +153,21 @@ for ik in tqdm(range(len(k))):
 
 
 	A11 = np.zeros((Ny,Ny))
-	A11_bis = np.zeros((Ny,Ny)) # same B11 without the thermal
+	A11_star = np.zeros((Ny,Ny)) # same B11 without the thermal
 	# term that is F11 for the non-TQG solving
-	
-	#A12 = np.zeros_like(A11)
-	#A21 = np.zeros_like(A11)
-	#A22 = np.zeros_like(A11)
 
 	# Block A11
 	
 	for i in range(Ny):
-		#A12[i,i] = -Vn[i] # same than under
-		#A21[i,i] = G12[i]
-		#A22[i,i] = Un[i]
 	
 		A11[i,i] = -Un[i] * (2 + K2) + F11[i]
-		A11_bis[i,i] = -Un[i] * (2 + K2) + F11[i] + G12[i]*dy**2
+		A11_star[i,i] = -Un[i] * (2 + K2) + F11[i] + G12[i]*dy**2
 		if i>0:
 			A11[i,i-1] = Un[i]
-			A11_bis[i,i-1] = Un[i]
+			A11_star[i,i-1] = Un[i]
 		if i<Ny-1:
 			A11[i,i+1] = Un[i]
-			A11_bis[i,i+1] = Un[i]
+			A11_star[i,i+1] = Un[i]
     
 
 	
@@ -208,11 +200,11 @@ for ik in tqdm(range(len(k))):
 	
 	
 	A11[0,1] = 2.0*A11[0,1]
-	A11_bis[0,1] = 2.0*A11_bis[0,1]
+	A11_star[0,1] = 2.0*A11_star[0,1]
 	B11[0,1] = 2.0*B11[0,1]
 	
 	A11[Ny-1,Ny-1] = 0.0
-	A11_bis[Ny-1,Ny-1] = 0.0
+	A11_star[Ny-1,Ny-1] = 0.0
 	B11[Ny-1,Ny-1] = 0.0
 	
 	
@@ -243,7 +235,7 @@ for ik in tqdm(range(len(k))):
 
 	###### NON THERMAL SOLVING (QG)
 
-	c_NT, X_NT = eig(A11_bis,B11)
+	c_NT, X_NT = eig(A11_star,B11)
 
 	sigma_NT = np.imag(c_NT) * k[ik]
 	sigmaNT_matrix[ik,:] = sigma_NT
@@ -278,10 +270,16 @@ print('/////////////////////////////////////////////////////')
 print('PLOT...')
 
 
+plt.plot(k, val_c, 'k--', label='TQG')
+plt.plot(k, val_cNT, 'k-', label='QG')
+plt.xlabel(r'$k$')
+plt.ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$')
+
+
 ##################################
 # Plot 1
 
-
+'''
 
 fig, (ax) = plt.subplots(2,2,figsize=(15,10))
 
@@ -366,7 +364,7 @@ ax[1,1].set_ylim(np.min(y_l), np.max(y_l))
 for spine in ax[1,1].spines.values():
     spine.set_linewidth(2)
 
-
+'''
 
 plt.tight_layout()
 
