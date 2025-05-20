@@ -1,9 +1,10 @@
 import os
-import numpy as np                                         
+import numpy as np                                        
 import matplotlib as mpl
-import scipy.linalg as spl
 import matplotlib.pyplot as plt
+
 from tqdm import tqdm
+from scipy.linalg import eig
 
 mpl.rcParams['font.size'] = 14
 mpl.rcParams['mathtext.fontset'] = 'stix'
@@ -23,7 +24,7 @@ print('-----------------------------------------------------')
 # @uthor : dimitri moreau 20/05/2025
 
 
-save_png = True
+save_png = False
 font_size = 17
 choice_plot_name = 'max_sigma_im'
 
@@ -41,12 +42,10 @@ ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
 dy = (Ly - ymin)/Ny
 
 y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,Nk*dk,dk) #np.linspace(0.1,Lk,Nk)
-#dk = Lk/Nk
 
 
 beta = 0 #1e-11
-#F1star = 0 #1/Rd**2
-F1star = 0
+F1star = 0 #1/Rd**2
 
 U0 = 1
 Theta0_U0 = 0.1 # ratio
@@ -87,8 +86,12 @@ if save_png == True:
 	    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 	    file.write(f"Ny = {Ny}\n")
 	    file.write(f"Nk = {Nk}\n")
+	    file.write(f"ymin = {ymin}\n")
 	    file.write(f"Ly = {Ly}\n")
+	    file.write(f"kmin = {kmin}\n")
 	    file.write(f"Lk = {Lk}\n")
+	    file.write(f"dy = {dy}\n")
+	    file.write(f"dk = {dk}\n")
 	    file.write(f"F1star = {F1star}\n")
 	    file.write(f"beta = {beta}\n")
 	    #file.write(f"Rd = {Rd}\n")
@@ -226,7 +229,7 @@ for ik in tqdm(range(len(k))):
 
 	###### THERMAL SOLVING (TQG)
 
-	c, X = spl.eig(A,B)
+	c, X = eig(A,B)
 
 
 
@@ -240,7 +243,7 @@ for ik in tqdm(range(len(k))):
 
 	###### NON THERMAL SOLVING (QG)
 
-	c_NT, X_NT = spl.eig(A11_bis,B11)
+	c_NT, X_NT = eig(A11_bis,B11)
 
 	sigma_NT = np.imag(c_NT) * k[ik]
 	sigmaNT_matrix[ik,:] = sigma_NT
@@ -273,16 +276,6 @@ print('/////////////////////////////////////////////////////')
 
 
 print('PLOT...')
-
-
-
-'''
-plt.plot(k, val_c, 'k--', label='TQG')
-plt.plot(k, val_cNT, 'k-', label='QG')
-plt.xlabel(r'$k$')
-plt.ylabel(r'$\sigma_\mathbf{Im}$')
-plt.legend()
-'''
 
 
 ##################################
