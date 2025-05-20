@@ -20,10 +20,10 @@ print('-----------------------------------------------------')
 
 # cf TQG notes : A.X = c.B.X is the system that is solved here
 # and also the non thermal system !!
-# @uthor : dimitri moreau 19/05/2025
+# @uthor : dimitri moreau 20/05/2025
 
 
-save_png = False
+save_png = True
 font_size = 17
 choice_plot_name = 'max_sigma_im'
 
@@ -36,11 +36,12 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 60, 51
+dk = 0.1
+ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
+dy = (Ly - ymin)/Ny
 
-Ly, Lk = np.pi, 5
-dy = Ly/Ny
-y_l, k = np.linspace(0.1,Ly,Ny), np.linspace(0.1,Lk,Nk)
-dk = Lk/Nk
+y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,Nk*dk,dk) #np.linspace(0.1,Lk,Nk)
+#dk = Lk/Nk
 
 
 beta = 0 #1e-11
@@ -48,7 +49,7 @@ beta = 0 #1e-11
 F1star = 0
 
 U0 = 1
-Theta0_U0 = 1 # ratio
+Theta0_U0 = 0.1 # ratio
 Theta0 = Theta0_U0 *U0
 
 
@@ -93,6 +94,7 @@ if save_png == True:
 	    #file.write(f"Rd = {Rd}\n")
 	    file.write(f"U0 = {U0}\n")
 	    file.write(f"Theta0 = {Theta0}\n")
+	    file.write(f"ratio_Theta0_U0 = {Theta0_U0}\n")
 	    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
 	print('Variables stored into : variables_used_'+name_exp+'.txt')
@@ -224,7 +226,7 @@ for ik in tqdm(range(len(k))):
 
 	###### THERMAL SOLVING (TQG)
 
-	c, _ = spl.eig(A,B)
+	c, X = spl.eig(A,B)
 
 
 
@@ -238,7 +240,7 @@ for ik in tqdm(range(len(k))):
 
 	###### NON THERMAL SOLVING (QG)
 
-	c_NT, _NT = spl.eig(A11_bis,B11)
+	c_NT, X_NT = spl.eig(A11_bis,B11)
 
 	sigma_NT = np.imag(c_NT) * k[ik]
 	sigmaNT_matrix[ik,:] = sigma_NT
