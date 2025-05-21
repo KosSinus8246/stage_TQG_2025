@@ -34,7 +34,7 @@ print('-----------------------------------------------------')
 
 
 
-def compute_sigmas(save_png, Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0):
+def compute_sigmas(save_png,Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0):
 
 	font_size = 17
 
@@ -234,10 +234,16 @@ def compute_sigmas(save_png, Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, T
 	ax.legend(fancybox=False)
 	ax.axhline(0, color='gray', linestyle=':')
 	ax.axvline(0, color='gray', linestyle=':')
-	ax.set_ylim(None, 0.5)
+	ax.set_ylim(-0.01, 0.5)
+	
+	ax.set_title(save_png)
+	
 	for spine in ax.spines.values():
 	    spine.set_linewidth(2)
 	
+	
+	# option
+	return fig
 	
 	print('END')
 	print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
