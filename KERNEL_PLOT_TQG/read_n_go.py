@@ -1,31 +1,3 @@
-'''from KERNEL_TQG_solve_v2_bis import *
-
-
-Ny, Nk = 60, 51
-dk = 0.1
-ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
-
-
-beta = 0 
-F1star = 0 # 1/Rd**2
-
-U0 = 1
-
-
-# compute_sigmas(False, Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, 1)
-# compute_sigmas(False, Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, 0.1)
-
-Theta0_U0 = np.round(np.linspace(0., 1., 20),3)  # 5 values between 0.1 and 1.0
-
-for theta in Theta0_U0:
-    compute_sigmas(str(theta), Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, theta)
-    plt.savefig('output/fig_ratio_'+str(theta)+'.png',dpi=300)
-
-# vider la mémoire avec show et tout refermer
-plt.show(block=False)
-plt.close('all')'''
-
-
 from KERNEL_TQG_solve_v2_bis import *
 import imageio.v2 as imageio
 import os
@@ -63,8 +35,36 @@ for theta in Theta0_U0:
 
 
 frames_pil = [Image.fromarray(frame) for frame in frames]
-frames_pil[0].save('output/sigmas_animation_pillow.gif', save_all=True, append_images=frames_pil[1:], duration=600, loop=0)
+frames_pil[0].save('output/sigmas_animation.gif', save_all=True, append_images=frames_pil[1:], duration=600, loop=0)
 
 
-print("GIF saved to: output/sigmas_animation_pillow.gif")
+print("GIF saved to: output/sigmas_animation.gif")
+
+
+# Create full file path
+file_path = os.path.join('output/', 'variables_used.txt')
+
+# Open a file in write mode
+with open('output/variables_used.txt', 'w') as file:
+    file.write('Used variables :\n')
+    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+    file.write(f"Ny = {Ny}\n")
+    file.write(f"Nk = {Nk}\n")
+    file.write(f"ymin = {ymin}\n")
+    file.write(f"Ly = {Ly}\n")
+    file.write(f"kmin = {kmin}\n")
+    file.write(f"Lk = {Lk}\n")
+    dy = (Ly-ymin)/Ny
+    file.write(f"dy = {dy}\n")
+    file.write(f"dk = {dk}\n")
+    file.write(f"F1star = {F1star}\n")
+    file.write(f"beta = {beta}\n")
+    #file.write(f"Rd = {Rd}\n")
+    file.write(f"U0 = {U0}\n")
+    #file.write(f"Theta0 = {Theta0}\n")
+    #file.write(f"ratio_Theta0_U0 = {Theta0_U0}\n")
+    file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
+
+print('Variables stored into : output/variables_used.txt')
+
 
