@@ -234,11 +234,11 @@ def compute_sigmas(save_png, Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, T
 	ax.legend(fancybox=False)
 	ax.axhline(0, color='gray', linestyle=':')
 	ax.axvline(0, color='gray', linestyle=':')
+	ax.set_ylim(None, 0.5)
 	for spine in ax.spines.values():
 	    spine.set_linewidth(2)
-
-
-
+	
+	
 	print('END')
 	print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
