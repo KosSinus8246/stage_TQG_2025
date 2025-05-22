@@ -38,7 +38,7 @@ dk = 0.1
 ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
 
 beta = 0 
-F1star = np.round(np.linspace(0.25, 4., 15), 3)
+F1star = np.round(np.linspace(0., 4., 15), 3)
 U0 = 1
 
 Theta0_U0 = 1
