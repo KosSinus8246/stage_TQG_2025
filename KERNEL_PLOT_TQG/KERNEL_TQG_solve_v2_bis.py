@@ -44,11 +44,9 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 	
 	if config == 'conf_1':
 		Un = U0*np.exp(-y_l**2)
-		#Un = 1/(1+np.exp(-y_l)) # sigmoide
 		G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
 	elif config == 'conf_2':
 		Un = U0*np.exp(-y_l**2)
-		#Un = 1/(1+np.exp(-y_l)) # sigmoide
 		G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Ly**2)) # dThetabar/dy
 	
 	else:
@@ -190,6 +188,8 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 		sigma = np.imag(c) * k[ik]
 		sigma_matrix[ik,:] = sigma
 		
+
+		
 		sigma_ree = np.real(c) * k[ik]
 		sigma_matrix_ree[ik,:] = sigma_ree
 
@@ -202,20 +202,18 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 		sigma_NT = np.imag(c_NT) * k[ik]
 		sigmaNT_matrix[ik,:] = sigma_NT
 		
+
+		
 		sigma_NT_ree = np.real(c_NT) * k[ik]
 		sigmaNT_matrix_ree[ik,:] = sigma_NT_ree
 
 		
-
-
-
 
 	val_c = np.max(sigma_matrix, axis=1)       
 	val_cNT = np.max(sigmaNT_matrix, axis=1)
 
 	val_c_ree = np.max(sigma_matrix_ree, axis=1)       
 	val_cNT_ree = np.max(sigmaNT_matrix_ree, axis=1)  
-
 
 	print('COMPUTATION : OK')
 
@@ -226,7 +224,8 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 
 
 	print('/////////////////////////////////////////////////////')
-
+	
+	
 
 
 	print('PLOT...')
