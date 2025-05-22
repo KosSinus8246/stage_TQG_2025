@@ -4,7 +4,6 @@ import os
 from io import BytesIO
 from PIL import Image
 
-
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_2_BIS~~~~~~~~~~~~~~~~~~~~')
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
@@ -13,7 +12,7 @@ print('-----------------------------------------------------')
 #########################
 # To change the variable in the loop
 
-# 1) Change the name of : var_title
+# 1) Change the name of : var_title and the config
 
 # 2) Put a linspace or an arange in your parameter
 #    that you want. Don't forget to replace the
@@ -30,7 +29,7 @@ print('-----------------------------------------------------')
 
 
 var_title = 'F1star'
-
+config = 'conf_1'
 
 
 Ny, Nk = 60, 51
@@ -51,7 +50,7 @@ os.makedirs('output', exist_ok=True)
 frames = []
 
 for var in F1star:
-    fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, var, U0, Theta0_U0)
+    fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, var, U0, Theta0_U0, config)
     
     save_png = r'$F_1^* =$'+str(var)
     ax.set_title(save_png)
@@ -68,7 +67,7 @@ for var in F1star:
 
 
 frames_pil = [Image.fromarray(frame) for frame in frames]
-frames_pil[0].save('output/sigmas_animation_'+var_title+'.gif', save_all=True, append_images=frames_pil[1:], duration=600, loop=0)
+frames_pil[0].save('output/sigmas_animation_'+var_title+'_'+config+'.gif', save_all=True, append_images=frames_pil[1:], duration=600, loop=0)
 
 
 print('GIF saved')
@@ -80,11 +79,11 @@ print('GIF saved')
 
 
 # Create full file path
-file_path = os.path.join('output/', 'variables_used_'+var_title+'.txt')
+file_path = os.path.join('output/', 'variables_used_'+var_title+'_'+config+'.txt')
 
 # Open a file in write mode
-with open('output/variables_used_'+var_title+'.txt', 'w') as file:
-    file.write('Used variables for :' +var_title +'\n')
+with open('output/variables_used_'+var_title+'_'+config+'.txt', 'w') as file:
+    file.write('Used variables for : '+var_title+' '+config+'\n')
     file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
     file.write(f"Ny = {Ny}\n")
     file.write(f"Nk = {Nk}\n")

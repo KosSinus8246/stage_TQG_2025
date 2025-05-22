@@ -8,13 +8,10 @@ from scipy.linalg import eig
 
 mpl.rcParams['font.size'] = 14
 mpl.rcParams['mathtext.fontset'] = 'stix'
-mpl.rcParams['font.family'] = 'STIXGeneral'
+#mpl.rcParams['font.family'] = 'STIXGeneral'
+mpl.rcParams['font.family'] = 'Courier New'
 mpl.rcParams['legend.edgecolor'] = '0'
 
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_2_BIS~~~~~~~~~~~~~~~~~~~~')
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print('-----------------------------------------------------')
 
 
 
@@ -34,7 +31,8 @@ print('-----------------------------------------------------')
 
 
 
-def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0):
+def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,config):
+
 
 	font_size = 17
 
@@ -44,11 +42,20 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0):
 	dy = (Ly - ymin)/Ny
 	y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,Nk*dk,dk)
 	
-	Un = U0*np.exp(-y_l**2)
-	#Un = 1/(1+np.exp(-y_l)) # sigmoide
-
+	if config == 'conf_1':
+		Un = U0*np.exp(-y_l**2)
+		#Un = 1/(1+np.exp(-y_l)) # sigmoide
+		G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
+	elif config == 'conf_2':
+		Un = U0*np.exp(-y_l**2)
+		#Un = 1/(1+np.exp(-y_l)) # sigmoide
+		G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Ly**2)) # dThetabar/dy
+	
+	else:
+		import sys
+		sys.exit("ERROR : NO CONFIGURATION")
+		
 	Vn = Un*(dy**2)
-	G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
 
 
 	G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un + beta - G12
