@@ -28,15 +28,15 @@ print('-----------------------------------------------------')
 
 
 
-var_title = 'beta'
+var_title = 'Ly'
 config = 'conf_2'
 
 
 Ny, Nk = 60, 51
 dk = 0.1
-ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
+ymin, kmin, Ly, Lk = 0.1, 0.1, np.round(np.linspace(0.1, 4, 15), 3) , 0.1+dk*Nk
 
-beta = np.round(np.linspace(0, 2, 15), 3) 
+beta = 0
 F1star = 0
 U0 = 1
 
@@ -49,10 +49,10 @@ os.makedirs('output', exist_ok=True)
 # List to store image bytes for the GIF
 frames = []
 
-for var in beta:
-    fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, var, F1star, U0, Theta0_U0, config)
+for var in Ly:
+    fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, var, Lk, beta, F1star, U0, Theta0_U0, config)
     
-    save_png = r'$\beta =$'+str(var)
+    save_png = r'$L_y =$'+str(var)
     ax.set_title(save_png)
     
     # Save figure to memory buffer

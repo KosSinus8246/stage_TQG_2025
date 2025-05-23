@@ -213,9 +213,12 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 	val_cNT = np.max(sigmaNT_matrix, axis=1)
 
 	val_c_ree = np.max(sigma_matrix_ree, axis=1)       
-	val_cNT_ree = np.max(sigmaNT_matrix_ree, axis=1)  
+	val_cNT_ree = np.max(sigmaNT_matrix_ree, axis=1)
+
 
 	print('COMPUTATION : OK')
+	
+	
 
 
 	##################################
