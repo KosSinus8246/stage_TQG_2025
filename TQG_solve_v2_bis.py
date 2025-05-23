@@ -8,7 +8,7 @@ from scipy.linalg import eig
 
 mpl.rcParams['font.size'] = 14
 mpl.rcParams['mathtext.fontset'] = 'stix'
-mpl.rcParams['font.family'] = 'STIXGeneral'
+mpl.rcParams['font.family'] = 'Courier New'
 mpl.rcParams['legend.edgecolor'] = '0'
 
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
@@ -23,7 +23,7 @@ print('-----------------------------------------------------')
 # @uthor : dimitri moreau 20/05/2025
 
 
-save_png = True  # create a folder im_para and a folder per
+save_png = False  # create a folder im_para and a folder per
 		 # experience with the "name_exp" variable
 		 # save also the used parameters and Real
 		 # and Imaginary sigma
@@ -50,7 +50,7 @@ beta = 0
 F1star = 0 # 1/Rd**2
 
 U0 = 1
-Theta0_U0 = 0.1 # ratio
+Theta0_U0 = 1 # ratio
 Theta0 = Theta0_U0 *U0
 
 
@@ -254,7 +254,7 @@ val_c = np.max(sigma_matrix, axis=1)
 val_cNT = np.max(sigmaNT_matrix, axis=1)
 
 val_c_ree = np.max(sigma_matrix_ree, axis=1)       
-val_cNT_ree = np.max(sigmaNT_matrix_ree, axis=1)  
+val_cNT_ree = np.max(sigmaNT_matrix_ree, axis=1)
 
 
 print('COMPUTATION : OK')
@@ -279,101 +279,16 @@ ax.set_xlabel(r'$k$')
 ax.set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$')
 ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
 ax.legend(fancybox=False)
+ax.axhline(0, color='gray', linestyle=':')
+ax.axvline(0, color='gray', linestyle=':')
 for spine in ax.spines.values():
     spine.set_linewidth(2)
 
 
-##################################
-# Plot 1
-
-'''
-
-fig, (ax) = plt.subplots(2,2,figsize=(15,10))
-
-
-fig.suptitle('Experience : '+name_exp)
-
-
-ax[0,0].axhline(0, color='gray', linestyle=':')
-ax[0,0].axvline(0, color='gray', linestyle=':')
-ax[0,0].tick_params(top=True,right=True,direction='in',size=4,width=1)
-
-ax[0,0].plot(k, val_c, 'k--', label='TQG')
-ax[0,0].plot(k, val_cNT, 'k-', label='QG')
-
-
-ax[0,0].legend(fancybox=False,loc='upper left')
 
 
 
 
-for spine in ax[0,0].spines.values():
-    spine.set_linewidth(2)
-    
-ax[0,0].set_xlabel(r'$k$',size=font_size)
-ax[0,0].set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$',size=font_size)
-ax[0,0].set_title(r'Growth rates',size=font_size)
-
-
-
-
-
-
-
-
-ax[1,0].plot(Un,y_l,'b')
-ax[1,0].tick_params(right=True, top=True,size=4,width=1,direction='in')
-ax[1,0].spines[['top','bottom','right','left']].set_linewidth(2)
-ax[1,0].set_ylabel(r'$y$',size=font_size)
-ax[1,0].set_xlabel(r'$\overline{U}$',size=font_size)
-ax[1,0].set_title('Velocity profile',size=font_size)
-ax[1,0].axhline(0, color='gray', linestyle=':')
-ax[1,0].axvline(0, color='gray', linestyle=':')
-ax[1,0].set_ylim(np.min(y_l), np.max(y_l))
-
-
-
-ax[0,1].scatter(val_c_ree,val_c,color='b',marker='*',s=50,alpha=0.6,edgecolor='k',label='TQG')
-ax[0,1].scatter(val_cNT_ree,val_cNT,color='b',marker='+',s=50,alpha=0.6,label='QG')
-ax[0,1].legend()
-ax[0,1].set_xlabel(r'$\mathbf{Re}\{\omega\}$',size=font_size)
-ax[0,1].set_ylabel(r'$\mathbf{Im}\{\omega\}$',size=font_size)
-ax[0,1].tick_params(right=True,top=True,direction='in',size=4,width=1)
-ax[0,1].axhline(0, color='gray', linestyle=':')
-ax[0,1].axvline(0, color='gray', linestyle=':')
-ax[0,1].set_title(r'Eigenfrequencies $\omega = c.k$')
-# Make the axes (spines) bold
-for spine in ax[0,1].spines.values():
-    spine.set_linewidth(2)
-    
-    
-    
-print('-----------------------------------------------------')
-
-
-borne = (1/4)*(Un*y_l)**2
-test_crit = Un * G12
-
-
-ax[1,1].axhline(0, color='gray', linestyle=':')
-ax[1,1].axvline(0, color='gray', linestyle=':')
-ax[1,1].plot(borne,y_l,'k--',label=r'Bound : $\frac{1}{4}.(\overline{U}.y)^2$')
-ax[1,1].plot(test_crit,y_l,'orange',label=r'$\overline{U}.\frac{\mathrm{d}\Theta}{\mathrm{d}y}$')
-ax[1,1].fill_betweenx(y_l,borne,test_crit,color='orange',alpha=0.3)
-ax[1,1].tick_params(left=True,right=True,top=True,bottom=True,labelleft=False,direction='in',size=4,width=1)
-ax[1,1].set_xlabel(r'Value proportional to $\overline{U}.y^2$',size=font_size)
-ax[1,1].legend(loc='best',fancybox=False)
-ax[1,1].set_title('Stability',size=font_size)
-ax[1,1].set_ylim(np.min(y_l), np.max(y_l))
-
-
-# Make the axes (spines) bold
-for spine in ax[1,1].spines.values():
-    spine.set_linewidth(2)
-
-'''
-
-plt.tight_layout()
 
 
 if save_png == True:
@@ -382,16 +297,16 @@ if save_png == True:
 
 
 
-# save outputs
-np.savetxt('im_para/'+name_exp+'/sigma_TQG.txt', 
-           np.column_stack([k, val_c, val_c_ree]),
-           fmt='%.18e', 
-           header='k	sigmaIm		sigmaRe')
-           
-np.savetxt('im_para/'+name_exp+'/sigma_QG.txt', 
-           np.column_stack([k, val_cNT, val_cNT_ree]),
-           fmt='%.18e', 
-           header='k	sigmaIm		sigmaRe')
+	# save outputs
+	np.savetxt('im_para/'+name_exp+'/sigma_TQG.txt', 
+		   np.column_stack([k, val_c, val_c_ree]),
+		   fmt='%.18e', 
+		   header='k	sigmaIm		sigmaRe')
+		   
+	np.savetxt('im_para/'+name_exp+'/sigma_QG.txt', 
+		   np.column_stack([k, val_cNT, val_cNT_ree]),
+		   fmt='%.18e', 
+		   header='k	sigmaIm		sigmaRe')
 
 
 
