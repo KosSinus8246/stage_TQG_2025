@@ -3,6 +3,11 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+import imageio.v2 as imageio
+from PIL import Image
+from io import BytesIO
+import os
+
 from tqdm import tqdm
 from scipy.linalg import eig
 
@@ -270,6 +275,131 @@ print('/////////////////////////////////////////////////////')
 
 
 print('PLOT...')
+
+
+# FOR TQG
+# 1. Find most unstable and less mode
+idx_max = np.argmax(np.imag(c))
+
+mode = X[:, idx_max]
+phi_y = mode[:Ny]
+theta_y = mode[Ny:]
+
+# 2. Time evolution
+omega = c[idx_max]
+times = np.linspace(0,20,50)
+
+# FOR NON-TQG
+idx_max_NT = np.argmax(np.imag(c_NT))
+
+mode_NT = X_NT[:, idx_max_NT]
+phi_y_NT = mode[:Ny]
+
+omega_NT = c_NT[idx_max_NT]
+
+
+
+phi_evol = []
+theta_evol = []
+
+phi_evol_NT = []
+
+
+
+# computes for each time the values of theta and phi
+for t in times:
+    phi_t = np.real(phi_y * np.exp(-1j * omega * t))  # Complex time evolution
+    phi_evol.append(phi_t)
+    
+    theta_t = np.real(theta_y * np.exp(-1j * omega * t))
+    theta_evol.append(theta_t)
+    
+    # NT
+    phi_t_NT = np.real(phi_y_NT * np.exp(-1j * omega_NT * t))  # Complex time evolution
+    phi_evol_NT.append(phi_t_NT)
+    
+
+phi_evol = np.array(phi_evol)
+theta_evol = np.array(theta_evol)
+phi_evol_NT = np.array(phi_evol_NT)
+
+    
+# Create output directory
+os.makedirs('output', exist_ok=True)
+
+# Store frames for animation
+frames = []
+
+# Create plot once (reuse figure to avoid flicker)
+#fig2, ax2 = plt.subplots(1, 1)
+
+fig2, ax2 = plt.subplots(1, 2,figsize=(15,6)) #sharey=True)
+
+for i in range(len(times)):
+    
+    fig2.suptitle('time : '+str(np.round(times[i],1)))
+    
+    ax2[0].plot(y_l, phi_evol[i], 'b-',label='TQG-Max')
+    ax2[0].plot(y_l, phi_evol_NT[i], 'b--',label='QG-Max')
+    ax2[1].plot(y_l, theta_evol[i], 'r-',label='TQG-Max')
+    
+    
+    ax2[1].set_xlabel(r'$y$')
+    ax2[1].set_ylim(-1.75, 1.75)
+    ax2[1].set_title(r'$\Theta(t,y)-$Modes')
+    ax2[1].axhline(0, color='gray', linestyle=':')
+    ax2[1].axvline(0, color='gray', linestyle=':')
+    ax2[1].tick_params(top=True, right=True, direction='in', size=4, width=1)
+    ax2[1].legend(fancybox=False)
+    
+    ax2[0].set_xlabel(r'$y$')
+    #ax2[0].set_ylabel('Amplitude')
+    ax2[0].set_title(r'$\phi(t,y)-$Modes')
+    ax2[0].set_ylim(-0.2, 0.2)
+    ax2[0].set_ylabel('Amplitude')
+    ax2[0].axhline(0, color='gray', linestyle=':')
+    ax2[0].axvline(0, color='gray', linestyle=':')
+    ax2[0].tick_params(top=True, right=True, direction='in', size=4, width=1)
+    ax2[0].legend(fancybox=False)
+    
+    for spine in ax2[1].spines.values():
+        spine.set_linewidth(2)
+        
+    for spine in ax2[0].spines.values():
+        spine.set_linewidth(2)
+
+
+    # Save current frame to memory
+    buf = BytesIO()
+    fig2.savefig(buf, format='png', dpi=100)
+    buf.seek(0)
+    image = imageio.imread(buf)
+    frames.append(image)
+    buf.close()
+    
+    ax2[0].clear()
+    ax2[1].clear()
+
+plt.close(fig2)
+
+
+
+
+# Save GIF
+frames_pil = [Image.fromarray(frame) for frame in frames]
+frames_pil[0].save('output/phi_theta_evolution.gif',
+    save_all=True,
+    append_images=frames_pil[1:],
+    duration=150,  # milliseconds per frame
+    loop=0
+)
+
+print("GIF saved to output/phi_theta_evolution.gif")
+
+
+
+
+
 
 fig, (ax) = plt.subplots(1,1)
 
