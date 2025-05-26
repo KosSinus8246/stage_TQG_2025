@@ -22,8 +22,11 @@ program tqg_solve
 
 
 
-    Ny = 5
+    !Ny = 60
+    !Nk = 51
+    Ny = 3
     Nk = 51
+
     dk = 0.1
     Lk = 0.1+dk*Nk
     Ly = 3.14
@@ -48,7 +51,7 @@ program tqg_solve
     B21 = 0
 
     ! filling vectors
-    do i=0,Ny
+    do i=1,Ny
         ! Arrays
         y_l(i+1) = y_l(i)+dy
         Un(i) = U0*exp(real(y_l(i)**2))
@@ -62,13 +65,13 @@ program tqg_solve
 
 
     ! main loop
-    do ik=0, Nk
+    do ik=1, Nk
 
         k(ik+1) = k(ik)+dk
         K2 = (k(ik)**2 + F1star)*dy**2
 
 
-        do i=0,Ny
+        do i=1,Ny
             ! B matrix
             B11(i,i) = -(2 + K2)
             B22(i,i) = 1
@@ -87,16 +90,31 @@ program tqg_solve
             A21(i,i) = -G12(i)
             A22(i,i) = Un(i)
 
-            ! Concatenate the 4 blocks into A
-            !A(0:Ny,0:Ny) = A11
-            !A(0:Ny,Ny:2*Ny) = A12
-            !A(Ny:2*Ny,0:Ny) = A21
-            !A(Ny:2*Ny,Ny:2*Ny) = A22
+
+            ! concatenate A
+            A(1:Ny,1:Ny) = A11
+            A(1:Ny,Ny+1:2*Ny) = A12
+            A(Ny+1:2*Ny,1:Ny) = A21
+            A(Ny+1:2*Ny,Ny+1:2*Ny) = A22
+
+            ! concatenate B
+
+            B(1:Ny,1:Ny) = B11
+            B(1:Ny,Ny+1:2*Ny) = B12
+            B(Ny+1:2*Ny,1:Ny) = B21
+            B(Ny+1:2*Ny,Ny+1:2*Ny) = B22
+
+
 
 
         end do
 
     end do
+
+
+
+
+
 
 
     print *, 'OK'
