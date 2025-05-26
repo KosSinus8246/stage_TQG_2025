@@ -1,3 +1,10 @@
+! @uthor : Dimitri Moreau 26/05/2025
+! ifx needed and LAPACK
+
+! Compilation : ifx TQG_solve_dmoreau.f90 -o tqg_solve -qmkl
+! Run : ./tqg_solve
+
+
 program tqg_solve
 	implicit none
 
@@ -108,17 +115,17 @@ program tqg_solve
 			B(1:Ny,Ny+1:2*Ny) = B12
 			B(Ny+1:2*Ny,1:Ny) = B21
 			B(Ny+1:2*Ny,Ny+1:2*Ny) = B22
-
-
-
-
+			
+			
+			
 
 		end do
+		
+		
 
 	end do
-
-
-
+	
+	
 	! Allocate LAPACK output and workspace
 	allocate(alphar(2*Ny), alphai(2*Ny), beta_eig(2*Ny))
 	lwork = 8 * 2*Ny
@@ -127,18 +134,19 @@ program tqg_solve
 
 	! LAPACK generalized eigensolver
     	call DGGEV('N', 'N', 2*Ny, A, 2*Ny, B, 2*Ny, alphar, alphai, beta_eig, &
-               dummyVL, 1, dummyVR, 1, work, lwork, info)
-               
-        if (info /= 0) then
-		print *, 'DGGEV failed, info = ', info
-	else
-		print *, 'Eigenvalues (lambda = alpha / beta):'
-		do i = 1, 2*Ny
-		    print *, 'λ(', i, ') = (', alphar(i), '+', alphai(i), 'i ) /', beta_eig(i)
-		end do
-    	end if
+	       dummyVL, 1, dummyVR, 1, work, lwork, info)
+	       
+	! alphai => ci and alphar => cr
+	
+	print *, alphai
 
 
+
+	
+
+
+
+	
 
 
 	print *, 'OK'
