@@ -28,6 +28,9 @@ program tqg_solve
 	
 	! storage for eigenvalues at each ik
 	real, allocatable :: eig_real(:,:), eig_imag(:,:)
+	
+	! final kci vector
+	real, allocatable :: sigmai(:)
 
 	print *, '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 	print *, '~~~~~~~~~~~~~~~TQG_SOLVE_2_BIS_FORTRAN~~~~~~~~~~~~~~~'
@@ -39,8 +42,11 @@ program tqg_solve
 
 	!Ny = 60
 	!Nk = 51
-	Ny = 8
-	Nk = 3
+	Ny = 60
+	Nk = 51
+	
+	! to avoid problem of out of bounds
+	Ny = Ny+1
 
 	dk = 0.1
 	Lk = 0.1+dk*Nk
@@ -66,6 +72,9 @@ program tqg_solve
     	allocate(eig_real(2*Ny, Nk), eig_imag(2*Ny, Nk))
 	lwork = 8 * 2*Ny
 	allocate(work(lwork))
+	
+	! for the final vetor
+	allocate(sigmai(Nk))
 	
 	
 	
@@ -101,14 +110,14 @@ program tqg_solve
 			B11(i,i) = -(2 + K2)
 			B22(i,i) = 1
 
-			if (i>0) B11(i,i-1) = 1
-			if (i < Ny-1) B11(i,i+1) = 1
+			if (i>1) B11(i,i-1) = 1
+			if (i < Ny) B11(i,i+1) = 1
 
 			! A matrix
 
 			A11(i,i) = -Un(i) * (2+K2) + F11(i)
-			if (i>0) A11(i,i-1) = Un(i)
-			if (i<Ny-1) A11(i,i+1) = Un(i)
+			if (i>1) A11(i,i-1) = Un(i)
+			if (i<Ny) A11(i,i+1) = Un(i)
 
 
 			A12(i,i) = -Vn(i)
@@ -133,16 +142,35 @@ program tqg_solve
 		B(Ny+1:2*Ny,1:Ny) = B21
 		B(Ny+1:2*Ny,Ny+1:2*Ny) = B22
 	
+		! BC's
+		A(2*Ny, 2*Ny) = 0.0
+		B(2*Ny, 2*Ny) = 0.0
+		
+		A11(1,2) = 2.0*A11(1,2)
+		B11(1,2) = 2.0*B11(1,2)
+		
+		A11(Ny,Ny) = 0.0
+		B11(Ny,Ny) = 0.0
+
+		
+		
 		
 		
 	! LAPACK generalized eigensolver
     	call DGGEV('N', 'N', 2*Ny, A, 2*Ny, B, 2*Ny, alphar, alphai, beta_eig, &
 	       dummyVL, 1, dummyVR, 1, work, lwork, info)
+	      
 	       
 	! store datas into arrays
-	eig_real(:, ik) = alphar
-        eig_imag(:, ik) = alphai
-		
+	! LAPACK don't returns alpha/beta_eig and we
+	! this to fit the scipy.eig version
+	if (beta_eig(i) /= 0.0) then
+	    eig_real(i, ik) = alphar(i)/beta_eig(i)
+	    eig_imag(i, ik) = alphai(i)/beta_eig(i)
+	else
+	    eig_real(i, ik) = 0.0
+	    eig_imag(i, ik) = 0.0
+	end if
 		
 
 	end do
@@ -153,22 +181,13 @@ program tqg_solve
 	
 	
 	do i=1,Nk
-		print *, 'ci for k =', i
-		!print *, i
-		print *, eig_imag(:,i)
+		
+		print *, maxval(eig_imag(:,i))
 		
 		
 	end do
 		
-	
 
-
-
-
-
-	print *, 'OK'
-
-	print *, '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 
 
 
