@@ -49,6 +49,7 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 		Un = U0*np.exp(-y_l**2)
 		G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Ly**2)) # dThetabar/dy
 	
+	
 	else:
 		import sys
 		sys.exit("ERROR : NO CONFIGURATION")
@@ -227,6 +228,7 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 
 
 	print('/////////////////////////////////////////////////////')
+
 	
 	
 
@@ -252,7 +254,7 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 	
 	
 	# option
-	return fig, (ax)
+	return Un, G12, fig, (ax)
 	
 	print('END')
 	print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')

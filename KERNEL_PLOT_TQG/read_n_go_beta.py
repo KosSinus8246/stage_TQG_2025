@@ -36,7 +36,7 @@ Ny, Nk = 60, 51
 dk = 0.1
 ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
 
-beta = np.round(np.linspace(0, 2, 15), 3) 
+beta = np.round(np.linspace(0, 3, 15), 3) 
 F1star = 0
 U0 = 1
 
@@ -50,7 +50,7 @@ os.makedirs('output', exist_ok=True)
 frames = []
 
 for var in beta:
-    fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, var, F1star, U0, Theta0_U0, config)
+    Un, G12, fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, var, F1star, U0, Theta0_U0, config)
     
     save_png = r'$\beta =$'+str(var)
     ax.set_title(save_png)
@@ -98,5 +98,50 @@ with open('output/variables_used_'+var_title+'_'+config+'.txt', 'w') as file:
     file.write(f"ratio_Theta0_U0 = {Theta0_U0}\n")
     file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
+
+
+
+
+
+y_l = np.linspace(ymin,Ly,Ny)
+crit, borne =Un*G12, 0.25*(Un*y_l)**2
+
+fig2, (ax2) = plt.subplots(1,2, figsize = (15,6),sharey=True)
+
+ax2[0].plot(Un,y_l,'b')
+ax2[0].tick_params(top=True,right=True,direction='in',size=4,width=1)
+ax2[0].axhline(0, color='gray', linestyle=':')
+ax2[0].axvline(0, color='gray', linestyle=':')
+#ax2.set_ylim(-0.01, 0.5)
+ax2[0].set_title('Velocity profile')
+ax2[0].set_ylabel(r'$y$')
+ax2[0].set_xlabel(r'$\overline{U}_n$')
+	
+	
+for spine in ax2[0].spines.values():
+    spine.set_linewidth(2)
+    
+    
+
+ax2[1].plot(crit,y_l,'k',label=r'$\overline{U}_n.\frac{\mathrm{d}\overline{\Theta}}{\mathrm{d}y}$')
+ax2[1].plot(borne,y_l,'k--',label=r'$\frac{1}{4}.\left(\overline{U}_n.y\right)^2$')
+ax2[1].fill_betweenx(y_l,crit,borne,color='orange',alpha=0.3)
+ax2[1].tick_params(top=True,right=True,direction='in',size=4,width=1)
+
+ax2[1].axhline(0, color='gray', linestyle=':')
+ax2[1].axvline(0, color='gray', linestyle=':')
+ax2[1].set_title('Stability')
+ax2[1].legend(fancybox=False,loc='upper left')
+ax2[1].set_xlabel(r'$\propto~\left(\overline{U}_n.y\right)^2$')
+#ax2.set_ylim(-0.01, 0.5)
+	
+	
+for spine in ax2[1].spines.values():
+    spine.set_linewidth(2)
+
+
+plt.savefig('output/stab_'+var_title+'_'+config+'.png',dpi=300)
+
 print('Variables saved')
+
 
