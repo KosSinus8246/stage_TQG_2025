@@ -182,7 +182,8 @@ program tqg_solve
 	
 	do i=1,Nk
 		
-		print *, maxval(eig_imag(:,i))
+		
+		print *, maxval(k(i)*eig_imag(:,i))
 		
 		
 	end do
