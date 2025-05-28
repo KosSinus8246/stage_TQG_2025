@@ -31,7 +31,7 @@ print('-----------------------------------------------------')
 
 
 
-def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,config):
+def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, Theta0_U0,config):
 
 
 	font_size = 17
@@ -45,9 +45,10 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 	if config == 'conf_1':
 		Un = U0*np.exp(-y_l**2)
 		G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
+		Lstar = None
 	elif config == 'conf_2':
 		Un = U0*np.exp(-y_l**2)
-		G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Ly**2)) # dThetabar/dy
+		G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Lstar**2)) # dThetabar/dy
 	
 	
 	else:
@@ -215,6 +216,9 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, Theta0_U0,c
 
 	val_c_ree = np.max(sigma_matrix_ree, axis=1)       
 	val_cNT_ree = np.max(sigmaNT_matrix_ree, axis=1)
+	
+	
+	print(sigmaNT_matrix.shape)
 
 
 	print('COMPUTATION : OK')

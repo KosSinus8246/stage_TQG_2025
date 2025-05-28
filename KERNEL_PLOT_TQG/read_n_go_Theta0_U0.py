@@ -36,6 +36,7 @@ config = 'conf_2'
 Ny, Nk = 60, 51
 dk = 0.1
 ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
+Lstar = 2.
 
 beta = 0 
 F1star = 0
@@ -50,7 +51,7 @@ os.makedirs('output', exist_ok=True)
 frames = []
 
 for var in Theta0_U0:
-    Un, G12, fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, var,config)
+    Un, G12, fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, var,config)
     
     save_png = r'$\Theta_0/U_0 =$'+str(var)
     ax.set_title(save_png)
@@ -98,6 +99,7 @@ with open('output/variables_used_'+var_title+'_'+config+'.txt', 'w') as file:
     file.write(f"beta = {beta}\n")
     file.write(f"U0 = {U0}\n")
     file.write(f"ratio_Theta0_U0 = {Theta0_U0}\n")
+    file.write(f"Lstar = {Lstar}\n")
     file.write('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n')
 
 

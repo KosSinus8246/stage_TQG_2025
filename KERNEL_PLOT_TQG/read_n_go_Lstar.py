@@ -28,16 +28,16 @@ print('-----------------------------------------------------')
 
 
 
-var_title = 'beta'
+var_title = 'Lstar'
 config = 'conf_2'
 
 
 Ny, Nk = 60, 51
 dk = 0.1
-ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
-Lstar = 2.
+ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi , 0.1+dk*Nk
+Lstar = np.round(np.linspace(0.1, 4., 15), 3)
 
-beta = np.round(np.linspace(0, 3, 15), 3) 
+beta = 0
 F1star = 0
 U0 = 1
 
@@ -50,10 +50,10 @@ os.makedirs('output', exist_ok=True)
 # List to store image bytes for the GIF
 frames = []
 
-for var in beta:
-    Un, G12, fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, var, F1star, U0, Theta0_U0, config)
+for var in Lstar:
+    Un, G12, fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, var, beta, F1star, U0, Theta0_U0, config)
     
-    save_png = r'$\beta =$'+str(var)
+    save_png = r'$L_* =$'+str(var)
     ax.set_title(save_png)
     
     # Save figure to memory buffer
@@ -105,8 +105,9 @@ with open('output/variables_used_'+var_title+'_'+config+'.txt', 'w') as file:
 
 
 
+
 y_l = np.linspace(ymin,Ly,Ny)
-crit, borne =Un*G12, 0.25*(Un*y_l)**2
+
 
 fig2, (ax2) = plt.subplots(1,2, figsize = (15,6),sharey=True)
 
@@ -125,9 +126,11 @@ for spine in ax2[0].spines.values():
     
     
 
-ax2[1].plot(crit,y_l,'k',label=r'$\overline{U}_n.\frac{\mathrm{d}\overline{\Theta}}{\mathrm{d}y}$')
-ax2[1].plot(borne,y_l,'k--',label=r'$\frac{1}{4}.\left(\overline{U}_n.y\right)^2$')
-ax2[1].fill_betweenx(y_l,crit,borne,color='orange',alpha=0.3)
+ax2[1].plot(Un*G12,y_l,'k',label=r'$\overline{U}_n.\frac{\mathrm{d}\overline{\Theta}}{\mathrm{d}y}$')
+
+
+ax2[1].plot(0.25*(Un*y_l)**2,y_l,'k--',label=r'$\frac{1}{4}.\left(\overline{U}_n.y\right)^2$')
+ax2[1].fill_betweenx(y_l,Un*G12,0.25*(Un*y_l)**2,color='orange',alpha=0.3)
 ax2[1].tick_params(top=True,right=True,direction='in',size=4,width=1)
 
 ax2[1].axhline(0, color='gray', linestyle=':')
@@ -144,6 +147,8 @@ for spine in ax2[1].spines.values():
 
 plt.savefig('output/stab_'+var_title+'_'+config+'.png',dpi=300)
 
-print('Variables saved')
 
+
+
+print('Variables saved')
 
