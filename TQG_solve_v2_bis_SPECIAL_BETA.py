@@ -48,10 +48,10 @@ dk = 0.1
 ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
 dy = (Ly - ymin)/Ny
 
-y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,Nk*dk,dk)
+y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,3,dk)
 
 
-beta = np.round(np.linspace(0, 3, 15), 3)
+beta = np.round(np.linspace(0, 1, 15), 3)
 #beta = 0
 F1star = 0 # 1/Rd**2
 
@@ -62,9 +62,9 @@ Theta0 = Theta0_U0 *U0
 
 
 contourf_beta_k_matrix = np.zeros((len(beta),len(k)))
+contourf_beta_k_matrix_NT = np.zeros((len(beta),len(k)))
 
 
-plt.figure()
 
 ix = 0
 for var in beta:
@@ -243,8 +243,8 @@ for var in beta:
 	val_cNT_ree = np.max(sigmaNT_matrix_ree, axis=1)
 	
 	
-	plt.plot(val_c)
 	contourf_beta_k_matrix[ix,:] = val_c
+	contourf_beta_k_matrix_NT[ix,:] = val_cNT
 
 	
 	
@@ -267,15 +267,17 @@ print('/////////////////////////////////////////////////////')
 
 print('PLOT...')
 
-fig, (ax) = plt.subplots(1,1)
-cs = ax.contour(k,beta,contourf_beta_k_matrix,colors='k')
-ax.clabel(cs)
+fig, (ax) = plt.subplots(1,2,figsize=(15,6))
+cs = ax[0].contour(k,beta,contourf_beta_k_matrix,colors='k')#levels=[0.05,0.1,0.15,0.2])
+ax[0].clabel(cs)
+ax[0].set_xlabel(r'$k$')
+ax[0].set_ylabel(r'$\beta$')
+ax[0].set_title('TQG')
 
-ax.set_xlabel(r'$k$')
-ax.set_ylabel(r'$\beta$')
-
-
-
+cs = ax[1].contour(k,beta,contourf_beta_k_matrix_NT,colors='k')
+ax[1].clabel(cs)
+ax[1].set_xlabel(r'$k$')
+ax[1].set_title('QG')
 
 
 plt.show()
