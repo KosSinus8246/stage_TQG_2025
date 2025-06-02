@@ -31,7 +31,7 @@ print('-----------------------------------------------------')
 
 
 
-def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, Theta0_U0,config):
+def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, Theta0_U0, config):
 
 
 	font_size = 17
@@ -219,6 +219,9 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, Thet
 	
 	
 	print(sigmaNT_matrix.shape)
+	
+	max_sigma, max_sigmaNT = np.nanmax(val_c), np.nanmax(val_cNT)
+	
 
 
 	print('COMPUTATION : OK')
@@ -253,34 +256,19 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, Thet
 	
 	
 	
+	
+	
 	for spine in ax.spines.values():
 	    spine.set_linewidth(2)
 	
 	
-	# option
-	return Un, G12, fig, (ax)
+
+	return Un, G12, fig, (ax), max_sigma, max_sigmaNT 
 	
 	print('END')
 	print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
 
-
-# EXAMPLE
-
-'''
-Ny, Nk = 60, 51
-dk = 0.1
-ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
-
-
-beta = 0 
-F1star = 0 # 1/Rd**2
-
-U0 = 1
-
-compute_sigmas(False, Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, 1)
-compute_sigmas(False, Ny, Nk, dk, ymin, kmin, Ly, Lk, beta, F1star, U0, 0.1)
-plt.show()'''
 
 
 

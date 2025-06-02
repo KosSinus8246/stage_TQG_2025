@@ -36,7 +36,7 @@ config = 'conf_2'
 Ny, Nk = 60, 51
 dk = 0.1
 ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
-Lstar = 2.
+Lstar = 0.1
 
 beta = 0 
 F1star = 0
@@ -51,7 +51,7 @@ os.makedirs('output', exist_ok=True)
 frames = []
 
 for var in Theta0_U0:
-    Un, G12, fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, var,config)
+    Un, G12, fig, (ax), max_sigma, max_sigmaNT = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, var,config)
     
     save_png = r'$\Theta_0/U_0 =$'+str(var)
     ax.set_title(save_png)

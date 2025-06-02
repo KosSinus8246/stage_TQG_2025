@@ -44,14 +44,21 @@ U0 = 1
 Theta0_U0 = 1
 
 
+
+# stack maximas into a matrix
+max_sigmas = np.zeros_like(Lstar)
+max_sigmas_NT = np.zeros_like(Lstar)
+
+
 # Ensure output dir exists
 os.makedirs('output', exist_ok=True)
 
 # List to store image bytes for the GIF
 frames = []
 
+i = 0
 for var in Lstar:
-    Un, G12, fig, (ax) = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, var, beta, F1star, U0, Theta0_U0, config)
+    Un, G12, fig, (ax), max_sigma, max_sigmaNT = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, var, beta, F1star, U0, Theta0_U0, config)
     
     save_png = r'$L_* =$'+str(var)
     ax.set_title(save_png)
@@ -64,6 +71,18 @@ for var in Lstar:
     frames.append(image)
     buf.close()
     plt.close(fig)
+    
+    
+    max_sigmas[i] = max_sigma
+    max_sigmas_NT[i] = max_sigmaNT
+    
+    i=i+1
+    
+   
+    
+    
+    
+
 
 
 
@@ -111,10 +130,13 @@ y_l = np.linspace(ymin,Ly,Ny)
 
 fig2, (ax2) = plt.subplots(1,2, figsize = (15,6),sharey=True)
 
-ax2[0].plot(Un,y_l,'b')
-ax2[0].tick_params(top=True,right=True,direction='in',size=4,width=1)
 ax2[0].axhline(0, color='gray', linestyle=':')
 ax2[0].axvline(0, color='gray', linestyle=':')
+
+
+ax2[0].plot(Un,y_l,'b')
+ax2[0].tick_params(top=True,right=True,direction='in',size=4,width=1)
+
 #ax2.set_ylim(-0.01, 0.5)
 ax2[0].set_title('Velocity profile')
 ax2[0].set_ylabel(r'$y$')
@@ -124,6 +146,10 @@ ax2[0].set_xlabel(r'$\overline{U}_n$')
 for spine in ax2[0].spines.values():
     spine.set_linewidth(2)
     
+
+
+ax2[1].axhline(0, color='gray', linestyle=':')
+ax2[1].axvline(0, color='gray', linestyle=':')
     
 
 ax2[1].plot(Un*G12,y_l,'k',label=r'$\overline{U}_n.\frac{\mathrm{d}\overline{\Theta}}{\mathrm{d}y}$')
@@ -133,8 +159,7 @@ ax2[1].plot(0.25*(Un*y_l)**2,y_l,'k--',label=r'$\frac{1}{4}.\left(\overline{U}_n
 ax2[1].fill_betweenx(y_l,Un*G12,0.25*(Un*y_l)**2,color='orange',alpha=0.3)
 ax2[1].tick_params(top=True,right=True,direction='in',size=4,width=1)
 
-ax2[1].axhline(0, color='gray', linestyle=':')
-ax2[1].axvline(0, color='gray', linestyle=':')
+
 ax2[1].set_title('Stability')
 ax2[1].legend(fancybox=False,loc='upper left')
 ax2[1].set_xlabel(r'$\propto~\left(\overline{U}_n.y\right)^2$')
@@ -146,6 +171,48 @@ for spine in ax2[1].spines.values():
 
 
 plt.savefig('output/stab_'+var_title+'_'+config+'.png',dpi=300)
+
+
+
+
+
+# derivative of sigmas_max
+deriv = np.zeros_like(max_sigmas)
+deriv_NT = np.zeros_like(max_sigmas)
+
+dLstar = (Lstar[-1] - Lstar[0])/(len(Lstar))
+
+
+for i in range(len(deriv)-1):
+	deriv[i] = (max_sigmas[i+1] - max_sigmas[-1])/dLstar
+	deriv_NT[i] = (max_sigmas_NT[i+1] - max_sigmas_NT[-1])/dLstar
+
+
+
+
+fig3, (ax3) = plt.subplots(1,1)
+
+ax3.axhline(0, color='gray', linestyle=':')
+ax3.axvline(0, color='gray', linestyle=':')
+
+ax3.plot(Lstar, deriv, 'k--',label='TQG')
+ax3.plot(Lstar, deriv_NT, 'k-',label='QG')
+ax3.tick_params(top=True,right=True,direction='in',size=4,width=1)
+ax3.set_xlabel(r'$L_*$')
+ax3.legend(fancybox=False,loc='lower right')
+
+ax3.set_ylabel(r'$\mathrm{d}\sigma/\mathrm{d}L_*$')
+
+ax3.set_title('Behaviour of $\sigma_\mathbf{max}$')
+
+
+for spine in ax3.spines.values():
+    spine.set_linewidth(2)
+
+
+plt.tight_layout()
+
+plt.savefig('output/deriv.png',dpi=100)
 
 
 
