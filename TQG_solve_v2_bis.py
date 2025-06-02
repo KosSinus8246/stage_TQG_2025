@@ -121,6 +121,8 @@ sigmaNT_matrix = np.zeros((len(k),Ny))
 sigma_matrix_ree = np.zeros((len(k),2*Ny))
 sigmaNT_matrix_ree = np.zeros((len(k),Ny))
 
+sigma_tot = np.zeros(Ny*Ny) # for the eigenfrequencies later
+
 # loop for each case of k
 for ik in tqdm(range(len(k))):
 
@@ -237,6 +239,8 @@ for ik in tqdm(range(len(k))):
 	
 	sigma_ree = np.real(c) * k[ik]
 	sigma_matrix_ree[ik,:] = sigma_ree
+	
+	sigma_tot = c * k[ik]
 
 
 
@@ -286,7 +290,9 @@ phi_y = mode[:Ny]
 theta_y = mode[Ny:]
 
 # 2. Time evolution
-omega = c[idx_max]
+omega_phi = sigma_tot[:Ny]
+omega_theta = sigma_tot[Ny:]
+
 times = np.linspace(0,20,50)
 
 # FOR NON-TQG
@@ -308,10 +314,10 @@ phi_evol_NT = []
 
 # computes for each time the values of theta and phi
 for t in times:
-    phi_t = np.real(phi_y * np.exp(-1j * omega * t))  # Complex time evolution
+    phi_t = np.real(phi_y * np.exp(-1j * omega_phi * t))  # Complex time evolution
     phi_evol.append(phi_t)
     
-    theta_t = np.real(theta_y * np.exp(-1j * omega * t))
+    theta_t = np.real(theta_y * np.exp(-1j * omega_theta * t))
     theta_evol.append(theta_t)
     
     # NT
@@ -355,7 +361,7 @@ for i in range(len(times)):
     ax2[0].set_xlabel(r'$y$')
     #ax2[0].set_ylabel('Amplitude')
     ax2[0].set_title(r'$\phi(t,y)-$Modes')
-    ax2[0].set_ylim(-0.2, 0.2)
+    ax2[0].set_ylim(-0.75, 0.75)
     ax2[0].set_ylabel('Amplitude')
     ax2[0].axhline(0, color='gray', linestyle=':')
     ax2[0].axvline(0, color='gray', linestyle=':')
@@ -384,17 +390,17 @@ plt.close(fig2)
 
 
 
+if save_png==True:
+	# Save GIF
+	frames_pil = [Image.fromarray(frame) for frame in frames]
+	frames_pil[0].save('output/phi_theta_evolution.gif',
+	    save_all=True,
+	    append_images=frames_pil[1:],
+	    duration=150,  # milliseconds per frame
+	    loop=0
+	)
 
-# Save GIF
-frames_pil = [Image.fromarray(frame) for frame in frames]
-frames_pil[0].save('output/phi_theta_evolution.gif',
-    save_all=True,
-    append_images=frames_pil[1:],
-    duration=150,  # milliseconds per frame
-    loop=0
-)
-
-print("GIF saved to output/phi_theta_evolution.gif")
+	print("GIF saved to output/phi_theta_evolution.gif")
 
 
 
