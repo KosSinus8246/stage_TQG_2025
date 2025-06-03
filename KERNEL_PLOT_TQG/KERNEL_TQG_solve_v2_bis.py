@@ -220,6 +220,7 @@ def compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, Thet
 	
 	print(sigmaNT_matrix.shape)
 	
+	# Take the maximal value of growth rates for each k
 	max_sigma, max_sigmaNT = np.nanmax(val_c), np.nanmax(val_cNT)
 	
 

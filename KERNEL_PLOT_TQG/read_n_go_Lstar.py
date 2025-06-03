@@ -201,7 +201,7 @@ ax3.tick_params(top=True,right=True,direction='in',size=4,width=1)
 ax3.set_xlabel(r'$L_*$')
 ax3.legend(fancybox=False,loc='lower right')
 
-ax3.set_ylabel(r'$\mathrm{d}\sigma/\mathrm{d}L_*$')
+ax3.set_ylabel(r'$\mathrm{d}\sigma_\mathbf{max}/\mathrm{d}L_*$')
 
 ax3.set_title('Behaviour of $\sigma_\mathbf{max}$')
 
@@ -212,7 +212,7 @@ for spine in ax3.spines.values():
 
 plt.tight_layout()
 
-plt.savefig('output/deriv.png',dpi=100)
+plt.savefig('output/deriv_'+var_title+'_'+config+'.png',dpi=100)
 
 
 

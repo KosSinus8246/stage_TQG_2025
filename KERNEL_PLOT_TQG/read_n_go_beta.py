@@ -44,11 +44,18 @@ U0 = 1
 Theta0_U0 = 1
 
 
+# stack maximas into a matrix
+max_sigmas = np.zeros_like(beta)
+max_sigmas_NT = np.zeros_like(beta)
+
+
 # Ensure output dir exists
 os.makedirs('output', exist_ok=True)
 
 # List to store image bytes for the GIF
 frames = []
+
+i = 0
 
 for var in beta:
     Un, G12, fig, (ax), max_sigma, max_sigmaNT = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, var, F1star, U0, Theta0_U0, config)
@@ -64,6 +71,13 @@ for var in beta:
     frames.append(image)
     buf.close()
     plt.close(fig)
+    
+    
+    max_sigmas[i] = max_sigma
+    max_sigmas_NT[i] = max_sigmaNT
+    
+    i = i+1
+
 
 
 
@@ -143,6 +157,54 @@ for spine in ax2[1].spines.values():
 
 
 plt.savefig('output/stab_'+var_title+'_'+config+'.png',dpi=300)
+
+
+
+
+# derivative of sigmas_max
+deriv = np.zeros_like(max_sigmas)
+deriv_NT = np.zeros_like(max_sigmas)
+
+dbeta = (beta[-1] - beta[0])/(len(beta))
+
+
+
+for i in range(len(deriv)-1):
+	deriv[i] = (max_sigmas[i+1] - max_sigmas[-1])/dbeta
+	deriv_NT[i] = (max_sigmas_NT[i+1] - max_sigmas_NT[-1])/dbeta
+
+
+
+
+fig3, (ax3) = plt.subplots(1,1)
+
+ax3.axhline(0, color='gray', linestyle=':')
+ax3.axvline(0, color='gray', linestyle=':')
+
+ax3.plot(beta, deriv, 'k--',label='TQG')
+ax3.plot(beta, deriv_NT, 'k-',label='QG')
+ax3.tick_params(top=True,right=True,direction='in',size=4,width=1)
+ax3.set_xlabel(r'$\beta$')
+ax3.legend(fancybox=False,loc='lower right')
+
+ax3.set_ylabel(r'$\mathrm{d}\sigma_\mathbf{max}/\mathrm{d}\beta$')
+
+ax3.set_title('Behaviour of $\sigma_\mathbf{max}$')
+
+
+for spine in ax3.spines.values():
+    spine.set_linewidth(2)
+
+
+plt.tight_layout()
+
+plt.savefig('output/deriv_'+var_title+'_'+config+'.png',dpi=100)
+
+
+
+
+
+
 
 print('Variables saved')
 

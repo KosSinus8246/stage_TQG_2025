@@ -29,7 +29,7 @@ print('-----------------------------------------------------')
 
 
 var_title = 'Theta0_U0'
-config = 'conf_2'
+config = 'conf_1'
 
 
 
@@ -44,11 +44,21 @@ U0 = 1
 
 Theta0_U0 = np.round(np.linspace(0., 2., 15), 3)
 
+
+
+# stack maximas into a matrix
+max_sigmas = np.zeros_like(Theta0_U0)
+max_sigmas_NT = np.zeros_like(Theta0_U0)
+
+
+
 # Ensure output dir exists
 os.makedirs('output', exist_ok=True)
 
 # List to store image bytes for the GIF
 frames = []
+
+i = 0
 
 for var in Theta0_U0:
     Un, G12, fig, (ax), max_sigma, max_sigmaNT = compute_sigmas(Ny, Nk, dk, ymin, kmin, Ly, Lk, Lstar, beta, F1star, U0, var,config)
@@ -64,6 +74,11 @@ for var in Theta0_U0:
     frames.append(image)
     buf.close()
     plt.close(fig)
+    
+    max_sigmas[i] = max_sigma
+    max_sigmas_NT[i] = max_sigmaNT
+    
+    i = i+1
 
 
 
@@ -142,6 +157,49 @@ for spine in ax2[1].spines.values():
 
 
 plt.savefig('output/stab_'+var_title+'_'+config+'.png',dpi=300)
+
+
+
+
+# derivative of sigmas_max
+deriv = np.zeros_like(max_sigmas)
+deriv_NT = np.zeros_like(max_sigmas)
+
+dTheta0_U0 = (Theta0_U0[-1] - Theta0_U0[0])/(len(Theta0_U0))
+
+
+
+for i in range(len(deriv)-1):
+	deriv[i] = (max_sigmas[i+1] - max_sigmas[-1])/dTheta0_U0
+	deriv_NT[i] = (max_sigmas_NT[i+1] - max_sigmas_NT[-1])/dTheta0_U0
+
+
+
+
+fig3, (ax3) = plt.subplots(1,1)
+
+ax3.axhline(0, color='gray', linestyle=':')
+ax3.axvline(0, color='gray', linestyle=':')
+
+ax3.plot(Theta0_U0, deriv, 'k--',label='TQG')
+ax3.plot(Theta0_U0, deriv_NT, 'k-',label='QG')
+ax3.tick_params(top=True,right=True,direction='in',size=4,width=1)
+ax3.set_xlabel(r'$\Theta_0/U_0$')
+ax3.legend(fancybox=False,loc='lower right')
+
+ax3.set_ylabel(r'$\mathrm{d}\sigma_\mathbf{max}/\mathrm{d}(\Theta_0/U_0)$')
+
+ax3.set_title('Behaviour of $\sigma_\mathbf{max}$')
+
+
+for spine in ax3.spines.values():
+    spine.set_linewidth(2)
+
+
+plt.tight_layout()
+
+plt.savefig('output/deriv_'+var_title+'_'+config+'.png',dpi=100)
+
 
 
 
