@@ -29,7 +29,7 @@ print('-----------------------------------------------------')
 
 
 var_title = 'beta'
-config = 'conf_1'
+config = 'conf_2'
 
 
 Ny, Nk = 60, 51
