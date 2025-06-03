@@ -1,5 +1,6 @@
 The version 2 is the actual version of TQG solve (@uthor : Dimitri Moreau). This is a python version
 of the 2 Fotran77 codes that are also in the repository (@uthor : Xavier Carton)
+The f90 version is coded by analogy to TQG solve python (@uthor : Dimitri Moreau)
 
 The bis in the name means that the script solves QG and TQG cases.
 
@@ -12,3 +13,8 @@ force the order 0 or 1.
 ifx -O0 myfortran_file.f -o my_program
 2) Run
 ./vpjt > output.txt
+
+To compile the f90 files
+
+1) ifx program.f90 -o program -qmkl
+2) ./ program
