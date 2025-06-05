@@ -58,7 +58,7 @@ beta = np.round(np.linspace(0, 3, 15), 3)
 F1star = 0 # 1/Rd**2
 
 U0 = 1
-Theta0_U0 = 1 # ratio
+Theta0_U0 = 1e-9 # ratio
 Theta0 = Theta0_U0 *U0
 
 
