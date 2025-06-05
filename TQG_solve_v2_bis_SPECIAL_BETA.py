@@ -28,14 +28,9 @@ print('-----------------------------------------------------')
 # @uthor : dimitri moreau 20/05/2025
 
 
-save_png = False  # create a folder im_para and a folder per
-		 # experience with the "name_exp" variable
-		 # save also the used parameters and Real
-		 # and Imaginary sigma
 font_size = 17
 choice_plot_name = 'max_sigma_im'
 
-name_exp = input('Name of the experience ?')
 
 print('-----------------------------------------------------')
 
@@ -58,7 +53,7 @@ beta = np.round(np.linspace(0, 3, 15), 3)
 F1star = 0 # 1/Rd**2
 
 U0 = 1
-Theta0_U0 = 1e-9 # ratio
+Theta0_U0 = 1e-13 # ratio
 Theta0 = Theta0_U0 *U0
 
 
@@ -284,12 +279,12 @@ res = np.arange(0.0,0.5,0.05)
 
 
 fig, (ax) = plt.subplots(1,2,figsize=(13,6))
-cs = ax[0].contour(k,beta,contourf_beta_k_matrix,res,cmap='Blues')
+cs = ax[0].contour(k,beta,contourf_beta_k_matrix,res,colors='k',linestyles='--')
 #ax[0].contourf(k,beta,contourf_beta_k_matrix,res,cmap='Grays')
 ax[0].clabel(cs,fontsize=15,colors='k')
 ax[0].set_xlabel(r'$k$')
 ax[0].set_ylabel(r'$\beta$')
-ax[0].set_title(r'Contours : $\sigma_\mathbf{TQG}$')
+ax[0].set_title(r'$\sigma-$Contours : TQG')
 ax[0].tick_params(top=True,right=True,direction='in',size=4,width=1)
 
 ax[0].set_ylim(np.min(beta), np.max(beta))
@@ -299,11 +294,11 @@ for spine in ax[0].spines.values():
     spine.set_linewidth(2)
 
 
-cs = ax[1].contour(k,beta,contourf_beta_k_matrix_NT,res,cmap='Oranges')
+cs = ax[1].contour(k,beta,contourf_beta_k_matrix_NT,res,colors='k',linestyles='-')
 #ax[1].contourf(k,beta,contourf_beta_k_matrix_NT,res,cmap='Grays')
 ax[1].clabel(cs,fontsize=15,colors='k')
 ax[1].set_xlabel(r'$k$')
-ax[1].set_title(r'Contours : $\sigma_\mathbf{QG}$')
+ax[1].set_title(r'$\sigma-$Contours : QG')
 ax[1].tick_params(top=True,right=True, labelleft=False,direction='in',size=4,width=1)
 for spine in ax[1].spines.values():
     spine.set_linewidth(2)
@@ -318,11 +313,12 @@ ax[1].set_xlim(0.1, np.max(k))
 
 
 
+'''
 
 fig, (ax) = plt.subplots(1,1)
 
-cs = ax.contour(k,beta,contourf_beta_k_matrix,res,colors='C0',alpha=0.6)
-cs2 = ax.contour(k,beta,contourf_beta_k_matrix_NT,res,colors='C1',alpha=0.6)
+cs = ax.contour(k,beta,contourf_beta_k_matrix,res,colors='k',linestyles='--')
+cs2 = ax.contour(k,beta,contourf_beta_k_matrix_NT,res,colors='k',linestyles='-')
 
 ax.clabel(cs,fontsize=15)
 ax.clabel(cs2,fontsize=15)
@@ -335,14 +331,11 @@ ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
 for spine in ax.spines.values():
     spine.set_linewidth(2)
 
-from matplotlib.patches import Patch
-legend_elements = [Patch(facecolor='C0', edgecolor='k',alpha=0.6, label='TQG'),
-    Patch(facecolor='C1', edgecolor='k',alpha=0.6, label='QG')]
 
-ax.legend(handles=legend_elements, fancybox=False)
+
 ax.set_xlabel(r'$k$')
 ax.set_ylabel(r'$\beta$')
-
+'''
 
 
 
@@ -356,7 +349,7 @@ fig, (ax) = plt.subplots(1,1)
 cs = ax.contour(k, beta, contourf_beta_k_matrix-contourf_beta_k_matrix_NT,10, cmap='Reds',alpha=0.65)
 ax.clabel(cs,fontsize=15,colors='k')
 
-ax.set_title(r'Contours : $\sigma_\mathbf{TQG} - \sigma_\mathbf{QG}$')
+ax.set_title(r'$\sigma-$Contours : TQG - QG')
 ax.set_ylim(np.min(beta), np.max(beta))
 ax.set_xlim(0.1, np.max(k))
 
