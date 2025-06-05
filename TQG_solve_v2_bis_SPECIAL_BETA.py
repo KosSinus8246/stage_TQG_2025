@@ -46,12 +46,14 @@ print('-----------------------------------------------------')
 Ny, Nk = 60, 51
 dk = 0.1
 ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
+#Ly = 25.6 # article
+
 dy = (Ly - ymin)/Ny
 
-y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,3,dk)
+y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,5,dk)
 
 
-beta = np.round(np.linspace(0, 1, 15), 3)
+beta = np.round(np.linspace(0, 3, 15), 3)
 #beta = 0
 F1star = 0 # 1/Rd**2
 
@@ -64,16 +66,22 @@ Theta0 = Theta0_U0 *U0
 contourf_beta_k_matrix = np.zeros((len(beta),len(k)))
 contourf_beta_k_matrix_NT = np.zeros((len(beta),len(k)))
 
-
+times = np.linspace(0,200,100)
 
 ix = 0
+
+
+
 for var in beta:
 
 	Un = U0*np.exp(-y_l**2)
-	#Un = 1/(1+np.exp(-y_l)) # sigmoide
+	#Un = (2/np.sqrt(np.pi)) * np.exp(-y_l**2) -2/Ly #article
 
 	Vn = Un*(dy**2)
 	G12 = -2*y_l*Theta0*np.exp(-y_l**2) # dThetabar/dy
+	
+	#G12 = -np.exp(-y_l**2) + 2/Ly #article 
+
 
 
 	G11 = 2.0*Un*(1-2*y_l**2) + F1star*Un + var - G12
@@ -247,6 +255,11 @@ for var in beta:
 	contourf_beta_k_matrix_NT[ix,:] = val_cNT
 
 	
+	indice = np.argmax(val_c)
+	E = np.exp(2*val_c[indice]*times)
+	#plt.plot(times,E)
+	#plt.yscale('log')
+	
 	
 	ix = ix+1
 	print(ix)
@@ -266,19 +279,101 @@ print('/////////////////////////////////////////////////////')
 
 
 print('PLOT...')
+#res = 5
+res = np.arange(0.0,0.5,0.05)
 
-fig, (ax) = plt.subplots(1,2,figsize=(15,6))
-cs = ax[0].contour(k,beta,contourf_beta_k_matrix,colors='k')#levels=[0.05,0.1,0.15,0.2])
-ax[0].clabel(cs)
+
+fig, (ax) = plt.subplots(1,2,figsize=(13,6))
+cs = ax[0].contour(k,beta,contourf_beta_k_matrix,res,cmap='Blues')
+#ax[0].contourf(k,beta,contourf_beta_k_matrix,res,cmap='Grays')
+ax[0].clabel(cs,fontsize=15,colors='k')
 ax[0].set_xlabel(r'$k$')
 ax[0].set_ylabel(r'$\beta$')
-ax[0].set_title('TQG')
+ax[0].set_title(r'Contours : $\sigma_\mathbf{TQG}$')
+ax[0].tick_params(top=True,right=True,direction='in',size=4,width=1)
 
-cs = ax[1].contour(k,beta,contourf_beta_k_matrix_NT,colors='k')
-ax[1].clabel(cs)
+ax[0].set_ylim(np.min(beta), np.max(beta))
+ax[0].set_xlim(0.1, np.max(k))
+
+for spine in ax[0].spines.values():
+    spine.set_linewidth(2)
+
+
+cs = ax[1].contour(k,beta,contourf_beta_k_matrix_NT,res,cmap='Oranges')
+#ax[1].contourf(k,beta,contourf_beta_k_matrix_NT,res,cmap='Grays')
+ax[1].clabel(cs,fontsize=15,colors='k')
 ax[1].set_xlabel(r'$k$')
-ax[1].set_title('QG')
+ax[1].set_title(r'Contours : $\sigma_\mathbf{QG}$')
+ax[1].tick_params(top=True,right=True, labelleft=False,direction='in',size=4,width=1)
+for spine in ax[1].spines.values():
+    spine.set_linewidth(2)
+    
+ax[1].set_ylim(np.min(beta), np.max(beta))
+ax[1].set_xlim(0.1, np.max(k))
 
+
+
+
+
+
+
+
+
+fig, (ax) = plt.subplots(1,1)
+
+cs = ax.contour(k,beta,contourf_beta_k_matrix,res,colors='C0',alpha=0.6)
+cs2 = ax.contour(k,beta,contourf_beta_k_matrix_NT,res,colors='C1',alpha=0.6)
+
+ax.clabel(cs,fontsize=15)
+ax.clabel(cs2,fontsize=15)
+ax.set_ylim(np.min(beta), np.max(beta))
+ax.set_xlim(0.1, np.max(k))
+ax.set_title(r'Contours : $\sigma_\mathbf{TQG} ~~;~~ \sigma_\mathbf{QG}$')
+
+ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
+
+for spine in ax.spines.values():
+    spine.set_linewidth(2)
+
+from matplotlib.patches import Patch
+legend_elements = [Patch(facecolor='C0', edgecolor='k',alpha=0.6, label='TQG'),
+    Patch(facecolor='C1', edgecolor='k',alpha=0.6, label='QG')]
+
+ax.legend(handles=legend_elements, fancybox=False)
+ax.set_xlabel(r'$k$')
+ax.set_ylabel(r'$\beta$')
+
+
+
+
+
+
+
+
+
+fig, (ax) = plt.subplots(1,1)
+
+cs = ax.contour(k, beta, contourf_beta_k_matrix-contourf_beta_k_matrix_NT,10, cmap='Reds',alpha=0.65)
+ax.clabel(cs,fontsize=15,colors='k')
+
+ax.set_title(r'Contours : $\sigma_\mathbf{TQG} - \sigma_\mathbf{QG}$')
+ax.set_ylim(np.min(beta), np.max(beta))
+ax.set_xlim(0.1, np.max(k))
+
+ax.set_xlabel(r'$k$')
+ax.set_ylabel(r'$\beta$')
+
+ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
+
+for spine in ax.spines.values():
+    spine.set_linewidth(2)
+
+
+  
+
+    
+    
+  
 
 plt.show()
 
