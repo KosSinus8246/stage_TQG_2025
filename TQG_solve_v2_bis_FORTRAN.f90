@@ -24,13 +24,16 @@ program tqg_solve
 	! for LAPACK computation
 	real, allocatable :: alphar(:), alphai(:), beta_eig(:), work(:)
 	real :: dummyVL(1,1), dummyVR(1,1) 
-	integer :: lwork, info
+	integer :: lwork, info, rwork
 	
 	! storage for eigenvalues at each ik
 	real, allocatable :: eig_real(:,:), eig_imag(:,:)
+	!real, allocatable :: eig_real(:,:)
+	!complex, allocatable :: eig_imag(:,:)
 	
 	! final kci vector
 	real, allocatable :: sigmai(:)
+	!complex, allocatable :: sigmai(:)
 
 	print *, '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 	print *, '~~~~~~~~~~~~~~~TQG_SOLVE_2_BIS_FORTRAN~~~~~~~~~~~~~~~'
@@ -53,10 +56,10 @@ program tqg_solve
 	Ly = 3.14
 	dy = Ly/Ny
 
-	beta = 0
-	F1star = 0
-	U0 = 1
-	Theta0_U0 = 1
+	beta = 0.0
+	F1star = 0.0
+	U0 = 1.0
+	Theta0_U0 = 1.0
 	Theta0 = Theta0_U0 * U0
 
 	! using the previous defined vectors
@@ -80,16 +83,16 @@ program tqg_solve
 	
 
 	! matrices full of 0 of the problem (no need loops)
-	B12 = 0
-	B21 = 0
+	B12 = 0.0
+	B21 = 0.0
 
 	! filling vectors
 	do i=1,Ny
 		! Arrays
 		y_l(i+1) = y_l(i)+dy
-		Un(i) = U0*exp(real(y_l(i)**2))
+		Un(i) = U0*exp((y_l(i)**2))
 		Vn(i) = Un(i)*dy**2
-		G12(i) = -2*y_l(i)*Theta0*exp(real(-y_l(i))**2)
+		G12(i) = -2*y_l(i)*Theta0*exp((-y_l(i))**2)
 		G11(i) = 2*Un(i)*(1-2*y_l(i)**2) + F1star*Un(i) + beta - G12(i)
 		F11(i) = G11(i)*dy**2
 
@@ -155,26 +158,22 @@ program tqg_solve
 		
 		
 		
-		
-	! LAPACK generalized eigensolver
-    	call DGGEV('N', 'N', 2*Ny, A, 2*Ny, B, 2*Ny, alphar, alphai, beta_eig, &
-	       dummyVL, 1, dummyVR, 1, work, lwork, info)
+		!print *, A
+		!print *, '**************************************'
+		!print *, B
+		! LAPACK generalized eigensolver
+		! DGGEV
+	    	call DGGEV('N', 'N', 2*Ny, A, 2*Ny, B, 2*Ny, alphar, alphai, beta_eig, &
+		      dummyVL, 1, dummyVR, 1, work, lwork, info)
+	      
+	
+	
+	end do
 	      
 	       
 	! store datas into arrays
 	! LAPACK don't returns alpha/beta_eig and we
 	! this to fit the scipy.eig version
-	if (beta_eig(i) /= 0.0) then
-	    eig_real(i, ik) = alphar(i)/beta_eig(i)
-	    eig_imag(i, ik) = alphai(i)/beta_eig(i)
-	else
-	    eig_real(i, ik) = 0.0
-	    eig_imag(i, ik) = 0.0
-	end if
-		
-
-	end do
-	
 	
 	
 	! print of the results
@@ -182,15 +181,12 @@ program tqg_solve
 	
 	do i=1,Nk
 		
-		
 		print *, maxval(k(i)*eig_imag(:,i))
 		
-		
 	end do
-		
-
-
-
+	
+	print *, size(eig_imag)
+	
 
 
 end program
