@@ -4,6 +4,12 @@ The f90 version is coded by analogy to TQG solve python (@uthor : Dimitri Moreau
 
 The bis in the name means that the script solves QG and TQG cases.
 
+The codes that are in ''KERNEL_...'' folders are ready to
+test different values of Theta0/U0, F1star, Lstar ...
+The other codes are initial codes that be used to create
+the KERNEL codes.
+
+
 Important : to compile the f90 files
 ifort is deprecated, we need to use ifx
 DO NOT use the optimisation at order 2 and
