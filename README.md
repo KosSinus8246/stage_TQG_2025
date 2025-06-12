@@ -1,3 +1,8 @@
+Hello reader,
+
+Information : you're free to use, share, modify etc ... All these
+codes.
+
 The version 2 is the actual version of TQG solve (@uthor : Dimitri Moreau).
 The f90 version is coded by analogy to TQG solve python (@uthor : Dimitri Moreau)
 (need to be debuged for the moment)
