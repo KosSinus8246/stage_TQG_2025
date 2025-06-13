@@ -1,5 +1,6 @@
 import os
-import numpy as np                                        
+import numpy as np
+import seaborn as sns                                        
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
@@ -25,7 +26,20 @@ print('-----------------------------------------------------')
 
 # cf TQG notes : A.X = c.B.X is the system that is solved here
 # and also the non thermal system
-# @uthor : dimitri moreau 20/05/2025
+# @uthor : dimitri moreau 13/06/2025
+
+
+def reg(x,y):
+
+	covxy = np.cov(x,y)
+	a = np.cov(x, y)[0, 1]/np.var(x) 
+	b = np.mean(y) - a*np.mean(x)
+
+	yhat = a*x+b
+	err = y - yhat
+
+	return yhat, err
+
 
 
 save_png = False  # create a folder im_para and a folder per
@@ -278,7 +292,6 @@ phiy = X[0:Ny,0:Ny]
 thetay = X[0:Ny,Ny:2*Ny]
 
 
-phi
 
 
 for i in range(len(k)):
@@ -324,6 +337,13 @@ if save_png==True:
 
 
 
+
+
+
+
+
+
+
 fig, (ax) = plt.subplots(1,1)
 
 ax.plot(k, val_c, 'k--', label='TQG')
@@ -337,6 +357,80 @@ ax.axvline(0, color='gray', linestyle=':')
 for spine in ax.spines.values():
     spine.set_linewidth(2)
 
+
+
+yhat, err = reg(k, val_c)
+ax.plot(k,yhat,'r--')
+
+yhatNT, errNT = reg(k, val_cNT)
+ax.plot(k,yhatNT,'r-')
+
+
+
+plt.tight_layout()
+
+
+
+
+#####################################
+# THEORY VS PRACTICE
+plt.figure()
+
+for i in range(len(k)):
+	
+	sigmai_th = -k[i]*np.sqrt((beta - Theta0/y_l + U0*F1star)**2 + 4*(k[i]**2 + F1star)*U0*Theta0/y_l)/(-2*(k[i]**2+F1star))
+	
+	plt.plot(k[i],np.max(sigmai_th),'+')
+
+
+
+
+
+#####################################
+# ERROR - straight line - kci
+fig, (ax) = plt.subplots(1,1)
+
+ax.plot(k,err,'k--',label='TQG')
+ax.plot(k,errNT,'k-',label='QG')
+ax.legend(fancybox=False)
+
+plt.tight_layout()
+
+
+
+#####################################
+# HISTPLOT
+
+bins = 20
+fig, (ax) = plt.subplots(1,2,figsize=(13,6))
+
+sns.histplot(err,ax=ax[0],bins=bins,stat='percent')
+
+for spine in ax[0].spines.values():
+    spine.set_linewidth(2)
+
+ax[0].set_ylabel(r'Percent %')
+ax[0].set_xlabel(r'TQG : $\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$')
+ax[0].tick_params(top=True,right=True,direction='in',size=4,width=1)
+ax[0].set_ylim(0,100)
+ax[0].axhline(0, color='gray', linestyle=':')
+ax[0].axvline(0, color='gray', linestyle=':')
+
+
+sns.histplot(errNT,ax=ax[1],bins=bins,stat='percent',color='C1')
+
+for spine in ax[1].spines.values():
+    spine.set_linewidth(2)
+
+ax[1].set_ylim(0,100)
+ax[1].tick_params(labelleft=False,top=True,right=True,direction='in',size=4,width=1)
+ax[1].set_ylabel('')
+ax[1].set_xlabel(r'QG : $\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$')
+ax[1].axhline(0, color='gray', linestyle=':')
+ax[1].axvline(0, color='gray', linestyle=':')
+
+
+plt.tight_layout()
 
 
 
