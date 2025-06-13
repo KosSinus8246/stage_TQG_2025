@@ -12,6 +12,10 @@ import os
 from tqdm import tqdm
 from scipy.linalg import eig
 
+
+from scipy.optimize import curve_fit
+
+
 mpl.rcParams['font.size'] = 14
 mpl.rcParams['mathtext.fontset'] = 'stix'
 mpl.rcParams['font.family'] = 'Courier New'
@@ -37,6 +41,9 @@ def reg(x,y):
 
 	yhat = a*x+b
 	err = y - yhat
+	
+	print(a)
+	print(b)
 
 	return yhat, err
 
@@ -66,7 +73,7 @@ y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,Nk*dk,dk)
 
 
 beta = 0 
-F1star = 0 # 1/Rd**2
+F1star = 12 # 1/Rd**2
 
 U0 = 1
 Theta0_U0 = 1 # ratio
@@ -356,48 +363,87 @@ ax.axhline(0, color='gray', linestyle=':')
 ax.axvline(0, color='gray', linestyle=':')
 for spine in ax.spines.values():
     spine.set_linewidth(2)
+    
+plt.tight_layout()
 
 
 
+fig, (ax) = plt.subplots(1,2,figsize=(13,6))
+
+ax[0].set_title('$y_\mathbf{Linear}=a.x+b$ and $y_\mathbf{Non-Linear}=a.\sqrt{x}+b.x+c$ fit')
+
+ax[0].plot(k, val_c, 'k--', label='$\sigma_\mathbf{Im}$ TQG')
+ax[0].plot(k, val_cNT, 'k-', label='$\sigma_\mathbf{Im}$ QG')
+ax[0].set_xlabel(r'$k$')
+ax[0].set_ylabel(r'$\sigma_\mathbf{Im} = \mathbf{Im}\{c\}.k ~\geq~ 0$')
+ax[0].tick_params(top=True,right=True,direction='in',size=4,width=1)
+
+ax[0].axhline(0, color='gray', linestyle=':')
+ax[0].axvline(0, color='gray', linestyle=':')
+for spine in ax[0].spines.values():
+    spine.set_linewidth(2)
+
+
+
+
+
+
+
+
+# FIT LINEAR
 yhat, err = reg(k, val_c)
-ax.plot(k,yhat,'r--')
+ax[0].plot(k,yhat,'r--',label='Linear fit : TQG')
 
 yhatNT, errNT = reg(k, val_cNT)
-ax.plot(k,yhatNT,'r-')
+ax[0].plot(k,yhatNT,'r-',label='Linear fit : QG')
+
+# FIT NON-LINEAR
+# Your custom model function (e.g., a quadratic)
+def custom_model(x,a, b, c):
+    return a*x**(0.5)+b*x+c
+
+# Curve fitting
+params, covariance = curve_fit(custom_model, k, val_c)
+paramsNT, covarianceNT = curve_fit(custom_model, k, val_cNT)
 
 
+ax[0].plot(k,custom_model(k, *params),'g--',label='Non-Linear fit : TQG')
+ax[0].plot(k,custom_model(k, *paramsNT),'g-',label='Non-Linear fit : QG')
+ax[0].legend(fancybox=False)
+
+
+
+
+
+
+
+
+
+
+
+ax[1].set_title('Residual data')
+
+ax[1].plot(k,err,'r--',label='TQG')
+ax[1].plot(k,errNT,'r-',label='QG')
+
+ax[1].plot(k,val_c - custom_model(k, *params),'g--',label='TQG')
+ax[1].plot(k,val_cNT - custom_model(k, *paramsNT),'g-',label='QG')
+
+
+
+ax[1].legend(fancybox=False)
+ax[1].set_ylabel(r'$\sigma_\mathbf{Im} - \widehat{\sigma}_\mathbf{Im}$')
+ax[1].tick_params(top=True,right=True,direction='in',size=4,width=1)
+ax[1].axhline(0, color='gray', linestyle=':')
+ax[1].axvline(0, color='gray', linestyle=':')
+ax[1].set_xlabel(r'$k$')
+for spine in ax[1].spines.values():
+    spine.set_linewidth(2)
 
 plt.tight_layout()
 
 
-
-
-#####################################
-# THEORY VS PRACTICE
-plt.figure()
-
-for i in range(len(k)):
-	
-	sigmai_th = -k[i]*np.sqrt((beta - Theta0/y_l + U0*F1star)**2 + 4*(k[i]**2 + F1star)*U0*Theta0/y_l)/(-2*(k[i]**2+F1star))
-	
-	plt.plot(k[i],np.max(sigmai_th),'+')
-
-
-
-
-
-#####################################
-# ERROR - straight line - kci
-fig, (ax) = plt.subplots(1,1)
-
-ax.plot(k,err,'k--',label='TQG')
-ax.plot(k,errNT,'k-',label='QG')
-ax.legend(fancybox=False)
-
-plt.tight_layout()
-
-
-
+'''
 #####################################
 # HISTPLOT
 
@@ -431,7 +477,7 @@ ax[1].axvline(0, color='gray', linestyle=':')
 
 
 plt.tight_layout()
-
+'''
 
 
 
