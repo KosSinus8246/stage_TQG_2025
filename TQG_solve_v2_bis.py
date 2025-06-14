@@ -73,7 +73,7 @@ y_l, k = np.linspace(ymin,Ly,Ny), np.arange(kmin,Nk*dk,dk)
 
 
 beta = 0 
-F1star = 12 # 1/Rd**2
+F1star = 0 # 1/Rd**2
 
 U0 = 1
 Theta0_U0 = 1 # ratio
@@ -441,6 +441,101 @@ for spine in ax[1].spines.values():
     spine.set_linewidth(2)
 
 plt.tight_layout()
+
+
+
+
+
+
+
+# Snapshots of Theta(y, t) at t = 0, 10, 20 for the most unstable mode
+times = [0, 10, 20]
+k_index = np.argmax(val_c)  # index of the most unstable k
+omega = omega_matrice[:, k_index]
+theta_eigvecs = thetay[:, k_index]
+
+fig, ax = plt.subplots(1, len(times), figsize=(15, 5))
+
+for i, t in enumerate(times):
+	theta_t = np.real(theta_eigvecs * np.exp(1j * omega[k_index] * t))
+	ax[i].plot(y_l, theta_t, 'b-')
+
+	ax[i].set_title(r'Time : '+str(t))
+
+	ax[i].tick_params(top=True,right=True,direction='in',size=4,width=1)
+
+	ax[i].set_xlabel(r'$y$')
+	ax[i].set_ylim(-5e-3,5e-3)
+	
+	for spine in ax[i].spines.values():
+		spine.set_linewidth(2)
+
+
+ax[0].set_ylabel(r'$\Theta(t,y)$')
+ax[1].tick_params(labelleft=False)
+ax[2].tick_params(labelleft=False)
+
+
+plt.tight_layout()
+
+
+'''
+# Parameters for GIF
+t_start, t_end, dt = 0, 100, 1
+gif_times = np.arange(t_start, t_end + dt, dt)
+
+# Most unstable mode
+k_index = np.argmax(val_c)
+#k_index = 0
+omega = omega_matrice[:, k_index]
+theta_eigvecs = thetay[:, k_index]
+
+frames = []
+
+for t in gif_times:
+    theta_t = np.real(theta_eigvecs * np.exp(1j * omega[k_index] * t))
+
+    fig, ax = plt.subplots(figsize=(6, 5))
+    ax.plot(y_l, theta_t, 'b-')
+    ax.set_title(r'$\Theta(y, t=' + f'{t}' + r')$')
+    ax.set_xlabel(r'$y$')
+    ax.set_ylabel(r'$\Theta$')
+    ax.set_ylim(-5e-3, 5e-3)
+    ax.grid(True)
+    for spine in ax.spines.values():
+        spine.set_linewidth(2)
+
+    # Save frame to bytes buffer
+    buf = BytesIO()
+    plt.tight_layout()
+    plt.savefig(buf, format='png')
+    plt.close(fig)
+    buf.seek(0)
+    image = Image.open(buf)
+    frames.append(image)
+
+# Save GIF
+output_path = 'theta_evolution.gif'
+frames[0].save(output_path,
+               format='GIF',
+               save_all=True,
+               append_images=frames[1:],
+               duration=100,  # ms per frame
+               loop=0)
+
+print(f"GIF saved to {output_path}")
+'''
+
+
+
+
+
+
+
+
+
+
+
 
 
 '''
