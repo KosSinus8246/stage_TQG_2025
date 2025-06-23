@@ -30,49 +30,50 @@ print('-----------------------------------------------------')
 
 
 
-N, Nk = 20, 51
+N = 20 
+#Nk, dk = 51, 0.1
 
-dk = 0.1
 Lmin =0.1
 L = np.pi
-kmin, Lk = 0.1, 0.1+dk*Nk
+#kmin, Lk = 0.1, 0.1+dk*Nk
 #dy, dx = (Ly - ymin)/Ny, (Lx - xmin)/Nx
 dh = L/N
 
 
 ###################
 # fully option
-regula = L / 6
+#regula = L / 6
 ##################
 
 
 
-x_l, y_l, k = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N), np.arange(kmin,Nk*dk,dk)
+x_l, y_l = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
+#k = np.arange(kmin,Nk*dk,dk)
 xx, yy = np.meshgrid(x_l,y_l)
 
 
-beta = 0.
-F1star = 0. # 1/Rd**2
+beta = 1.
+F1star = 0.5 # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 1. # ratio
+Theta0_U0 = 2. # ratio
 Theta0 = Theta0_U0 *U0
 
 
-#Un = U0*np.exp(-yy**2)
-Un = U0 * np.exp(-((yy - L/2)/regula)**2) # regula conf
+Un = U0*np.exp(-yy**2)
+#Un = U0 * np.exp(-((yy - L/2)/regula)**2) # regula conf
 
 
 Vn = Un*(dh**2)
 
-Thetabar = Theta0 * np.tanh((yy - L/2)/regula) # regula conf
-G12 = np.gradient(Thetabar, axis=0) / dh  # ∂Θ̄/∂y # regula conf
+#Thetabar = Theta0 * np.tanh((yy - L/2)/regula) # regula conf
+#G12 = np.gradient(Thetabar, axis=0) / dh  # ∂Θ̄/∂y # regula conf
 
-#G12 = -2*yy*Theta0*np.exp(-yy**2) # dThetabar/dy
+G12 = -2*yy*Theta0*np.exp(-yy**2) # dThetabar/dy
 
 
-#G11 = 2.0*Un*(1-2*yy**2) + F1star*Un + beta - G12
-G11 = 2 * Un * (1 - 2 * ((yy - L/2)/regula)**2) + F1star * Un + beta - G12 # regulaconf
+G11 = 2.0*Un*(1-2*yy**2) + F1star*Un + beta - G12
+#G11 = 2 * Un * (1 - 2 * ((yy - L/2)/regula)**2) + F1star * Un + beta - G12 # regulaconf
 F11 = G11*dh**2
 
 
@@ -240,7 +241,7 @@ print('COMPUTATION : OK')
 
 
 # Parameters for plotting
-timesteps = [0, 10, 20, 30]  # time points
+timesteps = [0, 1, 2, 3]  # time points
 mode_index = 11  # choose dominant or a specific mode
 
 # TQG ##################
@@ -282,35 +283,40 @@ PHI_xy_NT = np.real(phi_xy_NT)
 
 # Time evolution
 fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
-fig.suptitle(r'Evolution of $\phi(t,x,y)$')
+fig.suptitle(r'Evolution of $\phi(t,x,y)$ ; Top : TQG & Bottom : QG')
+
+lim_TQG, lim_QG = 0.3, 7
+
 
 for i, t in enumerate(timesteps):
 	PHI_t = np.real(PHI_xy * np.exp(c_mode * t))
 	PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 	
-	im = axs[0,i].pcolormesh(x_l,y_l,PHI_t,cmap='RdBu_r')
+	im = axs[0,i].pcolormesh(x_l,y_l,PHI_t,cmap='RdBu_r',vmin=-lim_TQG,vmax=lim_TQG)
 	axs[0,i].contour(x_l,y_l,PHI_t,colors='k')
 	axs[0,i].set_title(f"t = {t}")
-	axs[0,i].set_xlabel(r"$x$")
-	axs[0,i].set_ylabel(r"$y$")
-	fig.colorbar(im, ax=axs[0,i])
+
+	fig.colorbar(im, ax=axs[0,i],extend='both')
 	axs[0,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
 	for spine in axs[0,i].spines.values():
 		spine.set_linewidth(2)
 	
 	
 	
-	im = axs[1,i].pcolormesh(x_l,y_l,PHI_t_NT,cmap='coolwarm')
+	im = axs[1,i].pcolormesh(x_l,y_l,PHI_t_NT,cmap='coolwarm',vmin=-lim_QG,vmax=lim_QG)
 	axs[1,i].contour(x_l,y_l,PHI_t_NT,colors='k')
 	axs[1,i].set_xlabel(r"$x$")
-	axs[1,i].set_ylabel(r"$y$")
-	fig.colorbar(im, ax=axs[1,i])
+
+	fig.colorbar(im, ax=axs[1,i],extend='both')
 	axs[1,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
 	
 	for spine in axs[1,i].spines.values():
 		spine.set_linewidth(2)
 	
 	
+	
+axs[0,0].set_ylabel(r'$y$')
+axs[1,0].set_ylabel(r'$y$')
 
 plt.tight_layout()
 plt.show()
