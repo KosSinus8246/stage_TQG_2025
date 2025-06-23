@@ -52,11 +52,11 @@ x_l, y_l = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 xx, yy = np.meshgrid(x_l,y_l)
 
 
-beta = 1.
-F1star = 0.5 # 1/Rd**2
+beta = 0.
+F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 2. # ratio
+Theta0_U0 = 1. # ratio
 Theta0 = Theta0_U0 *U0
 
 
@@ -84,6 +84,9 @@ F11 = G11*dh**2
 k0, l0 = 0.73, 0.
 
 K2 = (k0**2+l0**2 + F1star)*dh**2
+
+print('/////////////////////////////////////////////////////')
+print('PARAMS : OK')
 
 
 ##################################
@@ -226,7 +229,8 @@ B11[(N*N)-1,(N*N)-1] = 0.0
 ##################################
 # SOLVING
 ##################################
-
+print('/////////////////////////////////////////////////////')
+print('COMPUTATION...')
 
 
 c, X = eig(A,B)
@@ -234,7 +238,7 @@ c_NT, X_NT = eig(A11_star, B11)
 
 
 
-print('COMPUTATION : OK')
+
 ##################################
 # PLOT
 ##################################
@@ -276,7 +280,12 @@ phi_xy_NT = phi_flat_NT.reshape((N, N))
 # Normalize for visualization if needed
 PHI_xy_NT = np.real(phi_xy_NT)
 
+print('COMPUTATION : OK')
 
+
+
+print('/////////////////////////////////////////////////////')
+print('PLOT...')
 
 
 
@@ -285,29 +294,29 @@ PHI_xy_NT = np.real(phi_xy_NT)
 fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
 fig.suptitle(r'Evolution of $\phi(t,x,y)$ ; Top : TQG & Bottom : QG')
 
-lim_TQG, lim_QG = 0.3, 7
+lim_TQG, lim_QG = 0.3, 5
 
 
 for i, t in enumerate(timesteps):
 	PHI_t = np.real(PHI_xy * np.exp(c_mode * t))
 	PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 	
-	im = axs[0,i].pcolormesh(x_l,y_l,PHI_t,cmap='RdBu_r',vmin=-lim_TQG,vmax=lim_TQG)
+	im1 = axs[0,i].pcolormesh(x_l,y_l,PHI_t,cmap='RdBu_r',vmin=-lim_TQG,vmax=lim_TQG)
 	axs[0,i].contour(x_l,y_l,PHI_t,colors='k')
 	axs[0,i].set_title(f"t = {t}")
 
-	fig.colorbar(im, ax=axs[0,i],extend='both')
+	#fig.colorbar(im, ax=axs[0,i],extend='both')
 	axs[0,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
 	for spine in axs[0,i].spines.values():
 		spine.set_linewidth(2)
 	
 	
 	
-	im = axs[1,i].pcolormesh(x_l,y_l,PHI_t_NT,cmap='coolwarm',vmin=-lim_QG,vmax=lim_QG)
+	im2 = axs[1,i].pcolormesh(x_l,y_l,PHI_t_NT,cmap='coolwarm',vmin=-lim_QG,vmax=lim_QG)
 	axs[1,i].contour(x_l,y_l,PHI_t_NT,colors='k')
 	axs[1,i].set_xlabel(r"$x$")
 
-	fig.colorbar(im, ax=axs[1,i],extend='both')
+	#fig.colorbar(im, ax=axs[1,i],extend='both')
 	axs[1,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
 	
 	for spine in axs[1,i].spines.values():
@@ -316,14 +325,18 @@ for i, t in enumerate(timesteps):
 	
 	
 axs[0,0].set_ylabel(r'$y$')
+fig.colorbar(im1, ax=axs[0,-1],extend='both')
+
 axs[1,0].set_ylabel(r'$y$')
+fig.colorbar(im2, ax=axs[1,-1],extend='both')
 
 plt.tight_layout()
 plt.show()
 
 
 
-
+print('END')
+print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 
 
 
