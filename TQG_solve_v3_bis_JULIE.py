@@ -69,7 +69,8 @@ Vn = Un*(dh**2)
 #Thetabar = Theta0 * np.tanh((yy - L/2)/regula) # regula conf
 #G12 = np.gradient(Thetabar, axis=0) / dh  # ∂Θ̄/∂y # regula conf
 
-G12 = -2*yy*Theta0*np.exp(-yy**2) # dThetabar/dy
+#G12 = -2*yy*Theta0*np.exp(-yy**2) #-2*xx*Theta0*np.exp(-xx**2) # dThetabar/dy
+G12 = -2*yy*Theta0*np.exp(-yy**2) -2*xx*Theta0*np.exp(-xx**2) # dThetabar/dy
 
 
 G11 = 2.0*Un*(1-2*yy**2) + F1star*Un + beta - G12
@@ -81,7 +82,7 @@ F11 = G11*dh**2
 
 
 
-k0, l0 = 0.73, 0.
+k0, l0 = 1., 1.
 
 K2 = (k0**2+l0**2 + F1star)*dh**2
 
@@ -96,18 +97,11 @@ print('PARAMS : OK')
 
 B11 = np.zeros((N*N, N*N))
 
-'''
-for i in range(N*N):
-	B11[i,i] = -(2 + K2)
-	if i>0:
-		B11[i,i-1] = 1.
-	if i<(N*N)-1:
-		B11[i,i+1] = 1.'''
 		
 def ij_to_index(i, j, N):
     return i * N + j
 
-for i in range(N):
+for i in tqdm(range(N)):
 	for j in range(N):
 		#idx = ij_to_index(i, j, N)
 		idx = i * N + j
@@ -149,24 +143,13 @@ A11_star = np.zeros((N*N,N*N))# same B11 without the thermal
 # term that is F11 for the non-TQG solving
 # Block A11
 
-'''
-for i in range(N*N):
-
-	A11[i,i] = -Un.ravel()[i] * (2 + K2) + F11.ravel()[i]
-	#A11_star[i,i] = -Un[i] * (2 + K2) + F11[i] + G12[i]*dh**2
-	if i>0:
-		A11[i,i-1] = Un.ravel()[i]
-		#A11_star[i,i-1] = Un.ravel()[i]
-	if i<(N*N)-1:
-		A11[i,i+1] = Un.ravel()[i]
-		#A11_star[i,i+1] = Un[i]'''
 		
 		
-for i in range(N):
+for i in tqdm(range(N)):
 	for j in range(N):
 		idx = i * N + j
 		A11[idx, idx] = -Un[i, j] * (4 + K2) + F11[i, j]
-		A11_star[idx, idx] = -Un[i, j] * (4 + K2) + F11[i, j] + G12[i, j]
+		A11_star[idx, idx] = -Un[i, j] * (4 + K2) + F11[i, j] + G12[i,j]*dh**2
 
 		if i > 0:
 			A11[idx, ij_to_index(i - 1, j, N)] = Un[i, j]
@@ -292,17 +275,22 @@ print('PLOT...')
 
 # Time evolution
 fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
-fig.suptitle(r'Evolution of $\phi(t,x,y)$ ; Top : TQG & Bottom : QG')
+fig.suptitle(r'Evolution of $\psi_\mathbf{TQG}(t,x,y)$ and $\psi_\mathbf{QG}(t,x,y)$')
 
-lim_TQG, lim_QG = 0.3, 5
+lim_TQG, lim_QG = 0.2, 5.
+levels = 10
 
 
 for i, t in enumerate(timesteps):
 	PHI_t = np.real(PHI_xy * np.exp(c_mode * t))
 	PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 	
-	im1 = axs[0,i].pcolormesh(x_l,y_l,PHI_t,cmap='RdBu_r',vmin=-lim_TQG,vmax=lim_TQG)
-	axs[0,i].contour(x_l,y_l,PHI_t,colors='k')
+	PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+	PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+	
+	im1 = axs[0,i].contourf(x_l,y_l,PSI,levels,cmap='RdBu_r',vmin=-lim_TQG,vmax=lim_TQG)
+	cs = axs[0,i].contour(x_l,y_l,PSI,levels,colors='k')
+	axs[0,i].clabel(cs)
 	axs[0,i].set_title(f"t = {t}")
 
 	#fig.colorbar(im, ax=axs[0,i],extend='both')
@@ -312,8 +300,9 @@ for i, t in enumerate(timesteps):
 	
 	
 	
-	im2 = axs[1,i].pcolormesh(x_l,y_l,PHI_t_NT,cmap='coolwarm',vmin=-lim_QG,vmax=lim_QG)
-	axs[1,i].contour(x_l,y_l,PHI_t_NT,colors='k')
+	im2 = axs[1,i].contourf(x_l,y_l,PSI_NT,levels,cmap='coolwarm',vmin=-lim_QG,vmax=lim_QG)
+	cs = axs[1,i].contour(x_l,y_l,PSI_NT,levels,colors='k')
+	axs[1,i].clabel(cs)
 	axs[1,i].set_xlabel(r"$x$")
 
 	#fig.colorbar(im, ax=axs[1,i],extend='both')
