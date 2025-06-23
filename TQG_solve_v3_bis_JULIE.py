@@ -25,6 +25,11 @@ print('-----------------------------------------------------')
 # VARIABLES, SPACE ...
 ##################################
 
+
+
+
+
+
 N, Nk = 20, 10
 
 dk = 0.1
@@ -33,6 +38,13 @@ L = np.pi
 kmin, Lk = 0.1, 0.1+dk*Nk
 #dy, dx = (Ly - ymin)/Ny, (Lx - xmin)/Nx
 dh = L/N
+
+
+###################
+# fully option
+regula = L / 6
+##################
+
 
 
 x_l, y_l, k = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N), np.arange(kmin,Nk*dk,dk)
@@ -47,22 +59,28 @@ Theta0_U0 = 1 # ratio
 Theta0 = Theta0_U0 *U0
 
 
-Un = U0*np.exp(-yy**2)
-#Un = 1/(1+np.exp(-y_l)) # sigmoide
+#Un = U0*np.exp(-yy**2)
+Un = U0 * np.exp(-((yy - L/2)/regula)**2) # regula conf
+
 
 Vn = Un*(dh**2)
-G12 = -2*y_l*Theta0*np.exp(-yy**2) # dThetabar/dy
+
+Thetabar = Theta0 * np.tanh((yy - L/2)/regula) # regula conf
+G12 = np.gradient(Thetabar, axis=0) / dh  # ∂Θ̄/∂y # regula conf
+
+#G12 = -2*yy*Theta0*np.exp(-yy**2) # dThetabar/dy
 
 
-G11 = 2.0*Un*(1-2*yy**2) + F1star*Un + beta - G12
+#G11 = 2.0*Un*(1-2*yy**2) + F1star*Un + beta - G12
+G11 = 2 * Un * (1 - 2 * ((yy - L/2)/regula)**2) + F1star * Un + beta - G12 # regulaconf
 F11 = G11*dh**2
 
 
 
 
-k0, l0 = 0.73, 0.73
 
-# LOOP (SOON)
+
+k0, l0 = 0.73, 0.
 
 K2 = (k0**2+l0**2 + F1star)*dh**2
 
@@ -86,18 +104,18 @@ def ij_to_index(i, j, N):
     return i * N + j
 
 for i in range(N):
-    for j in range(N):
-        #idx = ij_to_index(i, j, N)
-        idx = i * N + j
-        B11[idx, idx] = -4 - K2
-        if i > 0:
-            B11[idx, ij_to_index(i-1, j, N)] = 1
-        if i < N-1:
-            B11[idx, ij_to_index(i+1, j, N)] = 1
-        if j > 0:
-            B11[idx, ij_to_index(i, j-1, N)] = 1
-        if j < N-1:
-            B11[idx, ij_to_index(i, j+1, N)] = 1
+	for j in range(N):
+		#idx = ij_to_index(i, j, N)
+		idx = i * N + j
+		B11[idx, idx] = -4 - K2
+		if i > 0:
+		    B11[idx, ij_to_index(i-1, j, N)] = 1
+		if i < N-1:
+		    B11[idx, ij_to_index(i+1, j, N)] = 1
+		if j > 0:
+		    B11[idx, ij_to_index(i, j-1, N)] = 1
+		if j < N-1:
+		    B11[idx, ij_to_index(i, j+1, N)] = 1
 
 		
 		
@@ -123,9 +141,8 @@ print('MATRIX B : OK')
 
 
 A11 = np.zeros((N*N,N*N))
-A11_star = np.zeros((N*N,N*N)) # same B11 without the thermal
+A11_star = np.zeros((N*N,N*N))# same B11 without the thermal
 # term that is F11 for the non-TQG solving
-
 # Block A11
 
 '''
@@ -142,17 +159,23 @@ for i in range(N*N):
 		
 		
 for i in range(N):
-    for j in range(N):
-        idx = i * N + j
-        A11[idx, idx] = -Un[i, j] * (4 + K2) + F11[i, j]
-        if i > 0:
-            A11[idx, ij_to_index(i - 1, j, N)] = Un[i, j]
-        if i < N - 1:
-            A11[idx, ij_to_index(i + 1, j, N)] = Un[i, j]
-        if j > 0:
-            A11[idx, ij_to_index(i, j - 1, N)] = Un[i, j]
-        if j < N - 1:
-            A11[idx, ij_to_index(i, j + 1, N)] = Un[i, j]
+	for j in range(N):
+		idx = i * N + j
+		A11[idx, idx] = -Un[i, j] * (4 + K2) + F11[i, j]
+		A11_star[idx, idx] = -Un[i, j] * (4 + K2) + F11[i, j] + G12[i, j]
+
+		if i > 0:
+			A11[idx, ij_to_index(i - 1, j, N)] = Un[i, j]
+			A11_star[idx, ij_to_index(i - 1, j, N)] = Un[i, j]
+		if i < N - 1:
+			A11[idx, ij_to_index(i + 1, j, N)] = Un[i, j]
+			A11_star[idx, ij_to_index(i + 1, j, N)] = Un[i, j]
+		if j > 0:
+			A11[idx, ij_to_index(i, j - 1, N)] = Un[i, j]
+			A11_star[idx, ij_to_index(i, j - 1, N)] = Un[i, j]
+		if j < N - 1:
+			A11[idx, ij_to_index(i, j + 1, N)] = Un[i, j]
+			A11_star[idx, ij_to_index(i, j + 1, N)] = Un[i, j]
 
 
 
@@ -206,6 +229,7 @@ B11[(N*N)-1,(N*N)-1] = 0.0'''
 
 
 c, X = eig(A,B)
+c_NT, X_NT = eig(A11_star, B11)
 
 
 
@@ -217,7 +241,7 @@ print('COMPUTATION : OK')
 
 # Parameters for plotting
 timesteps = [0, 10, 20, 30]  # time points
-mode_index = 11  # choose dominant or a specific mode
+mode_index = np.argmax(c)  # choose dominant or a specific mode
 
 # Extract eigenvalue and eigenvector
 c_mode = c[mode_index]  # eigenvalue
@@ -233,13 +257,13 @@ Theta_xy = np.real(Theta_xy)
 # Time evolution
 fig, axs = plt.subplots(1, len(timesteps), figsize=(18, 5))
 for i, t in enumerate(timesteps):
-    Theta_t = np.real(Theta_xy * np.exp(c_mode * t))
-    im = axs[i].pcolormesh(x_l,y_l,Theta_t,cmap='RdBu_r')
-    axs[i].contour(x_l,y_l,Theta_t,colors='k')
-    axs[i].set_title(f"t = {t}")
-    axs[i].set_xlabel(r"$x$")
-    axs[i].set_ylabel(r"$y$")
-    fig.colorbar(im, ax=axs[i])
+	Theta_t = np.real(Theta_xy * np.exp(c_mode * t))
+	im = axs[i].pcolormesh(x_l,y_l,Theta_t,cmap='RdBu_r')
+	axs[i].contour(x_l,y_l,Theta_t,colors='k')
+	axs[i].set_title(f"t = {t}")
+	axs[i].set_xlabel(r"$x$")
+	axs[i].set_ylabel(r"$y$")
+	fig.colorbar(im, ax=axs[i])
 
 plt.tight_layout()
 plt.show()
