@@ -30,10 +30,10 @@ print('-----------------------------------------------------')
 
 
 
-N = 20 
+N = 20
 #Nk, dk = 51, 0.1
 
-Lmin =0.1
+Lmin = 0.1
 L = np.pi
 #kmin, Lk = 0.1, 0.1+dk*Nk
 #dy, dx = (Ly - ymin)/Ny, (Lx - xmin)/Nx
@@ -46,7 +46,7 @@ x_l, y_l = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 xx, yy = np.meshgrid(x_l,y_l)
 
 
-beta = 3.
+beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
@@ -97,13 +97,13 @@ for i in tqdm(range(N)):
 		idx = i * N + j
 		B11[idx, idx] = -4 - K2
 		if i > 0:
-		    B11[idx, ij_to_index(i-1, j, N)] = 1
+			B11[idx, ij_to_index(i-1, j, N)] = 1
 		if i < N-1:
-		    B11[idx, ij_to_index(i+1, j, N)] = 1
+			B11[idx, ij_to_index(i+1, j, N)] = 1
 		if j > 0:
-		    B11[idx, ij_to_index(i, j-1, N)] = 1
+			B11[idx, ij_to_index(i, j-1, N)] = 1
 		if j < N-1:
-		    B11[idx, ij_to_index(i, j+1, N)] = 1
+			B11[idx, ij_to_index(i, j+1, N)] = 1
 
 		
 		
@@ -277,6 +277,7 @@ for i, t in enumerate(timesteps):
 	
 	PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 	PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+		
 	
 	im1 = axs[0,i].contourf(x_l,y_l,PSI,levels,cmap='RdBu_r',vmin=-lim_TQG,vmax=lim_TQG)
 	cs = axs[0,i].contour(x_l,y_l,PSI,levels,colors='k')
