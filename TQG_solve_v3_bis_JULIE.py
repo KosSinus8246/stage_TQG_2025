@@ -40,19 +40,13 @@ L = np.pi
 dh = L/N
 
 
-###################
-# fully option
-#regula = L / 6
-##################
-
-
 
 x_l, y_l = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 #k = np.arange(kmin,Nk*dk,dk)
 xx, yy = np.meshgrid(x_l,y_l)
 
 
-beta = 0.
+beta = 3.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
@@ -61,20 +55,16 @@ Theta0 = Theta0_U0 *U0
 
 
 Un = U0*np.exp(-yy**2)
-#Un = U0 * np.exp(-((yy - L/2)/regula)**2) # regula conf
 
 
 Vn = Un*(dh**2)
 
-#Thetabar = Theta0 * np.tanh((yy - L/2)/regula) # regula conf
-#G12 = np.gradient(Thetabar, axis=0) / dh  # ∂Θ̄/∂y # regula conf
 
 #G12 = -2*yy*Theta0*np.exp(-yy**2) #-2*xx*Theta0*np.exp(-xx**2) # dThetabar/dy
 G12 = -2*yy*Theta0*np.exp(-yy**2) -2*xx*Theta0*np.exp(-xx**2) # dThetabar/dy
 
 
 G11 = 2.0*Un*(1-2*yy**2) + F1star*Un + beta - G12
-#G11 = 2 * Un * (1 - 2 * ((yy - L/2)/regula)**2) + F1star * Un + beta - G12 # regulaconf
 F11 = G11*dh**2
 
 
@@ -229,7 +219,7 @@ c_NT, X_NT = eig(A11_star, B11)
 
 # Parameters for plotting
 timesteps = [0, 1, 2, 3]  # time points
-mode_index = 11  # choose dominant or a specific mode
+mode_index = np.argmax(np.imag(c))  # choose dominant or a specific mode
 
 # TQG ##################
 ########################
@@ -275,9 +265,9 @@ print('PLOT...')
 
 # Time evolution
 fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
-fig.suptitle(r'Evolution of $\psi_\mathbf{TQG}(t,x,y)$ and $\psi_\mathbf{QG}(t,x,y)$')
+fig.suptitle(r'Evolution of $\psi_\mathbf{TQG}$ and $\psi_\mathbf{QG}$')
 
-lim_TQG, lim_QG = 0.2, 5.
+lim_TQG, lim_QG = 0.4, 0.4
 levels = 10
 
 
@@ -292,9 +282,13 @@ for i, t in enumerate(timesteps):
 	cs = axs[0,i].contour(x_l,y_l,PSI,levels,colors='k')
 	axs[0,i].clabel(cs)
 	axs[0,i].set_title(f"t = {t}")
+	
+	axs[0,i].set_xlim(Lmin,L)
+	axs[0,i].set_ylim(Lmin,L)
 
 	#fig.colorbar(im, ax=axs[0,i],extend='both')
-	axs[0,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
+	axs[0,i].tick_params(top=True,right=True,labelbottom=False,direction='in',size=4,width=1)
+	
 	for spine in axs[0,i].spines.values():
 		spine.set_linewidth(2)
 	
@@ -304,6 +298,8 @@ for i, t in enumerate(timesteps):
 	cs = axs[1,i].contour(x_l,y_l,PSI_NT,levels,colors='k')
 	axs[1,i].clabel(cs)
 	axs[1,i].set_xlabel(r"$x$")
+	axs[1,i].set_xlim(Lmin,L)
+	axs[1,i].set_ylim(Lmin,L)
 
 	#fig.colorbar(im, ax=axs[1,i],extend='both')
 	axs[1,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
@@ -315,9 +311,15 @@ for i, t in enumerate(timesteps):
 	
 axs[0,0].set_ylabel(r'$y$')
 fig.colorbar(im1, ax=axs[0,-1],extend='both')
+axs[0,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
+axs[0,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
+axs[0,3].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 
 axs[1,0].set_ylabel(r'$y$')
 fig.colorbar(im2, ax=axs[1,-1],extend='both')
+axs[1,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
+axs[1,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
+axs[1,3].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 
 plt.tight_layout()
 plt.show()
