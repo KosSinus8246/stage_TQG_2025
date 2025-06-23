@@ -30,7 +30,7 @@ print('-----------------------------------------------------')
 
 
 
-N, Nk = 20, 10
+N, Nk = 20, 51
 
 dk = 0.1
 Lmin =0.1
@@ -51,11 +51,11 @@ x_l, y_l, k = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N), np.arange(kmin,Nk*dk
 xx, yy = np.meshgrid(x_l,y_l)
 
 
-beta = 0
-F1star = 0 # 1/Rd**2
+beta = 0.
+F1star = 0. # 1/Rd**2
 
-U0 = 1
-Theta0_U0 = 1 # ratio
+U0 = 1.
+Theta0_U0 = 1. # ratio
 Theta0 = Theta0_U0 *U0
 
 
@@ -194,7 +194,7 @@ A = np.block([[A11,A12],[A21,A22]])
 print('MATRIX A : OK')
 
 
-'''
+
 # velocity odd
 A[0,1] = 2.0*A[0,1]
 B[0,1] = 2.0*B[0,1]
@@ -215,7 +215,7 @@ B11[0,1] = 2.0*B11[0,1]
 
 A11[(N*N)-1,(N*N)-1] = 0.0
 A11_star[(N*N)-1,(N*N)-1] = 0.0
-B11[(N*N)-1,(N*N)-1] = 0.0'''
+B11[(N*N)-1,(N*N)-1] = 0.0
 
 
 
@@ -241,29 +241,76 @@ print('COMPUTATION : OK')
 
 # Parameters for plotting
 timesteps = [0, 10, 20, 30]  # time points
-mode_index = np.argmax(c)  # choose dominant or a specific mode
+mode_index = 11  # choose dominant or a specific mode
 
+# TQG ##################
+########################
 # Extract eigenvalue and eigenvector
 c_mode = c[mode_index]  # eigenvalue
 X_mode = X[:, mode_index]  # eigenvector
 
 # Extract Theta from second half of X
-Theta_flat = X_mode[N*N:]
-Theta_xy = Theta_flat.reshape((N, N))
+#Theta_flat = X_mode[N*N:]
+phi_flat = X_mode[:N*N]
+phi_xy = phi_flat.reshape((N, N))
 
 # Normalize for visualization if needed
-Theta_xy = np.real(Theta_xy)
+PHI_xy = np.real(phi_xy)
+
+
+
+
+
+# QG ##################
+########################
+# Extract eigenvalue and eigenvector
+c_NT_mode = c_NT[mode_index]  # eigenvalue
+X_NT_mode = X_NT[:, mode_index]  # eigenvector
+
+# Extract Theta from second half of X
+#Theta_flat = X_mode[N*N:]
+phi_flat_NT = X_NT_mode
+phi_xy_NT = phi_flat_NT.reshape((N, N))
+
+# Normalize for visualization if needed
+PHI_xy_NT = np.real(phi_xy_NT)
+
+
+
+
+
 
 # Time evolution
-fig, axs = plt.subplots(1, len(timesteps), figsize=(18, 5))
+fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
+fig.suptitle(r'Evolution of $\phi(t,x,y)$')
+
 for i, t in enumerate(timesteps):
-	Theta_t = np.real(Theta_xy * np.exp(c_mode * t))
-	im = axs[i].pcolormesh(x_l,y_l,Theta_t,cmap='RdBu_r')
-	axs[i].contour(x_l,y_l,Theta_t,colors='k')
-	axs[i].set_title(f"t = {t}")
-	axs[i].set_xlabel(r"$x$")
-	axs[i].set_ylabel(r"$y$")
-	fig.colorbar(im, ax=axs[i])
+	PHI_t = np.real(PHI_xy * np.exp(c_mode * t))
+	PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
+	
+	im = axs[0,i].pcolormesh(x_l,y_l,PHI_t,cmap='RdBu_r')
+	axs[0,i].contour(x_l,y_l,PHI_t,colors='k')
+	axs[0,i].set_title(f"t = {t}")
+	axs[0,i].set_xlabel(r"$x$")
+	axs[0,i].set_ylabel(r"$y$")
+	fig.colorbar(im, ax=axs[0,i])
+	axs[0,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
+	for spine in axs[0,i].spines.values():
+		spine.set_linewidth(2)
+	
+	
+	
+	im = axs[1,i].pcolormesh(x_l,y_l,PHI_t_NT,cmap='coolwarm')
+	axs[1,i].contour(x_l,y_l,PHI_t_NT,colors='k')
+	axs[1,i].set_xlabel(r"$x$")
+	axs[1,i].set_ylabel(r"$y$")
+	fig.colorbar(im, ax=axs[1,i])
+	axs[1,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
+	
+	for spine in axs[1,i].spines.values():
+		spine.set_linewidth(2)
+	
+	
 
 plt.tight_layout()
 plt.show()
