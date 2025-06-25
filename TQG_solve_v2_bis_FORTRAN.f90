@@ -1,7 +1,7 @@
 ! @uthor : Dimitri Moreau 26/05/2025
 ! ifx needed and LAPACK
 
-! Compilation : ifx TQG_solve_dmoreau.f90 -o tqg_solve -qmkl
+! Compilation : ! gfortran linear_system_1D.f90 -llapack -lblas -o tqgsolve
 ! Run : ./tqg_solve
 
 
