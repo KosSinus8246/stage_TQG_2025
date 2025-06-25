@@ -1,8 +1,7 @@
 ! @uthor : Dimitri Moreau 26/05/2025
 ! ifx needed and LAPACK
 
-! Compilation : ! gfortran linear_system_1D.f90 -llapack -lblas -o tqgsolve
-! Run : ./tqg_solve
+! Compilation : gfortran TQG_solve_v2_bis_FORTRAN.f90 -llapack -lblas -o solver
 
 
 program tqg_solve
@@ -12,28 +11,24 @@ program tqg_solve
 	real :: dk,dy, Ly, Lk, ymin, kmin
 	integer :: Ny, Nk, i, ik
 	! main parameters
-	real :: beta, F1star, Theta0_U0, Theta0, U0, K2
+	real :: beta, F1star, Theta0_U0, Theta0, U0, K2, max_sigma
 	! vectors
-	real, allocatable :: Un(:), Vn(:), y_l(:), k(:)
-	real, allocatable :: G12(:), G11(:), F11(:)
+	real(8), allocatable :: Un(:), Vn(:), y_l(:), k(:)
+	real(8), allocatable :: G12(:), G11(:), F11(:)
 	! matrix
-	real, allocatable :: A11(:,:), A12(:,:), A21(:,:), A22(:,:)
-	real, allocatable :: B11(:,:), B12(:,:), B21(:,:), B22(:,:)
-	real, allocatable :: A(:,:), B(:,:)
+	real(8), allocatable :: A11(:,:), A12(:,:), A21(:,:), A22(:,:)
+	real(8), allocatable :: B11(:,:), B12(:,:), B21(:,:), B22(:,:)
+	real(8), allocatable :: A(:,:), B(:,:)
 
 	! for LAPACK computation
-	real, allocatable :: alphar(:), alphai(:), beta_eig(:), work(:)
+	real(8), allocatable :: alphar(:), alphai(:), beta_eig(:), work(:)
 	real :: dummyVL(1,1), dummyVR(1,1) 
 	integer :: lwork, info, rwork
 	
 	! storage for eigenvalues at each ik
-	real, allocatable :: eig_real(:,:), eig_imag(:,:)
-	!real, allocatable :: eig_real(:,:)
-	!complex, allocatable :: eig_imag(:,:)
+	real(8), allocatable :: eig_real(:,:), eig_imag(:,:)
+
 	
-	! final kci vector
-	real, allocatable :: sigmai(:)
-	!complex, allocatable :: sigmai(:)
 
 	print *, '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
 	print *, '~~~~~~~~~~~~~~~TQG_SOLVE_2_BIS_FORTRAN~~~~~~~~~~~~~~~'
@@ -72,19 +67,15 @@ program tqg_solve
 	
 	! same thing but for Lapack stuff
 	allocate(alphar(2*Ny), alphai(2*Ny), beta_eig(2*Ny))
-    	allocate(eig_real(2*Ny, Nk), eig_imag(2*Ny, Nk))
+    	!allocate(eig_real(2*Ny, Nk), eig_imag(2*Ny, Nk))
+	allocate(eig_real(Nk, 2*Ny), eig_imag(Nk, 2*Ny))  
 	lwork = 8 * 2*Ny
 	allocate(work(lwork))
 	
 	! for the final vetor
-	allocate(sigmai(Nk))
+	!allocate(sigmai(Nk))
 	
 	
-	
-
-	! matrices full of 0 of the problem (no need loops)
-	B12 = 0.0
-	B21 = 0.0
 
 	! filling vectors
 	do i=1,Ny
@@ -105,6 +96,11 @@ program tqg_solve
 
 		k(ik+1) = k(ik)+dk
 		K2 = (k(ik)**2 + F1star)*dy**2
+		
+		
+		! Reset matrices to 0 at each iteration 
+		A11 = 0.0; A12 = 0.0; A21 = 0.0; A22 = 0.0
+		B11 = 0.0; B12 = 0.0; B21 = 0.0; B22 = 0.0
 		
 
 
@@ -163,9 +159,30 @@ program tqg_solve
 		!print *, B
 		! LAPACK generalized eigensolver
 		! DGGEV
-	    	call DGGEV('N', 'N', 2*Ny, A, 2*Ny, B, 2*Ny, alphar, alphai, beta_eig, &
-		      dummyVL, 1, dummyVR, 1, work, lwork, info)
+	    	call DGGEV('N', 'N', 2*Ny, A, 2*Ny, B, 2*Ny, alphar, alphai, beta_eig,&
+	    	dummyVL, 1, dummyVR, 1, work, lwork, info)
+	    	
+	    	
+		if (info /= 0) then
+		    print *, 'LAPACK error: DGGEV returned info = ', info
+		end if
+
+	    	
+	    	
+	    	
+		do i = 1, 2*Ny
+			if (beta_eig(i) .ne. 0.d0) then
+				eig_real(ik, i) = alphar(i) / beta_eig(i) * k(ik)
+				eig_imag(ik, i) = alphai(i) / beta_eig(i) * k(ik)
+			else
+				eig_real(ik, i) = 0.d0
+				eig_imag(ik, i) = 0.d0
+			end if
+		end do
+
 	      
+
+	
 	
 	
 	end do
@@ -178,14 +195,13 @@ program tqg_solve
 	
 	! print of the results
 	
-	
-	do i=1,Nk
-		
-		print *, maxval(k(i)*eig_imag(:,i))
-		
+
+	do ik = 1, Nk
+		max_sigma = maxval(eig_imag(ik,:))
+		print *, max_sigma
 	end do
-	
-	print *, size(eig_imag)
+
+
 	
 
 
