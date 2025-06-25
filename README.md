@@ -22,5 +22,5 @@ force the order 0 or 1.
 
 To compile the f90 files
 
-1) gfortran linear_system_1D.f90 -llapack -lblas -o potsolve
+1) gfortran myfile.f90 -llapack -lblas -o program
 2) ./program
