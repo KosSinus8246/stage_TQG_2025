@@ -53,7 +53,7 @@ beta = np.round(np.linspace(0, 3, 15), 3)
 F1star = 0 # 1/Rd**2
 
 U0 = 1
-Theta0_U0 = 1e-13 # ratio
+Theta0_U0 = 2 # ratio
 Theta0 = Theta0_U0 *U0
 
 
@@ -275,7 +275,7 @@ print('/////////////////////////////////////////////////////')
 
 print('PLOT...')
 #res = 5
-res = np.arange(0.0,0.5,0.05)
+res = np.arange(0.0,1,0.05)
 
 
 fig, (ax) = plt.subplots(1,2,figsize=(13,6))
@@ -284,7 +284,7 @@ cs = ax[0].contour(k,beta,contourf_beta_k_matrix,res,colors='k',linestyles='--')
 ax[0].clabel(cs,fontsize=15,colors='k')
 ax[0].set_xlabel(r'$k$')
 ax[0].set_ylabel(r'$\beta$')
-ax[0].set_title(r'$\sigma-$Contours : TQG')
+ax[0].set_title(r'$\sigma_i-$contours : TQG')
 ax[0].tick_params(top=True,right=True,direction='in',size=4,width=1)
 
 ax[0].set_ylim(np.min(beta), np.max(beta))
@@ -298,7 +298,7 @@ cs = ax[1].contour(k,beta,contourf_beta_k_matrix_NT,res,colors='k',linestyles='-
 #ax[1].contourf(k,beta,contourf_beta_k_matrix_NT,res,cmap='Grays')
 ax[1].clabel(cs,fontsize=15,colors='k')
 ax[1].set_xlabel(r'$k$')
-ax[1].set_title(r'$\sigma-$Contours : QG')
+ax[1].set_title(r'$\sigma_i-$contours : QG')
 ax[1].tick_params(top=True,right=True, labelleft=False,direction='in',size=4,width=1)
 for spine in ax[1].spines.values():
     spine.set_linewidth(2)
@@ -344,21 +344,21 @@ ax.set_ylabel(r'$\beta$')
 
 
 
-fig, (ax) = plt.subplots(1,1)
+fig2, (ax2) = plt.subplots(1,1)
 
-cs = ax.contour(k, beta, contourf_beta_k_matrix-contourf_beta_k_matrix_NT,10, cmap='Reds',alpha=0.65)
-ax.clabel(cs,fontsize=15,colors='k')
+cs = ax2.contour(k, beta, contourf_beta_k_matrix-contourf_beta_k_matrix_NT,10, cmap='Reds',alpha=0.65)
+ax2.clabel(cs,fontsize=15,colors='k')
 
-ax.set_title(r'$\sigma-$Contours : TQG - QG')
-ax.set_ylim(np.min(beta), np.max(beta))
-ax.set_xlim(0.1, np.max(k))
+ax2.set_title(r'$\sigma-$contours : TQG - QG')
+ax2.set_ylim(np.min(beta), np.max(beta))
+ax2.set_xlim(0.1, np.max(k))
 
-ax.set_xlabel(r'$k$')
-ax.set_ylabel(r'$\beta$')
+ax2.set_xlabel(r'$k$')
+ax2.set_ylabel(r'$\beta$')
 
-ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
+ax2.tick_params(top=True,right=True,direction='in',size=4,width=1)
 
-for spine in ax.spines.values():
+for spine in ax2.spines.values():
     spine.set_linewidth(2)
 
 
