@@ -310,7 +310,7 @@ for i, t in enumerate(timesteps):
 	
 	#cs = axs[0,i].contour(x_l,y_l,PSI,levels,colors='k')
 	#axs[0,i].clabel(cs)
-	axs[0,i].streamplot(x_l,y_l,u_s,v_s,color='k',linewidth=0.5,arrowsize=0.5)
+	axs[0,i].streamplot(x_l,y_l,u_s,v_s,color='k',linewidth=0.5,arrowsize=0.75)
 
 	
 	axs[0,i].set_title(f"t = {t}")
@@ -331,7 +331,7 @@ for i, t in enumerate(timesteps):
 	#cs = axs[1,i].contour(x_l,y_l,PSI_NT,levels,colors='k')
 	#axs[1,i].clabel(cs)
 
-	axs[1,i].streamplot(x_l,y_l,u_sNT,v_sNT,color='k',linewidth=0.5,arrowsize=0.5)
+	axs[1,i].streamplot(x_l,y_l,u_sNT,v_sNT,color='k',linewidth=0.5,arrowsize=0.75)
 
 
 	axs[1,i].set_xlabel(r"$x$")
