@@ -31,7 +31,6 @@ print('-----------------------------------------------------')
 
 
 N = 20
-#Nk, dk = 51, 0.1
 
 Lmin = 0.1
 L = np.pi
@@ -54,7 +53,8 @@ Theta0_U0 = 1. # ratio
 Theta0 = Theta0_U0 *U0
 
 
-Un = U0*np.exp(-yy**2)
+#Un = U0*np.exp(-yy**2)
+Un = U0*np.exp(-(yy-L/2)**2)
 
 
 Vn = Un*(dh**2)
@@ -72,7 +72,7 @@ F11 = G11*dh**2
 
 
 
-k0, l0 = 1., 1.
+k0, l0 = 5., 5.
 
 K2 = (k0**2+l0**2 + F1star)*dh**2
 
@@ -210,6 +210,7 @@ c, X = eig(A,B)
 c_NT, X_NT = eig(A11_star, B11)
 
 
+print('EIGENVALUES AND EIGENVECTORS : OK')
 
 
 ##################################
@@ -218,7 +219,7 @@ c_NT, X_NT = eig(A11_star, B11)
 
 
 # Parameters for plotting
-timesteps = [0, 1, 2, 3]  # time points
+timesteps = [0, 0.5, 1, 1.5]  # time points
 mode_index = np.argmax(np.imag(c))  # choose dominant or a specific mode
 
 # TQG ##################
@@ -239,6 +240,7 @@ PHI_xy = np.real(phi_xy)
 
 
 
+
 # QG ##################
 ########################
 # Extract eigenvalue and eigenvector
@@ -252,6 +254,14 @@ phi_xy_NT = phi_flat_NT.reshape((N, N))
 
 # Normalize for visualization if needed
 PHI_xy_NT = np.real(phi_xy_NT)
+
+
+
+
+
+
+
+
 
 print('COMPUTATION : OK')
 
@@ -267,7 +277,7 @@ print('PLOT...')
 fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
 fig.suptitle(r'Evolution of $\psi_\mathbf{TQG}$ and $\psi_\mathbf{QG}$')
 
-lim_TQG, lim_QG = 0.4, 0.4
+lim_TQG, lim_QG = 1e-1, 1.
 levels = 10
 
 
@@ -277,11 +287,32 @@ for i, t in enumerate(timesteps):
 	
 	PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 	PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+
+	# VELOCITIES
+	u_s, v_s = np.zeros_like(PSI), np.zeros_like(PSI)
+	u_sNT, v_sNT = np.zeros_like(PSI), np.zeros_like(PSI)
+
+
+	for j in range(len(x_l)-1):
+		for k in range(len(y_l)-1):
+			u_s[j,k] = - (PSI[j+1,k] - PSI[j-1,k])/(2*dh)
+			v_s[j,k] =   (PSI[j,k+1] - PSI[j,k-1])/(2*dh)
+
+			u_sNT[j,k] = - (PSI_NT[j+1,k] - PSI_NT[j-1,k])/(2*dh)
+			v_sNT[j,k] =   (PSI_NT[j,k+1] - PSI_NT[j,k-1])/(2*dh)
+
+
+
+
 		
 	
 	im1 = axs[0,i].contourf(x_l,y_l,PSI,levels,cmap='RdBu_r',vmin=-lim_TQG,vmax=lim_TQG)
-	cs = axs[0,i].contour(x_l,y_l,PSI,levels,colors='k')
-	axs[0,i].clabel(cs)
+	
+	#cs = axs[0,i].contour(x_l,y_l,PSI,levels,colors='k')
+	#axs[0,i].clabel(cs)
+	axs[0,i].streamplot(x_l,y_l,u_s,v_s,color='k',linewidth=0.5,arrowsize=0.5)
+
+	
 	axs[0,i].set_title(f"t = {t}")
 	
 	axs[0,i].set_xlim(Lmin,L)
@@ -296,8 +327,13 @@ for i, t in enumerate(timesteps):
 	
 	
 	im2 = axs[1,i].contourf(x_l,y_l,PSI_NT,levels,cmap='coolwarm',vmin=-lim_QG,vmax=lim_QG)
-	cs = axs[1,i].contour(x_l,y_l,PSI_NT,levels,colors='k')
-	axs[1,i].clabel(cs)
+
+	#cs = axs[1,i].contour(x_l,y_l,PSI_NT,levels,colors='k')
+	#axs[1,i].clabel(cs)
+
+	axs[1,i].streamplot(x_l,y_l,u_sNT,v_sNT,color='k',linewidth=0.5,arrowsize=0.5)
+
+
 	axs[1,i].set_xlabel(r"$x$")
 	axs[1,i].set_xlim(Lmin,L)
 	axs[1,i].set_ylim(Lmin,L)
@@ -318,9 +354,11 @@ axs[0,3].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direc
 
 axs[1,0].set_ylabel(r'$y$')
 fig.colorbar(im2, ax=axs[1,-1],extend='both')
-axs[1,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
-axs[1,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
-axs[1,3].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
+axs[1,1].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
+axs[1,2].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
+axs[1,3].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
+
+
 
 plt.tight_layout()
 plt.show()
