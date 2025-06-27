@@ -14,12 +14,6 @@ the KERNEL codes.
 The code TQG solve named ''JULIE'' is a 2D adaption 
 of the TQG solve v2 bis ''TARANIS''
 
-
-Important : to compile the f90 files
-ifort is deprecated, we need to use ifx
-DO NOT use the optimisation at order 2 and
-force the order 0 or 1.
-
 To compile the f90 files
 
 1) gfortran myfile.f90 -llapack -lblas -o program
