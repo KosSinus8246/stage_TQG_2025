@@ -49,7 +49,7 @@ beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 0. # ratio
+Theta0_U0 = 0.1 # ratio
 Theta0 = Theta0_U0 *U0
 
 
@@ -72,7 +72,7 @@ F11 = G11*dh**2
 
 
 
-k0, l0 = 5., 0.
+k0, l0 = 2., 0.
 
 K2 = (k0**2+l0**2 + F1star)*dh**2
 
@@ -220,7 +220,9 @@ print('EIGENVALUES AND EIGENVECTORS : OK')
 
 # Parameters for plotting
 timesteps = [0, 0.5, 1, 1.5]  # time points
-mode_index = np.argmax(np.imag(c))  # choose dominant or a specific mode
+#mode_index = np.argmax(np.imag(c))  # choose dominant or a specific mode
+mode_index = 1
+
 
 # TQG ##################
 ########################
@@ -275,9 +277,9 @@ print('PLOT...')
 
 # Time evolution
 fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
-fig.suptitle(r'Evolution of $\psi_\mathbf{TQG}$ and $\psi_\mathbf{QG}$')
+fig.suptitle(r'Evolution of $\psi_\mathbf{TQG}$ and $\psi_\mathbf{QG}$ : mode n°'+str(mode_index))
 
-lim_TQG, lim_QG = 1., 1.
+lim_TQG, lim_QG = 1.5, 1.5
 levels = 10
 
 
@@ -286,7 +288,7 @@ for i, t in enumerate(timesteps):
 	PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 	
 	PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
-	PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+	PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
 
 	# VELOCITIES
 	u_s, v_s = np.zeros_like(PSI), np.zeros_like(PSI)
@@ -306,7 +308,7 @@ for i, t in enumerate(timesteps):
 
 		
 	
-	im1 = axs[0,i].contourf(x_l,y_l,PSI,levels,cmap='RdBu_r',vmin=-lim_TQG,vmax=lim_TQG)
+	im1 = axs[0,i].contourf(x_l,y_l,PSI,levels,cmap='coolwarm',vmin=-lim_TQG,vmax=lim_TQG)
 	
 	#cs = axs[0,i].contour(x_l,y_l,PSI,levels,colors='k')
 	#axs[0,i].clabel(cs)
@@ -326,7 +328,7 @@ for i, t in enumerate(timesteps):
 	
 	
 	
-	im2 = axs[1,i].contourf(x_l,y_l,PSI_NT,levels,cmap='RdBu_r',vmin=-lim_QG,vmax=lim_QG)
+	im2 = axs[1,i].contourf(x_l,y_l,PSI_NT,levels,cmap='coolwarm',vmin=-lim_QG,vmax=lim_QG)
 
 	#cs = axs[1,i].contour(x_l,y_l,PSI_NT,levels,colors='k')
 	#axs[1,i].clabel(cs)
@@ -357,6 +359,22 @@ fig.colorbar(im2, ax=axs[1,-1],extend='both')
 axs[1,1].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
 axs[1,2].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
 axs[1,3].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
+
+
+
+'''
+plt.figure()
+
+for i in range(N):
+	plt.plot(i,A11[i,i],'k+')
+	plt.plot(i,A11_star[i,i],'r+')'''
+
+
+
+
+
+
+
 
 
 
