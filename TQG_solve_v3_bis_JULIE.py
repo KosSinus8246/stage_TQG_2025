@@ -27,7 +27,7 @@ print('-----------------------------------------------------')
 
 
 
-colormap = 'coolwarm'
+colormap = 'RdBu_r'
 lim_TQG, lim_QG = 1., 10.
 levels = 30
 
@@ -76,7 +76,7 @@ F11 = G11*dh**2
 
 
 
-k0, l0 = 2., 1.
+k0, l0 = 2., 0.5
 
 K2 = (k0**2+l0**2 + F1star)*dh**2
 
@@ -305,8 +305,10 @@ for i, t in enumerate(timesteps):
 			u_sNT[j,k] = - (PSI_NT[j+1,k] - PSI_NT[j-1,k])/(2*dh)
 			v_sNT[j,k] =   (PSI_NT[j,k+1] - PSI_NT[j,k-1])/(2*dh)
 			
-			zeta[j,k] = (PSI[j,k+1] -2*PSI[j,k] + PSI[j,k-1])/(dh**2) + (PSI[j+1,k] -2*PSI[j,k] + PSI[j-1,k])/(dh**2) 
-			zeta_NT[j,k] = (PSI_NT[j,k+1] -2*PSI_NT[j,k] + PSI_NT[j,k-1])/(dh**2) + (PSI_NT[j+1,k] -2*PSI_NT[j,k] + PSI_NT[j-1,k])/(dh**2) 
+			zeta[j,k] = (PSI[j,k+1] -2*PSI[j,k] + PSI[j,k-1])/(dh**2) +\
+			 (PSI[j+1,k] -2*PSI[j,k] + PSI[j-1,k])/(dh**2) 
+			zeta_NT[j,k] = (PSI_NT[j,k+1] -2*PSI_NT[j,k] + PSI_NT[j,k-1])/(dh**2) +\
+			 (PSI_NT[j+1,k] -2*PSI_NT[j,k] + PSI_NT[j-1,k])/(dh**2) 
 
 
 
@@ -355,13 +357,25 @@ for i, t in enumerate(timesteps):
 	
 	
 axs[0,0].set_ylabel(r'$y$')
-fig.colorbar(im1, ax=axs[0,-1],extend='both')
+cbar_1 = fig.colorbar(im1, ax=axs[0,-1])
+cbar_1.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
+cbar_1.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
+                               direction='in',    # Tick style
+                               length=2,width=1)            # Length of ticks for visibility
+
+
 axs[0,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 axs[0,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 axs[0,3].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 
 axs[1,0].set_ylabel(r'$y$')
-fig.colorbar(im2, ax=axs[1,-1],extend='both')
+cbar_2 = fig.colorbar(im2, ax=axs[1,-1])
+cbar_2.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
+cbar_2.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
+                               direction='in',    # Tick style
+                               length=2,width=1)            # Length of ticks for visibility
+
+
 axs[1,1].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
 axs[1,2].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
 axs[1,3].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
