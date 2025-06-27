@@ -49,7 +49,7 @@ beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 1. # ratio
+Theta0_U0 = 0. # ratio
 Theta0 = Theta0_U0 *U0
 
 
@@ -72,7 +72,7 @@ F11 = G11*dh**2
 
 
 
-k0, l0 = 5., 5.
+k0, l0 = 5., 0.
 
 K2 = (k0**2+l0**2 + F1star)*dh**2
 
@@ -277,7 +277,7 @@ print('PLOT...')
 fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
 fig.suptitle(r'Evolution of $\psi_\mathbf{TQG}$ and $\psi_\mathbf{QG}$')
 
-lim_TQG, lim_QG = 1e-1, 1.
+lim_TQG, lim_QG = 1., 1.
 levels = 10
 
 
@@ -326,7 +326,7 @@ for i, t in enumerate(timesteps):
 	
 	
 	
-	im2 = axs[1,i].contourf(x_l,y_l,PSI_NT,levels,cmap='coolwarm',vmin=-lim_QG,vmax=lim_QG)
+	im2 = axs[1,i].contourf(x_l,y_l,PSI_NT,levels,cmap='RdBu_r',vmin=-lim_QG,vmax=lim_QG)
 
 	#cs = axs[1,i].contour(x_l,y_l,PSI_NT,levels,colors='k')
 	#axs[1,i].clabel(cs)
