@@ -18,7 +18,9 @@ print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_3_BIS~~~~~~~~~~~~~~~~~~~~')
 print('~~~~~~~~~~~~~~~~~~~~~~~JULIE~~~~~~~~~~~~~~~~~~~~~~~~~')
 print('-----------------------------------------------------')
 
-
+# cf TQG notes : A.X = c.B.X is the 2D system that is solved here
+# and also the 2D non thermal system
+# @uthor : dimitri moreau 27/06/2025
 
 
 ##################################
