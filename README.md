@@ -1,4 +1,4 @@
-Hello reader,
+Hello Quasi-Geostrophy enthusiast,
 
 The version 2 is the actual version of TQG solve (@uthor : Dimitri Moreau).
 The f90 version is coded by analogy to TQG solve python (@uthor : Dimitri Moreau)
@@ -18,3 +18,5 @@ To compile the f90 files
 
 1) gfortran myfile.f90 -llapack -lblas -o program
 2) ./program
+
+@dmoreau
