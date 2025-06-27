@@ -27,10 +27,12 @@ print('-----------------------------------------------------')
 
 
 
+colormap = 'coolwarm'
+lim_TQG, lim_QG = 1., 10.
+levels = 30
 
 
-
-N = 20
+N = 25
 
 Lmin = 0.1
 L = np.pi
@@ -49,8 +51,10 @@ beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 0.1 # ratio
+Theta0_U0 = 1. # ratio
 Theta0 = Theta0_U0 *U0
+
+mode_index = 1 # mode to observe
 
 
 #Un = U0*np.exp(-yy**2)
@@ -72,7 +76,7 @@ F11 = G11*dh**2
 
 
 
-k0, l0 = 2., 0.
+k0, l0 = 2., 1.
 
 K2 = (k0**2+l0**2 + F1star)*dh**2
 
@@ -219,9 +223,9 @@ print('EIGENVALUES AND EIGENVECTORS : OK')
 
 
 # Parameters for plotting
-timesteps = [0, 0.5, 1, 1.5]  # time points
-#mode_index = np.argmax(np.imag(c))  # choose dominant or a specific mode
-mode_index = 1
+timesteps = [0.0, 0.25, 0.5, 0.75]  # time points
+
+
 
 
 # TQG ##################
@@ -277,10 +281,7 @@ print('PLOT...')
 
 # Time evolution
 fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
-fig.suptitle(r'Evolution of $\psi_\mathbf{TQG}$ and $\psi_\mathbf{QG}$ : mode n°'+str(mode_index))
-
-lim_TQG, lim_QG = 1.5, 1.5
-levels = 10
+fig.suptitle(r'Evolution of $\zeta_\mathbf{TQG}$ and $\zeta_\mathbf{QG}$ : mode n°'+str(mode_index))
 
 
 for i, t in enumerate(timesteps):
@@ -293,22 +294,26 @@ for i, t in enumerate(timesteps):
 	# VELOCITIES
 	u_s, v_s = np.zeros_like(PSI), np.zeros_like(PSI)
 	u_sNT, v_sNT = np.zeros_like(PSI), np.zeros_like(PSI)
+	zeta, zeta_NT = np.zeros_like(PSI), np.zeros_like(PSI)
 
 
 	for j in range(len(x_l)-1):
 		for k in range(len(y_l)-1):
-			u_s[j,k] = - (PSI[j+1,k] - PSI[j-1,k])/(2*dh)
-			v_s[j,k] =   (PSI[j,k+1] - PSI[j,k-1])/(2*dh)
+			u_s[j,k] = - (PSI[j+1,k] - PSI[j-1,k])/(2*dh) # -dpsi/dy
+			v_s[j,k] =   (PSI[j,k+1] - PSI[j,k-1])/(2*dh) # dpsi/dx
 
 			u_sNT[j,k] = - (PSI_NT[j+1,k] - PSI_NT[j-1,k])/(2*dh)
 			v_sNT[j,k] =   (PSI_NT[j,k+1] - PSI_NT[j,k-1])/(2*dh)
-
+			
+			zeta[j,k] = (PSI[j,k+1] -2*PSI[j,k] + PSI[j,k-1])/(dh**2) + (PSI[j+1,k] -2*PSI[j,k] + PSI[j-1,k])/(dh**2) 
+			zeta_NT[j,k] = (PSI_NT[j,k+1] -2*PSI_NT[j,k] + PSI_NT[j,k-1])/(dh**2) + (PSI_NT[j+1,k] -2*PSI_NT[j,k] + PSI_NT[j-1,k])/(dh**2) 
 
 
 
 		
 	
-	im1 = axs[0,i].contourf(x_l,y_l,PSI,levels,cmap='coolwarm',vmin=-lim_TQG,vmax=lim_TQG)
+	im1 = axs[0,i].contourf(x_l,y_l,zeta,levels, cmap=colormap,vmin=-lim_TQG,vmax=lim_TQG)
+	#im1 = axs[0,i].pcolormesh(x_l,y_l,PSI,cmap=colormap,vmin=-lim_TQG,vmax=lim_TQG)
 	
 	#cs = axs[0,i].contour(x_l,y_l,PSI,levels,colors='k')
 	#axs[0,i].clabel(cs)
@@ -328,7 +333,8 @@ for i, t in enumerate(timesteps):
 	
 	
 	
-	im2 = axs[1,i].contourf(x_l,y_l,PSI_NT,levels,cmap='coolwarm',vmin=-lim_QG,vmax=lim_QG)
+	im2 = axs[1,i].contourf(x_l,y_l,zeta_NT,levels, cmap=colormap,vmin=-lim_QG,vmax=lim_QG)
+	#im2 = axs[1,i].pcolormesh(x_l,y_l,PSI_NT,cmap=colormap,vmin=-lim_QG,vmax=lim_QG)
 
 	#cs = axs[1,i].contour(x_l,y_l,PSI_NT,levels,colors='k')
 	#axs[1,i].clabel(cs)
