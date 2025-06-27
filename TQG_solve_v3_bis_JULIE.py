@@ -363,6 +363,11 @@ cbar_1.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
                                direction='in',    # Tick style
                                length=2,width=1)            # Length of ticks for visibility
 
+# Set the border (spine) linewidth of the colorbar
+for spine in cbar_1.ax.spines.values():
+	spine.set_linewidth(1.5)  # You can set this to any float value
+
+
 
 axs[0,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 axs[0,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
@@ -374,6 +379,11 @@ cbar_2.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
 cbar_2.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
                                direction='in',    # Tick style
                                length=2,width=1)            # Length of ticks for visibility
+
+
+# Set the border (spine) linewidth of the colorbar
+for spine in cbar_2.ax.spines.values():
+	spine.set_linewidth(1.5)  # You can set this to any float value
 
 
 axs[1,1].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
