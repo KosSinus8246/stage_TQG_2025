@@ -30,7 +30,7 @@ print('-----------------------------------------------------')
 
 
 colormap = 'RdBu_r'
-lim_TQG, lim_QG = 1., 10.
+lim_TQG, lim_QG = 1.5, 7.2
 levels = 30
 
 
@@ -226,7 +226,7 @@ print('EIGENVALUES AND EIGENVECTORS : OK')
 
 # Parameters for plotting
 timesteps = [0.0, 0.25, 0.5, 0.75]  # time points
-
+timesteps = [0.0,0.4, 0.8, 1.2]
 
 
 
