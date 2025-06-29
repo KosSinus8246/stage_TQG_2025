@@ -29,8 +29,12 @@ print('-----------------------------------------------------')
 
 
 
+# Parameters for plotting
+#timesteps = [0.0, 0.25, 0.5, 0.75]  # time points
+timesteps = [0.0,0.2, 0.4, 0.6]
+mode_index = 1 # mode to observe
 colormap = 'RdBu_r'
-lim_TQG, lim_QG = 1.5, 7.2
+lim_TQG, lim_QG = 0.75, 4.
 levels = 30
 
 
@@ -56,7 +60,7 @@ U0 = 1.
 Theta0_U0 = 1. # ratio
 Theta0 = Theta0_U0 *U0
 
-mode_index = 1 # mode to observe
+
 
 
 #Un = U0*np.exp(-yy**2)
@@ -224,9 +228,6 @@ print('EIGENVALUES AND EIGENVECTORS : OK')
 ##################################
 
 
-# Parameters for plotting
-timesteps = [0.0, 0.25, 0.5, 0.75]  # time points
-timesteps = [0.0,0.4, 0.8, 1.2]
 
 
 
