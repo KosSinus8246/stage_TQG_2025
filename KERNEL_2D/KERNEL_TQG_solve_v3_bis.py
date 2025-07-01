@@ -18,12 +18,7 @@ print('-----------------------------------------------------')
 
 
 
-
-print('/////////////////////////////////////////////////////')
-print('PARAMS : OK')
-
-
-def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0):
+def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,timesteps):
 
 
 
@@ -65,7 +60,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0):
 	def ij_to_index(i, j, N):
 	    return i * N + j
 
-	for i in tqdm(range(N)):
+	for i in range(N):
 		for j in range(N):
 			#idx = ij_to_index(i, j, N)
 			idx = i * N + j
@@ -93,7 +88,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0):
 	B = np.block([[B11,B12],[B21,B22]])
 
 
-	print('MATRIX B : OK')
+
 
 
 	##################################
@@ -142,8 +137,6 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0):
 
 	A = np.block([[A11,A12],[A21,A22]])
 
-	print('MATRIX A : OK')
-
 
 
 	# velocity odd
@@ -176,24 +169,16 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0):
 	##################################
 	# SOLVING
 	##################################
-	print('/////////////////////////////////////////////////////')
-	print('COMPUTATION...')
+	
 
 
 	c, X = eig(A,B)
 	c_NT, X_NT = eig(A11_star, B11)
 
 
-	print('EIGENVALUES AND EIGENVECTORS : OK')
 
 
-	##################################
-	# PLOT
-	##################################
-
-
-	# Parameters for plotting
-	timesteps = [0.0, 0.25, 0.5, 0.75]  # time points
+	
 
 
 
@@ -234,6 +219,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0):
 
 
 	zeta_list = []
+	u_s_list = []
+	v_s_list = []
 
 	for i, t in enumerate(timesteps):
 		PHI_t = np.real(PHI_xy * np.exp(c_mode * t))
@@ -266,6 +253,9 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0):
 				 
 				 
 		zeta_list.append(zeta)
+		u_s_list.append(u_s)
+		v_s_list.append(v_s)
+		
 
 
 
@@ -273,10 +263,11 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0):
 
 
 	zeta_list = np.array(zeta_list)
+	u_s_list = np.array(u_s_list)
+	v_s_list = np.array(v_s_list)
 
-	print('COMPUTATION : OK')
 	
-	return zeta_list
+	return zeta_list, u_s_list, v_s_list
 
 
 
