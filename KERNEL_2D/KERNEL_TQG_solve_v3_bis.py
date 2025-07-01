@@ -221,6 +221,11 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,t
 	zeta_list = []
 	u_s_list = []
 	v_s_list = []
+	
+	zeta_listNT = []
+	u_s_listNT = []
+	v_s_listNT = []
+	
 
 	for i, t in enumerate(timesteps):
 		PHI_t = np.real(PHI_xy * np.exp(c_mode * t))
@@ -256,6 +261,10 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,t
 		u_s_list.append(u_s)
 		v_s_list.append(v_s)
 		
+		zeta_listNT.append(zeta_NT)
+		u_s_listNT.append(u_sNT)
+		v_s_listNT.append(v_sNT)
+		
 
 
 
@@ -265,9 +274,13 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,t
 	zeta_list = np.array(zeta_list)
 	u_s_list = np.array(u_s_list)
 	v_s_list = np.array(v_s_list)
+	
+	zeta_listNT = np.array(zeta_listNT)
+	u_s_listNT = np.array(u_s_listNT)
+	v_s_listNT = np.array(v_s_listNT)
 
 	
-	return zeta_list, u_s_list, v_s_list
+	return zeta_list, u_s_list, v_s_list, zeta_listNT, u_s_listNT, v_s_listNT 
 
 
 
