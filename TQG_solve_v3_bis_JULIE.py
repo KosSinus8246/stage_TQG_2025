@@ -29,12 +29,8 @@ print('-----------------------------------------------------')
 
 
 
-# Parameters for plotting
-#timesteps = [0.0, 0.25, 0.5, 0.75]  # time points
-timesteps = [0.0,0.2, 0.4, 0.6]
-mode_index = 1 # mode to observe
 colormap = 'RdBu_r'
-lim_TQG, lim_QG = 0.75, 4.
+lim_TQG, lim_QG = 1., 10.
 levels = 30
 
 
@@ -57,10 +53,10 @@ beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 1. # ratio
+Theta0_U0 = 2. # ratio
 Theta0 = Theta0_U0 *U0
 
-
+mode_index = 5 # mode to observe
 
 
 #Un = U0*np.exp(-yy**2)
@@ -82,7 +78,7 @@ F11 = G11*dh**2
 
 
 
-k0, l0 = 2., 0.5
+k0, l0 = 2., 0.
 
 K2 = (k0**2+l0**2 + F1star)*dh**2
 
@@ -227,6 +223,9 @@ print('EIGENVALUES AND EIGENVECTORS : OK')
 # PLOT
 ##################################
 
+
+# Parameters for plotting
+timesteps = [0.0, 0.25, 0.5, 0.75]  # time points
 
 
 
@@ -395,23 +394,18 @@ axs[1,3].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direct
 
 
 
-'''
-plt.figure()
-
-for i in range(N):
-	plt.plot(i,A11[i,i],'k+')
-	plt.plot(i,A11_star[i,i],'r+')'''
-
-
-
-
-
-
-
 
 
 
 plt.tight_layout()
+
+
+
+np.savetxt('zeta_'+str(mode_index)+'.txt', zeta, fmt='%.2f')  # '%d' is for integers
+
+
+
+
 plt.show()
 
 
