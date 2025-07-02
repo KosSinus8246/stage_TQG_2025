@@ -160,7 +160,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,t
 	A11_star[(N*N)-1,(N*N)-1] = 0.0
 	B11[(N*N)-1,(N*N)-1] = 0.0
 
-
+	
 
 
 
