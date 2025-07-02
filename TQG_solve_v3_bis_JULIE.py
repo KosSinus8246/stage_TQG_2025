@@ -53,10 +53,10 @@ beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 2. # ratio
+Theta0_U0 = 1. # ratio
 Theta0 = Theta0_U0 *U0
 
-mode_index = 5 # mode to observe
+mode_index = 327 # mode to observe
 
 
 #Un = U0*np.exp(-yy**2)
@@ -314,7 +314,11 @@ for i, t in enumerate(timesteps):
 
 
 
-		
+	#print('////////////////////////////////')
+	#print(np.isnan(zeta).any())
+	
+	
+	
 	
 	im1 = axs[0,i].contourf(x_l,y_l,zeta,levels, cmap=colormap,vmin=-lim_TQG,vmax=lim_TQG)
 	#im1 = axs[0,i].pcolormesh(x_l,y_l,PSI,cmap=colormap,vmin=-lim_TQG,vmax=lim_TQG)
@@ -401,7 +405,27 @@ plt.tight_layout()
 
 
 
-np.savetxt('zeta_'+str(mode_index)+'.txt', zeta, fmt='%.2f')  # '%d' is for integers
+
+norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
+norm_c = np.sort(norm_c)[::-1]
+
+
+percent = norm_c[2:]/np.nansum(norm_c[2:])
+
+cumsun_f = np.nancumsum(percent)
+
+fig, (ax) = plt.subplots(1,2,figsize=(15,4))
+
+ax[0].plot(percent*100,'k',label='norm')
+
+ax[1].plot(cumsun_f,'r',label='cumsum')
+ax[1].plot(np.linspace(0.9,0.9,len(cumsun_f)))
+
+
+
+
+
+#np.savetxt('zeta_'+str(mode_index)+'.txt', zeta, fmt='%.2f')  # '%d' is for integers
 
 
 
