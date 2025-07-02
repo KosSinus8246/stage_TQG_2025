@@ -1,8 +1,16 @@
 from KERNEL_TQG_solve_v3_bis import *
 import imageio.v2 as imageio
+
+'''
 import os
 from io import BytesIO
-from PIL import Image
+from PIL import Image'''
+
+
+mpl.rcParams['font.size'] = 14
+mpl.rcParams['mathtext.fontset'] = 'stix'
+mpl.rcParams['font.family'] = 'Courier New'
+mpl.rcParams['legend.edgecolor'] = '0'
 
 
 
@@ -17,8 +25,7 @@ beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 2. # ratio
-#mode_index = 5 # mode to observe
+Theta0_U0 = 0.1 # ratio
 
 k0, l0 = 2., 0.
 
@@ -93,18 +100,71 @@ vminNT = -vmaxNT
 
 
 for i in range(zeta_final.shape[0]):
-	im = ax[0,i].contourf(x,y,zeta_final[i,:,:],20,cmap='RdBu_r',vmin=vmin,vmax=vmax)
+	im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],20,cmap='RdBu_r',vmin=vmin,vmax=vmax)
 	ax[0,i].set_title(str(timesteps[i]))
 	ax[0,i].streamplot(x,y,u_s_final[i,:,:],v_s_final[i,:,:],color='k',linewidth=0.5,arrowsize=0.75)
+	ax[0,i].set_xlim(np.min(x),np.max(x))
+	ax[0,i].set_ylim(np.min(y),np.max(y))
 	
-	imNT = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],20,cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
+	ax[0,i].set_title('t = '+str(timesteps[i]))
+	ax[0,i].tick_params(top=True,right=True,labelbottom=False,direction='in',size=4,width=1)
+	
+	for spine in ax[0,i].spines.values():
+		spine.set_linewidth(2)
+	
+	
+	
+	im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],20,cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
 	ax[1,i].streamplot(x,y,u_s_finalNT[i,:,:],v_s_finalNT[i,:,:],color='k',linewidth=0.5,arrowsize=0.75)
+	ax[1,i].set_xlim(np.min(x),np.max(x))
+	ax[1,i].set_ylim(np.min(y),np.max(y))
+	ax[1,i].set_xlabel(r"$x$")
+	ax[1,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
+	
+	for spine in ax[1,i].spines.values():
+		spine.set_linewidth(2)
 	
 	
-	
-	
-fig.colorbar(im,ax=ax[0,3])
-fig.colorbar(imNT,ax=ax[1,3])
-	
+ax[0,0].set_ylabel(r'$y$')
+cbar_1 = fig.colorbar(im1, ax=ax[0,-1])
+cbar_1.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
+cbar_1.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
+                               direction='in',    # Tick style
+                               length=2,width=1)            # Length of ticks for visibility
+
+# Set the border (spine) linewidth of the colorbar
+for spine in cbar_1.ax.spines.values():
+	spine.set_linewidth(1.5)  # You can set this to any float value
+
+
+
+ax[0,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
+ax[0,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
+ax[0,3].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
+
+ax[1,0].set_ylabel(r'$y$')
+cbar_2 = fig.colorbar(im2, ax=ax[1,-1])
+cbar_2.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
+cbar_2.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
+                               direction='in',    # Tick style
+                               length=2,width=1)            # Length of ticks for visibility
+
+
+# Set the border (spine) linewidth of the colorbar
+for spine in cbar_2.ax.spines.values():
+	spine.set_linewidth(1.5)  # You can set this to any float value
+
+
+ax[1,1].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
+ax[1,2].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
+ax[1,3].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
+
+
+
+
+
+
+plt.tight_layout()
+
 	
 plt.show()
