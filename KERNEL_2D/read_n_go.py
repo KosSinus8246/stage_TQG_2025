@@ -43,7 +43,7 @@ beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 0.1 # ratio
+Theta0_U0 = 1. # ratio
 
 k0, l0 = 2., 0.
 
@@ -128,7 +128,7 @@ for i in range(zeta_final.shape[0]):
 	im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],25,cmap='RdBu_r',vmin=vmin,vmax=vmax)
 	#im1 = ax[0,i].pcolormesh(x,y,zeta_final[i,:,:],cmap='RdBu_r',vmin=vmin,vmax=vmax)
 	ax[0,i].set_title(str(timesteps[i]))
-	ax[0,i].streamplot(x,y,u_s_final[i,:,:],v_s_final[i,:,:],color='k',linewidth=0.5,arrowsize=0.75)
+	ax[0,i].streamplot(x,y,u_s_final[i,:,:],v_s_final[i,:,:],color='k',linewidth=0.5,arrowsize=0.75,density=0.75)
 	ax[0,i].set_xlim(np.min(x),np.max(x))
 	ax[0,i].set_ylim(np.min(y),np.max(y))
 	
@@ -142,7 +142,7 @@ for i in range(zeta_final.shape[0]):
 	
 	im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],25,cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
 	#im2 = ax[1,i].pcolormesh(x,y,zeta_finalNT[i,:,:],cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
-	ax[1,i].streamplot(x,y,u_s_finalNT[i,:,:],v_s_finalNT[i,:,:],color='k',linewidth=0.5,arrowsize=0.75)
+	ax[1,i].streamplot(x,y,u_s_finalNT[i,:,:],v_s_finalNT[i,:,:],color='k',linewidth=0.5,arrowsize=0.75,density=0.75)
 	ax[1,i].set_xlim(np.min(x),np.max(x))
 	ax[1,i].set_ylim(np.min(y),np.max(y))
 	ax[1,i].set_xlabel(r"x", fontweight="bold")
