@@ -406,20 +406,27 @@ plt.tight_layout()
 
 
 
-norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
-norm_c = np.sort(norm_c)[::-1]
+norm_c = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
+norm_c__ = np.sort(norm_c)[::-1]
+ix_norm_c__ = np.argsort(norm_c)[::-1]
+
+np.savetxt('KERNEL_2D/array_ix_modes.txt',ix_norm_c__)
 
 
-percent = norm_c[2:]/np.nansum(norm_c[2:])
+percent = norm_c__[2:]/np.nansum(norm_c__[2:])
 
 cumsun_f = np.nancumsum(percent)
 
 fig, (ax) = plt.subplots(1,2,figsize=(15,4))
 
-ax[0].plot(percent*100,'k',label='norm')
+ax[0].plot(percent,'k',label='norm')
+ax[0].plot(np.linspace((10/100)*np.max(percent),(10/100)*np.max(percent),len(percent)),'--',label=r'$10\%$')
+ax[0].plot(np.linspace((50/100)*np.max(percent),(50/100)*np.max(percent),len(percent)),'--',label=r'$50\%$')
+ax[0].legend()
 
 ax[1].plot(cumsun_f,'r',label='cumsum')
-ax[1].plot(np.linspace(0.9,0.9,len(cumsun_f)))
+ax[1].plot(np.linspace(0.9,0.9,len(cumsun_f)),'--',label=r'$90\%$')
+ax[1].legend()
 
 
 
