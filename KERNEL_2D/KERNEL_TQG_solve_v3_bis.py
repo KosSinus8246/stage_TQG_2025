@@ -20,26 +20,22 @@ def get_ix(c, c_NT):
 	norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
 	norm_cNT__ = np.sort(norm_cNT)[::-1]
 	ix_norm_cNT__ = np.argsort(norm_cNT)[::-1]
-
-	np.savetxt('ix_modes_sort_QG.txt',ix_norm_cNT__)
 	
 	norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
 	norm_c__ = np.sort(norm_c)[::-1]
 	ix_norm_c__ = np.argsort(norm_c)[::-1]
-
-	np.savetxt('ix_modes_sort_TQG.txt',ix_norm_c__)
-
-
+	
+	return ix_norm_c__, ix_norm_cNT__
 
 
 
-def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0,timesteps, array_index_model2_QG, array_index_model2_TQG):
+
+
+def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh):
 
 	
 
 
-	dh = L/N
-	
 	x_l, y_l = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 	xx, yy = np.meshgrid(x_l,y_l)
 	
@@ -191,23 +187,27 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0,timesteps, ar
 	c_NT, X_NT = eig(A11_star, B11)
 	
 	
-	get_ix(c,c_NT)
-
+	
+	#############################################"
+	return x_l, y_l, xx, yy, c, c_NT, X, X_NT
 	
 	
 	
-	norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
-	norm_c__ = np.sort(norm_c)[::-1]
-	ix_norm_c__ = np.argsort(norm_c)[::-1]
+	
+	
+	
+	
 
+	
+	
+def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh):
 
-
-
+	
 	# TQG ##################
 	########################
 	# Extract eigenvalue and eigenvector
-	c_mode = c[array_index_model2_TQG]  # eigenvalue
-	X_mode = X[:, array_index_model2_TQG]  # eigenvector
+	c_mode = c[ix_norm_c__]  # eigenvalue
+	X_mode = X[:, ix_norm_c__]  # eigenvector
 
 	# Extract Theta from second half of X
 	#Theta_flat = X_mode[N*N:]
@@ -225,8 +225,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0,timesteps, ar
 	# QG ##################
 	########################
 	# Extract eigenvalue and eigenvector
-	c_NT_mode = c_NT[array_index_model2_QG]  # eigenvalue
-	X_NT_mode = X_NT[:, array_index_model2_QG]  # eigenvector
+	c_NT_mode = c_NT[ix_norm_cNT__]  # eigenvalue
+	X_NT_mode = X_NT[:, ix_norm_cNT__]  # eigenvector
 
 	# Extract Theta from second half of X
 	#Theta_flat = X_mode[N*N:]
@@ -263,8 +263,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0,timesteps, ar
 
 
 
-		for j in range(len(x_l)-1):
-			for k in range(len(y_l)-1):
+		for j in range(N-1):
+			for k in range(N-1):
 				u_s[j,k] = - (PSI[j+1,k] - PSI[j-1,k])/(2*dh) # -dpsi/dy
 				v_s[j,k] =   (PSI[j,k+1] - PSI[j,k-1])/(2*dh) # dpsi/dx
 

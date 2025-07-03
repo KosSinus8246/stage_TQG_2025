@@ -19,15 +19,15 @@ print('~~~~~~~~~~~~~~~~~~~~~~~JULIE~~~~~~~~~~~~~~~~~~~~~~~~~')
 print('-----------------------------------------------------')
 
 
-nb_mode = int(input('How many modes ?')) 
 
 
 
+'''
 array_index_model_QG = np.array(np.loadtxt('ix_modes_sort_QG.txt'),dtype=int)
 array_index_model2_QG = array_index_model_QG[:nb_mode]
 
 array_index_model_TQG = np.array(np.loadtxt('ix_modes_sort_TQG.txt'),dtype=int)
-array_index_model2_TQG = array_index_model_TQG[:nb_mode]
+array_index_model2_TQG = array_index_model_TQG[:nb_mode]'''
 
 
 
@@ -37,6 +37,7 @@ N = 20
 
 Lmin = 0.1
 L = np.pi
+dh = L/N
 x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 
 beta = 0.
@@ -47,16 +48,40 @@ Theta0_U0 = 1. # ratio
 
 k0, l0 = 2., 0.
 
-
-
-
-
-
-
 # Parameters for plotting
 timesteps = [0., 0.25, 0.50, 0.75]  # time points
 
 
+
+
+#####
+# compute eigenvalues and eigenvectors
+x_l, y_l, xx, yy, c, c_NT, X, X_NT = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh)
+
+
+
+#####
+# finding the modes that are important
+ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT)
+
+ix_norm_c__, ix_norm_cNT__ = ix_norm_c__[5], ix_norm_cNT__[5]
+
+
+#nb_mode = ix_norm_c__[5] #int(input('How many modes ?')) 
+
+
+
+zeta_list, u_s_list, v_s_list, zeta_listNT, u_s_listNT, v_s_listNT  = compute_variables(
+	N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh
+	)
+
+
+
+
+
+
+
+'''
 
 
 zeta_list_2 = []
@@ -200,4 +225,4 @@ ax[1,3].tick_params(top=True,right=True,labelbottom=True,labelleft=False,directi
 plt.tight_layout()
 
 	
-plt.show()
+plt.show()'''
