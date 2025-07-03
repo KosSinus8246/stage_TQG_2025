@@ -5,21 +5,37 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from scipy.linalg import eig
 
-
+'''
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_3_BIS~~~~~~~~~~~~~~~~~~~~')
 print('~~~~~~~~~~~~~~~~~~~~~~~JULIE~~~~~~~~~~~~~~~~~~~~~~~~~')
-print('-----------------------------------------------------')
+print('-----------------------------------------------------')'''
 
 # cf TQG notes : A.X = c.B.X is the 2D system that is solved here
 # and also the 2D non thermal system
 # @uthor : dimitri moreau 27/06/2025
 
 
+def get_ix(c, c_NT):
+	norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
+	norm_cNT__ = np.sort(norm_cNT)[::-1]
+	ix_norm_cNT__ = np.argsort(norm_cNT)[::-1]
 
-def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,timesteps):
+	np.savetxt('ix_modes_sort_QG.txt',ix_norm_cNT__)
+	
+	norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
+	norm_c__ = np.sort(norm_c)[::-1]
+	ix_norm_c__ = np.argsort(norm_c)[::-1]
+
+	np.savetxt('ix_modes_sort_TQG.txt',ix_norm_c__)
 
 
+
+
+
+def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0,timesteps, array_index_model2_QG, array_index_model2_TQG):
+
+	
 
 
 	dh = L/N
@@ -175,6 +191,10 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,t
 	c_NT, X_NT = eig(A11_star, B11)
 	
 	
+	get_ix(c,c_NT)
+
+	
+	
 	
 	norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
 	norm_c__ = np.sort(norm_c)[::-1]
@@ -183,16 +203,11 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,t
 
 
 
-	
-
-
-
-
 	# TQG ##################
 	########################
 	# Extract eigenvalue and eigenvector
-	c_mode = c[mode_index]  # eigenvalue
-	X_mode = X[:, mode_index]  # eigenvector
+	c_mode = c[array_index_model2_TQG]  # eigenvalue
+	X_mode = X[:, array_index_model2_TQG]  # eigenvector
 
 	# Extract Theta from second half of X
 	#Theta_flat = X_mode[N*N:]
@@ -210,8 +225,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,t
 	# QG ##################
 	########################
 	# Extract eigenvalue and eigenvector
-	c_NT_mode = c_NT[mode_index]  # eigenvalue
-	X_NT_mode = X_NT[:, mode_index]  # eigenvector
+	c_NT_mode = c_NT[array_index_model2_QG]  # eigenvalue
+	X_NT_mode = X_NT[:, array_index_model2_QG]  # eigenvector
 
 	# Extract Theta from second half of X
 	#Theta_flat = X_mode[N*N:]

@@ -13,6 +13,24 @@ mpl.rcParams['font.family'] = 'Courier New'
 mpl.rcParams['legend.edgecolor'] = '0'
 
 
+print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_3_BIS~~~~~~~~~~~~~~~~~~~~')
+print('~~~~~~~~~~~~~~~~~~~~~~~JULIE~~~~~~~~~~~~~~~~~~~~~~~~~')
+print('-----------------------------------------------------')
+
+
+nb_mode = int(input('How many modes ?')) 
+
+
+
+array_index_model_QG = np.array(np.loadtxt('ix_modes_sort_QG.txt'),dtype=int)
+array_index_model2_QG = array_index_model_QG[:nb_mode]
+
+array_index_model_TQG = np.array(np.loadtxt('ix_modes_sort_TQG.txt'),dtype=int)
+array_index_model2_TQG = array_index_model_TQG[:nb_mode]
+
+
+
 
 
 N = 20
@@ -29,12 +47,11 @@ Theta0_U0 = 0.1 # ratio
 
 k0, l0 = 2., 0.
 
-nb_mode = int(input('How many modes ?')) 
 
-array_index_model = np.array(np.loadtxt('array_ix_modes.txt'),dtype=int)
-array_index_model2 = array_index_model[:nb_mode]
 
-print(array_index_model2)
+
+
+
 
 # Parameters for plotting
 timesteps = [0., 0.25, 0.50, 0.75]  # time points
@@ -51,10 +68,11 @@ u_s_list_2NT = []
 v_s_list_2NT = []
 
 
-cts = 0
-for i in array_index_model2:
+for i in tqdm(range(nb_mode)):
 	
-	zeta, us, vs, zetaNT, usNT, vsNT = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, i, k0, l0,timesteps)
+	zeta, us, vs, zetaNT, usNT, vsNT = compute_TQG_2D(
+		N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0,timesteps, array_index_model2_QG[i], array_index_model2_TQG[i]
+		)
 
 	zeta_list_2.append(zeta)
 	u_s_list_2.append(us)
@@ -64,8 +82,7 @@ for i in array_index_model2:
 	u_s_list_2NT.append(usNT)
 	v_s_list_2NT.append(vsNT)
 	
-	cts = cts +1
-	print(cts)
+
 	
 
 
@@ -96,7 +113,7 @@ v_s_finalNT = np.nansum(v_s_list_2NT,axis=0)
 
 
 fig, ax = plt.subplots(2, len(timesteps), figsize=(16, 7))
-fig.suptitle(r'Evolution of $\zeta_\mathbf{TQG}$ and $\zeta_\mathbf{QG}$ : sum of '+str(len(array_index_model2))+' modes', fontweight='bold')
+fig.suptitle(r'Evolution of $\zeta_\mathbf{TQG}$ and $\zeta_\mathbf{QG}$ : sum of '+str(nb_mode)+' modes', fontweight='bold')
 
 vmax = np.nanmax(zeta_final)
 vmin = -vmax
@@ -108,7 +125,8 @@ vminNT = -vmaxNT
 
 
 for i in range(zeta_final.shape[0]):
-	im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],20,cmap='RdBu_r',vmin=vmin,vmax=vmax)
+	im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],25,cmap='RdBu_r',vmin=vmin,vmax=vmax)
+	#im1 = ax[0,i].pcolormesh(x,y,zeta_final[i,:,:],cmap='RdBu_r',vmin=vmin,vmax=vmax)
 	ax[0,i].set_title(str(timesteps[i]))
 	ax[0,i].streamplot(x,y,u_s_final[i,:,:],v_s_final[i,:,:],color='k',linewidth=0.5,arrowsize=0.75)
 	ax[0,i].set_xlim(np.min(x),np.max(x))
@@ -122,7 +140,8 @@ for i in range(zeta_final.shape[0]):
 	
 	
 	
-	im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],20,cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
+	im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],25,cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
+	#im2 = ax[1,i].pcolormesh(x,y,zeta_finalNT[i,:,:],cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
 	ax[1,i].streamplot(x,y,u_s_finalNT[i,:,:],v_s_finalNT[i,:,:],color='k',linewidth=0.5,arrowsize=0.75)
 	ax[1,i].set_xlim(np.min(x),np.max(x))
 	ax[1,i].set_ylim(np.min(y),np.max(y))
