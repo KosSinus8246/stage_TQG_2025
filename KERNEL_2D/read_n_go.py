@@ -20,15 +20,10 @@ print('-----------------------------------------------------')
 
 
 
-
-
-'''
-array_index_model_QG = np.array(np.loadtxt('ix_modes_sort_QG.txt'),dtype=int)
-array_index_model2_QG = array_index_model_QG[:nb_mode]
-
-array_index_model_TQG = np.array(np.loadtxt('ix_modes_sort_TQG.txt'),dtype=int)
-array_index_model2_TQG = array_index_model_TQG[:nb_mode]'''
-
+#########################"
+# 1) Computes c and X for QG and TQG with : compute_TQG_2D()
+# 2) Find the most unstable modes with : get_ix()
+# 3) Computes PSI, zeta, u, v with : compute_variables()
 
 
 
@@ -36,7 +31,7 @@ array_index_model2_TQG = array_index_model_TQG[:nb_mode]'''
 N = 20
 
 Lmin = 0.1
-L = np.pi
+L = 2*np.pi
 dh = L/N
 x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 
@@ -51,6 +46,7 @@ k0, l0 = 2., 0.
 # Parameters for plotting
 timesteps = [0., 0.25, 0.50, 0.75]  # time points
 
+nb_modes = int(input('How many modes ? '))
 
 
 
@@ -63,27 +59,10 @@ x_l, y_l, xx, yy, c, c_NT, X, X_NT = compute_TQG_2D(N, Lmin, L, beta, F1star, U0
 #####
 # finding the modes that are important
 ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT)
-
-ix_norm_c__, ix_norm_cNT__ = ix_norm_c__[5], ix_norm_cNT__[5]
-
-
-#nb_mode = ix_norm_c__[5] #int(input('How many modes ?')) 
+ix_norm_c__2, ix_norm_cNT__2 = ix_norm_c__[:nb_modes], ix_norm_cNT__[:nb_modes]
 
 
-
-zeta_list, u_s_list, v_s_list, zeta_listNT, u_s_listNT, v_s_listNT  = compute_variables(
-	N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh
-	)
-
-
-
-
-
-
-
-'''
-
-
+# final list that stack each paramaters for each mode
 zeta_list_2 = []
 u_s_list_2 = []
 v_s_list_2 = []
@@ -93,26 +72,28 @@ u_s_list_2NT = []
 v_s_list_2NT = []
 
 
-for i in tqdm(range(nb_mode)):
+
+for i in tqdm(range(nb_modes)):
 	
-	zeta, us, vs, zetaNT, usNT, vsNT = compute_TQG_2D(
-		N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0,timesteps, array_index_model2_QG[i], array_index_model2_TQG[i]
-		)
+	zeta, u_s, v_s, zetaNT, u_sNT, v_sNT  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh)
 
 	zeta_list_2.append(zeta)
-	u_s_list_2.append(us)
-	v_s_list_2.append(vs)
+	u_s_list_2.append(u_s)
+	v_s_list_2.append(v_s)
 	
 	zeta_list_2NT.append(zetaNT)
-	u_s_list_2NT.append(usNT)
-	v_s_list_2NT.append(vsNT)
-	
+	u_s_list_2NT.append(u_sNT)
+	v_s_list_2NT.append(v_sNT)
+
+
+
+
 
 	
 
 
 
-
+# convert all in an array
 zeta_list_2 = np.array(zeta_list_2)
 zeta_final = np.nansum(zeta_list_2,axis=0)
 
@@ -138,7 +119,7 @@ v_s_finalNT = np.nansum(v_s_list_2NT,axis=0)
 
 
 fig, ax = plt.subplots(2, len(timesteps), figsize=(16, 7))
-fig.suptitle(r'Evolution of $\zeta_\mathbf{TQG}$ and $\zeta_\mathbf{QG}$ : sum of '+str(nb_mode)+' modes', fontweight='bold')
+fig.suptitle(r'Evolution of $\zeta_\mathbf{TQG}$ and $\zeta_\mathbf{QG}$ : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 vmax = np.nanmax(zeta_final)
 vmin = -vmax
@@ -225,4 +206,4 @@ ax[1,3].tick_params(top=True,right=True,labelbottom=True,labelleft=False,directi
 plt.tight_layout()
 
 	
-plt.show()'''
+plt.show()

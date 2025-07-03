@@ -17,11 +17,13 @@ print('-----------------------------------------------------')'''
 
 
 def get_ix(c, c_NT):
-	norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
+	#norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
+	norm_cNT = (np.imag(c_NT)**2)**0.5
 	norm_cNT__ = np.sort(norm_cNT)[::-1]
 	ix_norm_cNT__ = np.argsort(norm_cNT)[::-1]
 	
-	norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
+	#norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
+	norm_c = (np.imag(c)**2)**0.5
 	norm_c__ = np.sort(norm_c)[::-1]
 	ix_norm_c__ = np.argsort(norm_c)[::-1]
 	
@@ -261,7 +263,7 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 
 
 
-
+		# loop to compute physical params
 
 		for j in range(N-1):
 			for k in range(N-1):
@@ -275,7 +277,8 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 				 (PSI[j+1,k] -2*PSI[j,k] + PSI[j-1,k])/(dh**2) 
 				zeta_NT[j,k] = (PSI_NT[j,k+1] -2*PSI_NT[j,k] + PSI_NT[j,k-1])/(dh**2) +\
 				 (PSI_NT[j+1,k] -2*PSI_NT[j,k] + PSI_NT[j-1,k])/(dh**2)
-				 
+		
+		# stack it into a list	 
 				 
 		zeta_list.append(zeta)
 		u_s_list.append(u_s)
@@ -289,7 +292,7 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 
 
 	
-
+	# convert the final list into an array
 
 	zeta_list = np.array(zeta_list)
 	u_s_list = np.array(u_s_list)
