@@ -173,6 +173,12 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, mode_index, k0, l0,t
 
 	c, X = eig(A,B)
 	c_NT, X_NT = eig(A11_star, B11)
+	
+	
+	
+	norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
+	norm_c__ = np.sort(norm_c)[::-1]
+	ix_norm_c__ = np.argsort(norm_c)[::-1]
 
 
 

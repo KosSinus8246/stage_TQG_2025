@@ -30,10 +30,14 @@ Theta0_U0 = 0.1 # ratio
 k0, l0 = 2., 0.
 
 nb_mode = int(input('How many modes ?')) 
+
+array_index_model = np.array(np.loadtxt('array_ix_modes.txt'),dtype=int)
+array_index_model2 = array_index_model[:nb_mode]
+
+print(array_index_model2)
+
 # Parameters for plotting
 timesteps = [0., 0.25, 0.50, 0.75]  # time points
-
-
 
 
 
@@ -47,7 +51,8 @@ u_s_list_2NT = []
 v_s_list_2NT = []
 
 
-for i in tqdm(range(nb_mode)):
+cts = 0
+for i in array_index_model2:
 	
 	zeta, us, vs, zetaNT, usNT, vsNT = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, i, k0, l0,timesteps)
 
@@ -58,6 +63,9 @@ for i in tqdm(range(nb_mode)):
 	zeta_list_2NT.append(zetaNT)
 	u_s_list_2NT.append(usNT)
 	v_s_list_2NT.append(vsNT)
+	
+	cts = cts +1
+	print(cts)
 	
 
 
@@ -88,7 +96,7 @@ v_s_finalNT = np.nansum(v_s_list_2NT,axis=0)
 
 
 fig, ax = plt.subplots(2, len(timesteps), figsize=(16, 7))
-#fig, (ax) = plt.subplots(1,4,figsize=(16, 4))
+fig.suptitle(r'Evolution of $\zeta_\mathbf{TQG}$ and $\zeta_\mathbf{QG}$ : sum of '+str(len(array_index_model2))+' modes', fontweight='bold')
 
 vmax = np.nanmax(zeta_final)
 vmin = -vmax
@@ -106,7 +114,7 @@ for i in range(zeta_final.shape[0]):
 	ax[0,i].set_xlim(np.min(x),np.max(x))
 	ax[0,i].set_ylim(np.min(y),np.max(y))
 	
-	ax[0,i].set_title('t = '+str(timesteps[i]))
+	ax[0,i].set_title('t = '+str(timesteps[i]), fontweight="bold")
 	ax[0,i].tick_params(top=True,right=True,labelbottom=False,direction='in',size=4,width=1)
 	
 	for spine in ax[0,i].spines.values():
@@ -118,14 +126,20 @@ for i in range(zeta_final.shape[0]):
 	ax[1,i].streamplot(x,y,u_s_finalNT[i,:,:],v_s_finalNT[i,:,:],color='k',linewidth=0.5,arrowsize=0.75)
 	ax[1,i].set_xlim(np.min(x),np.max(x))
 	ax[1,i].set_ylim(np.min(y),np.max(y))
-	ax[1,i].set_xlabel(r"$x$")
+	ax[1,i].set_xlabel(r"x", fontweight="bold")
 	ax[1,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
+	for tick in ax[1, i].get_xticklabels():
+	    tick.set_fontweight('bold')
+
+	for tick in ax[1, i].get_yticklabels():
+	    tick.set_fontweight('bold')
+
 	
 	for spine in ax[1,i].spines.values():
 		spine.set_linewidth(2)
 	
 	
-ax[0,0].set_ylabel(r'$y$')
+ax[0,0].set_ylabel(r'y', fontweight="bold")
 cbar_1 = fig.colorbar(im1, ax=ax[0,-1])
 cbar_1.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
 cbar_1.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
@@ -142,7 +156,7 @@ ax[0,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direct
 ax[0,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 ax[0,3].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 
-ax[1,0].set_ylabel(r'$y$')
+ax[1,0].set_ylabel(r'y', fontweight="bold")
 cbar_2 = fig.colorbar(im2, ax=ax[1,-1])
 cbar_2.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
 cbar_2.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
