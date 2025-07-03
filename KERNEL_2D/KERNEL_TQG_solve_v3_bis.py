@@ -17,13 +17,13 @@ print('-----------------------------------------------------')'''
 
 
 def get_ix(c, c_NT):
-	#norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
-	norm_cNT = (np.imag(c_NT)**2)**0.5
+	norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
+	#norm_cNT = (np.imag(c_NT)**2)**0.5
 	norm_cNT__ = np.sort(norm_cNT)[::-1]
 	ix_norm_cNT__ = np.argsort(norm_cNT)[::-1]
 	
-	#norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
-	norm_c = (np.imag(c)**2)**0.5
+	norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
+	#norm_c = (np.imag(c)**2)**0.5
 	norm_c__ = np.sort(norm_c)[::-1]
 	ix_norm_c__ = np.argsort(norm_c)[::-1]
 	
@@ -189,6 +189,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh):
 	c_NT, X_NT = eig(A11_star, B11)
 	
 	
+	print('EIGENVALUES AND EIGENVECTORS : OK')
+	
 	
 	#############################################"
 	return x_l, y_l, xx, yy, c, c_NT, X, X_NT
@@ -301,6 +303,7 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	zeta_listNT = np.array(zeta_listNT)
 	u_s_listNT = np.array(u_s_listNT)
 	v_s_listNT = np.array(v_s_listNT)
+	
 
 	
 	return zeta_list, u_s_list, v_s_list, zeta_listNT, u_s_listNT, v_s_listNT 
