@@ -16,7 +16,14 @@ print('-----------------------------------------------------')'''
 # @uthor : dimitri moreau 27/06/2025
 
 
-def get_ix(c, c_NT):
+def get_ix(c, c_NT,nb_modes):
+
+	'''
+	Function that select the most important modes following
+	the desired criteria
+	'''
+
+
 	norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
 	#norm_cNT = (np.imag(c_NT)**2)**0.5
 	norm_cNT__ = np.sort(norm_cNT)[::-1]
@@ -27,6 +34,35 @@ def get_ix(c, c_NT):
 	norm_c__ = np.sort(norm_c)[::-1]
 	ix_norm_c__ = np.argsort(norm_c)[::-1]
 	
+	
+
+	fig, (ax) = plt.subplots(1,1)
+
+	# [2:] to remove the inf of begin and end because they are sorted
+
+	ax.plot(100*norm_c__[2:]/np.nanmax(norm_c__[2:]),'k',label='TQG')
+	ax.plot(100*norm_cNT__[2:]/np.nanmax(norm_cNT__[2:]),'r',label='QG')
+	ax.axvline(nb_modes, 0, 100, color='C1', linestyle='--')
+	
+	ax.set_xlabel('Number of mode', fontweight="bold")
+	ax.set_ylabel(r'Importance of the sorted mode', fontweight="bold")
+	ax.legend(fancybox=False, prop={'weight': 'bold'})
+	ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
+	
+	ax.axhline(0, color='gray', linestyle=':')
+	ax.axvline(0, color='gray', linestyle=':')
+	
+	
+
+	
+	for tick in ax.get_xticklabels():
+	    tick.set_fontweight('bold')
+	for tick in ax.get_yticklabels():
+	    tick.set_fontweight('bold')
+	for spine in ax.spines.values():
+		spine.set_linewidth(2)
+
+	
 	return ix_norm_c__, ix_norm_cNT__
 
 
@@ -35,7 +71,9 @@ def get_ix(c, c_NT):
 
 def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh):
 
-	
+	'''
+	Function that computes eigenvalues and eigenvectors
+	'''
 
 
 	x_l, y_l = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
@@ -205,6 +243,10 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh):
 	
 	
 def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh):
+
+	'''
+	Function that computes the parameters zeta, us, vs
+	'''
 
 	
 	# TQG ##################

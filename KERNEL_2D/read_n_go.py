@@ -58,7 +58,7 @@ x_l, y_l, xx, yy, c, c_NT, X, X_NT = compute_TQG_2D(N, Lmin, L, beta, F1star, U0
 
 #####
 # finding the modes that are important
-ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT)
+ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT,nb_modes)
 ix_norm_c__2, ix_norm_cNT__2 = ix_norm_c__[:nb_modes], ix_norm_cNT__[:nb_modes]
 
 
@@ -119,7 +119,7 @@ v_s_finalNT = np.nansum(v_s_list_2NT,axis=0)
 
 
 fig, ax = plt.subplots(2, len(timesteps), figsize=(16, 7))
-fig.suptitle(r'Evolution of $\zeta_\mathbf{TQG}$ and $\zeta_\mathbf{QG}$ : sum of '+str(nb_modes)+' modes', fontweight='bold')
+fig.suptitle(r'Evolution of ζ (top : TQG and bottom : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 vmax = np.nanmax(zeta_final)
 vmin = -vmax
@@ -143,6 +143,11 @@ for i in range(zeta_final.shape[0]):
 	
 	for spine in ax[0,i].spines.values():
 		spine.set_linewidth(2)
+	for tick in ax[0, i].get_xticklabels():
+	    tick.set_fontweight('bold')
+
+	for tick in ax[0, i].get_yticklabels():
+	    tick.set_fontweight('bold')
 	
 	
 	
