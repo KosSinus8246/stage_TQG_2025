@@ -39,13 +39,17 @@ beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 0.5 # ratio
+Theta0_U0 = 1. # ratio
 
 k0, l0 = 1., 0.
 BC = ''
+BC = 'activated'
+
 
 # Parameters for plotting
-timesteps = [0., 0.25, 0.5, 0.75]  # time points
+#timesteps = [0., 0.25, 0.5, 0.75]  # time points
+timesteps = [0., 0.3, 0.6, 0.9]
+
 
 nb_modes = int(input('How many modes ? '))
 
@@ -167,6 +171,7 @@ for i in range(zeta_final.shape[0]):
 	ax2[i].set_title('t = '+str(timesteps[i]), fontweight="bold")
 	ax2[i].tick_params(top=True,right=True,direction='in',size=4,width=1)
 	cs = ax2[i].contour(x,y,theta_final[i,:,:],[-0.2,-0.1,0.,0.1,0.2],colors='k')
+	ax2[i].set_xlabel('x', fontweight="bold")
 	ax2[i].clabel(cs)
 	for spine in ax2[i].spines.values():
 		spine.set_linewidth(2)
@@ -267,7 +272,7 @@ for spine in cbar_3.ax.spines.values():
     
     
 
-
+ax2[0].set_ylabel('y', fontweight="bold")
 
 
 
