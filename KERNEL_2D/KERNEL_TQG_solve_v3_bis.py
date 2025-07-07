@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 from scipy.linalg import eig
+import sys
+
 
 '''
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
@@ -33,6 +35,13 @@ def get_ix(c, c_NT,nb_modes):
 	#norm_c = (np.imag(c)**2)**0.5
 	norm_c__ = np.sort(norm_c)[::-1]
 	ix_norm_c__ = np.argsort(norm_c)[::-1]
+	
+	
+	if nb_modes > len(c):
+		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+		print("!  THE NUMBER OF MODES REQUESTED IS TOO IMPORTANT  !")
+		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+		sys.exit()
 	
 	
 
@@ -69,7 +78,7 @@ def get_ix(c, c_NT,nb_modes):
 
 
 
-def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh):
+def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC):
 
 	'''
 	Function that computes eigenvalues and eigenvectors
@@ -96,7 +105,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh):
 	F11 = G11*dh**2
 
 
-
+	print('PARAMETERS : OK')
 
 
 
@@ -139,7 +148,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh):
 	B = np.block([[B11,B12],[B21,B22]])
 
 
-
+	print('MATRIX B : OK')
 
 
 	##################################
@@ -187,30 +196,36 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh):
 	# Final block matrix A
 
 	A = np.block([[A11,A12],[A21,A22]])
+	
+	
+	print('MATRIX A : OK')
+
+
+	if BC == 'activated':
+		# velocity odd
+		A[0,1] = 2.0*A[0,1]
+		B[0,1] = 2.0*B[0,1]
+
+
+		# velocity not odd
+		#A[0,1]=0.0
+		#B[0,1]=0.0
+
+		A[2*(N*N)-1,2*(N*N)-1] = 0.0
+		B[2*(N*N)-1,2*(N*N)-1] = 0.0
 
 
 
-	# velocity odd
-	A[0,1] = 2.0*A[0,1]
-	B[0,1] = 2.0*B[0,1]
+		A11[0,1] = 2.0*A11[0,1]
+		A11_star[0,1] = 2.0*A11_star[0,1]
+		B11[0,1] = 2.0*B11[0,1]
 
-
-	# velocity not odd
-	#A[0,1]=0.0
-	#B[0,1]=0.0
-
-	A[2*(N*N)-1,2*(N*N)-1] = 0.0
-	B[2*(N*N)-1,2*(N*N)-1] = 0.0
-
-
-
-	A11[0,1] = 2.0*A11[0,1]
-	A11_star[0,1] = 2.0*A11_star[0,1]
-	B11[0,1] = 2.0*B11[0,1]
-
-	A11[(N*N)-1,(N*N)-1] = 0.0
-	A11_star[(N*N)-1,(N*N)-1] = 0.0
-	B11[(N*N)-1,(N*N)-1] = 0.0
+		A11[(N*N)-1,(N*N)-1] = 0.0
+		A11_star[(N*N)-1,(N*N)-1] = 0.0
+		B11[(N*N)-1,(N*N)-1] = 0.0
+		
+	elif BC == '':
+		print('NO BC\'S IMPLEMENTED')
 
 	
 
@@ -345,6 +360,7 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	zeta_listNT = np.array(zeta_listNT)
 	u_s_listNT = np.array(u_s_listNT)
 	v_s_listNT = np.array(v_s_listNT)
+	
 	
 
 	

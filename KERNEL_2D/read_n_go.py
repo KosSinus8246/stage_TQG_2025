@@ -42,9 +42,10 @@ U0 = 1.
 Theta0_U0 = 0.5 # ratio
 
 k0, l0 = 1., 0.
+BC = ''
 
 # Parameters for plotting
-timesteps = [0., 0.05, 0.10, 0.15]  # time points
+timesteps = [0., 0.25, 0.5, 0.75]  # time points
 
 nb_modes = int(input('How many modes ? '))
 
@@ -52,7 +53,7 @@ nb_modes = int(input('How many modes ? '))
 
 #####
 # compute eigenvalues and eigenvectors
-x_l, y_l, xx, yy, c, c_NT, X, X_NT = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh)
+x_l, y_l, xx, yy, c, c_NT, X, X_NT = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC)
 
 
 
@@ -180,6 +181,15 @@ cbar_1.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
 for spine in cbar_1.ax.spines.values():
 	spine.set_linewidth(1.5)  # You can set this to any float value
 
+# Set tick labels bold
+for tick in cbar_1.ax.get_yticklabels():
+    tick.set_fontweight('bold')
+
+# Set spine linewidth
+for spine in cbar_1.ax.spines.values():
+    spine.set_linewidth(1.5)
+
+
 
 
 ax[0,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
@@ -191,12 +201,23 @@ cbar_2 = fig.colorbar(im2, ax=ax[1,-1])
 cbar_2.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
 cbar_2.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
                                direction='in',    # Tick style
-                               length=2,width=1)            # Length of ticks for visibility
+                               length=2,width=1)            # Length of ticks for visibilit
 
 
 # Set the border (spine) linewidth of the colorbar
 for spine in cbar_2.ax.spines.values():
 	spine.set_linewidth(1.5)  # You can set this to any float value
+
+# Set tick labels bold
+for tick in cbar_2.ax.get_yticklabels():
+    tick.set_fontweight('bold')
+
+# Set spine linewidth
+for spine in cbar_2.ax.spines.values():
+    spine.set_linewidth(1.5)
+
+
+
 
 
 ax[1,1].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
