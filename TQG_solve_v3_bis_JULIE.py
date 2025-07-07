@@ -245,6 +245,10 @@ phi_xy = phi_flat.reshape((N, N))
 PHI_xy = np.real(phi_xy)
 
 
+# extract theta
+theta_flat = X_mode[N*N:]
+theta_xy = theta_flat.reshape((N, N))
+THETA_xy = np.real(theta_xy)
 
 
 
@@ -286,11 +290,17 @@ fig, axs = plt.subplots(2, len(timesteps), figsize=(16, 7))
 fig.suptitle(r'Evolution of $\zeta_\mathbf{TQG}$ and $\zeta_\mathbf{QG}$ : mode n°'+str(mode_index))
 
 
+# figure for theta
+fig2, axs2 = plt.subplots(1, len(timesteps), figsize=(16, 4))
+
+
 for i, t in enumerate(timesteps):
 	PHI_t = np.real(PHI_xy * np.exp(c_mode * t))
+	THETA_t = np.real(THETA_xy * np.exp(c_mode * t))
 	PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 	
 	PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+	THETA = np.real(THETA_t * np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 	PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
 
 	# VELOCITIES
@@ -359,6 +369,22 @@ for i, t in enumerate(timesteps):
 	
 	for spine in axs[1,i].spines.values():
 		spine.set_linewidth(2)
+		
+		
+		
+	imtheta = axs2[i].contourf(x_l,y_l,THETA,levels, cmap=colormap,vmin=-1,vmax=1)
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	
 	
 	
