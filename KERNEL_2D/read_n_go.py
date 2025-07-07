@@ -72,11 +72,13 @@ zeta_list_2NT = []
 u_s_list_2NT = []
 v_s_list_2NT = []
 
+theta_list_2 = []
+
 
 
 for i in tqdm(range(nb_modes)):
 	
-	zeta, u_s, v_s, zetaNT, u_sNT, v_sNT  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh)
+	zeta, u_s, v_s, zetaNT, u_sNT, v_sNT, theta  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh)
 
 	zeta_list_2.append(zeta)
 	u_s_list_2.append(u_s)
@@ -86,6 +88,7 @@ for i in tqdm(range(nb_modes)):
 	u_s_list_2NT.append(u_sNT)
 	v_s_list_2NT.append(v_sNT)
 
+	theta_list_2.append(theta)
 
 
 
@@ -116,11 +119,17 @@ v_s_list_2NT = np.array(v_s_list_2NT)
 v_s_finalNT = np.nansum(v_s_list_2NT,axis=0)
 
 
+theta_list_2 = np.array(theta_list_2)
+theta_final = np.nansum(theta_list_2,axis=0)
 
 
 
 fig, ax = plt.subplots(2, len(timesteps), figsize=(16, 7))
 fig.suptitle(r'Evolution of ζ (top : TQG and bottom : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
+
+# figure for theta
+fig2, ax2 = plt.subplots(1, len(timesteps), figsize=(16, 4))
+fig2.suptitle(r'Evolution of Θ : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 vmax = np.nanmax(zeta_final)
 vmin = -vmax
@@ -148,6 +157,23 @@ for i in range(zeta_final.shape[0]):
 	    tick.set_fontweight('bold')
 
 	for tick in ax[0, i].get_yticklabels():
+	    tick.set_fontweight('bold')
+	    
+	    
+	im_theta = ax2[i].contourf(x,y,theta_final[i,:,:],30,cmap='RdBu_r',vmin=-1,vmax=1)
+	ax2[i].set_title(str(timesteps[i]))
+	ax2[i].set_xlim(np.min(x),np.max(x))
+	ax2[i].set_ylim(np.min(y),np.max(y))
+	ax2[i].set_title('t = '+str(timesteps[i]), fontweight="bold")
+	ax2[i].tick_params(top=True,right=True,direction='in',size=4,width=1)
+	cs = ax2[i].contour(x,y,theta_final[i,:,:],[-0.2,-0.1,0.,0.1,0.2],colors='k')
+	ax2[i].clabel(cs)
+	for spine in ax2[i].spines.values():
+		spine.set_linewidth(2)
+	for tick in ax2[i].get_xticklabels():
+	    tick.set_fontweight('bold')
+
+	for tick in ax2[i].get_yticklabels():
 	    tick.set_fontweight('bold')
 	
 	
@@ -215,6 +241,31 @@ for tick in cbar_2.ax.get_yticklabels():
 # Set spine linewidth
 for spine in cbar_2.ax.spines.values():
     spine.set_linewidth(1.5)
+
+
+'''
+cbar_3 = fig2.colorbar(im_theta,ax=ax2[:],location='bottom',aspect=75)
+cbar_3.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
+cbar_3.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
+                               direction='in',    # Tick style
+                               length=2,width=1)            # Length of ticks for visibilit
+
+
+# Set the border (spine) linewidth of the colorbar
+for spine in cbar_3.ax.spines.values():
+	spine.set_linewidth(1.5)  # You can set this to any float value
+
+# Set tick labels bold
+for tick in cbar_3.ax.get_xticklabels():
+    tick.set_fontweight('bold')
+
+# Set spine linewidth
+for spine in cbar_3.ax.spines.values():
+    spine.set_linewidth(1.5)'''
+    
+    
+    
+    
 
 
 

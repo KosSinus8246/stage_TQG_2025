@@ -271,12 +271,16 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	X_mode = X[:, ix_norm_c__]  # eigenvector
 
 	# Extract Theta from second half of X
-	#Theta_flat = X_mode[N*N:]
 	phi_flat = X_mode[:N*N]
 	phi_xy = phi_flat.reshape((N, N))
-
 	# Normalize for visualization if needed
 	PHI_xy = np.real(phi_xy)
+	
+	# Extract Theta from second half of X
+	theta_flat = X_mode[N*N:]
+	theta_xy = theta_flat.reshape((N, N))
+	# Normalize for visualization if needed
+	THETA_xy = np.real(theta_xy)
 
 
 
@@ -307,12 +311,16 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	u_s_listNT = []
 	v_s_listNT = []
 	
+	theta_list = []
+	
 
 	for i, t in enumerate(timesteps):
 		PHI_t = np.real(PHI_xy * np.exp(c_mode * t))
+		THETA_t = np.real(THETA_xy * np.exp(c_mode * t))
 		PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 		
 		PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+		THETA = np.real(THETA_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 		PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
 
 		# VELOCITIES
@@ -347,6 +355,8 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		u_s_listNT.append(u_sNT)
 		v_s_listNT.append(v_sNT)
 		
+		theta_list.append(THETA)
+		
 
 
 
@@ -361,10 +371,12 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	u_s_listNT = np.array(u_s_listNT)
 	v_s_listNT = np.array(v_s_listNT)
 	
+	theta_list = np.array(theta_list)
+	
 	
 
 	
-	return zeta_list, u_s_list, v_s_list, zeta_listNT, u_s_listNT, v_s_listNT 
+	return zeta_list, u_s_list, v_s_list, zeta_listNT, u_s_listNT, v_s_listNT, theta_list 
 
 
 
