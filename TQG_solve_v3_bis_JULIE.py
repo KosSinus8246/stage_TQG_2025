@@ -374,6 +374,16 @@ for spine in cbar_1.ax.spines.values():
 	spine.set_linewidth(1.5)  # You can set this to any float value
 
 
+# Set tick labels bold
+for tick in cbar_1.ax.get_yticklabels():
+    tick.set_fontweight('bold')
+
+# Set spine linewidth
+for spine in cbar_1.ax.spines.values():
+    spine.set_linewidth(1.5)
+
+
+
 
 axs[0,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 axs[0,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
@@ -385,6 +395,15 @@ cbar_2.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
 cbar_2.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
                                direction='in',    # Tick style
                                length=2,width=1)            # Length of ticks for visibility
+
+# Set tick labels bold
+for tick in cbar_2.ax.get_yticklabels():
+    tick.set_fontweight('bold')
+
+# Set spine linewidth
+for spine in cbar_2.ax.spines.values():
+    spine.set_linewidth(1.5)
+
 
 
 # Set the border (spine) linewidth of the colorbar
@@ -404,13 +423,20 @@ axs[1,3].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direct
 plt.tight_layout()
 
 
-
-
-norm_c = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
-norm_c__ = np.sort(norm_c)[::-1]
-ix_norm_c__ = np.argsort(norm_c)[::-1]
-
-np.savetxt('KERNEL_2D/array_ix_modes.txt',ix_norm_c__)
+def get_ix(c, c_NT):
+	norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
+	norm_cNT__ = np.sort(norm_cNT)[::-1]
+	ix_norm_cNT__ = np.argsort(norm_cNT)[::-1]
+	
+	norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
+	norm_c__ = np.sort(norm_c)[::-1]
+	ix_norm_c__ = np.argsort(norm_c)[::-1]
+	
+	return norm_cNT__, norm_c__
+	
+norm_cNT__, norm_c__ = get_ix(c,c_NT)
+	
+	
 
 
 percent = norm_c__[2:]/np.nansum(norm_c__[2:])
