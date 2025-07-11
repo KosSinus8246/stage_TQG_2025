@@ -1,6 +1,6 @@
 from KERNEL_TQG_solve_v3_bis import *
 import imageio.v2 as imageio
-
+import cmocean
 '''
 import os
 from io import BytesIO
@@ -47,8 +47,8 @@ BC = 'activated'
 
 
 # Parameters for plotting
-#timesteps = [0., 0.25, 0.5, 0.75]  # time points
-timesteps = [0., 0.3, 0.6, 0.9]
+#timesteps = [0., 0.3, 0.6, 0.9]
+timesteps = [0., 0.4, 0.8, 1.2]
 
 
 nb_modes = int(input('How many modes ? '))
@@ -57,7 +57,7 @@ nb_modes = int(input('How many modes ? '))
 
 #####
 # compute eigenvalues and eigenvectors
-x_l, y_l, xx, yy, c, c_NT, X, X_NT = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC)
+x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC)
 
 
 
@@ -82,16 +82,11 @@ theta_list_2 = []
 
 for i in tqdm(range(nb_modes)):
 	
-	zeta, u_s, v_s, zetaNT, u_sNT, v_sNT, theta  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh)
+	zeta, zetaNT, theta  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar)
 
 	zeta_list_2.append(zeta)
-	u_s_list_2.append(u_s)
-	v_s_list_2.append(v_s)
-	
 	zeta_list_2NT.append(zetaNT)
-	u_s_list_2NT.append(u_sNT)
-	v_s_list_2NT.append(v_sNT)
-
+	
 	theta_list_2.append(theta)
 
 
@@ -105,22 +100,8 @@ for i in tqdm(range(nb_modes)):
 zeta_list_2 = np.array(zeta_list_2)
 zeta_final = np.nansum(zeta_list_2,axis=0)
 
-u_s_list_2 = np.array(u_s_list_2)
-u_s_final = np.nansum(u_s_list_2,axis=0)
-
-v_s_list_2 = np.array(v_s_list_2)
-v_s_final = np.nansum(v_s_list_2,axis=0)
-
-
-
 zeta_list_2NT = np.array(zeta_list_2NT)
 zeta_finalNT = np.nansum(zeta_list_2NT,axis=0)
-
-u_s_list_2NT = np.array(u_s_list_2NT)
-u_s_finalNT = np.nansum(u_s_list_2NT,axis=0)
-
-v_s_list_2NT = np.array(v_s_list_2NT)
-v_s_finalNT = np.nansum(v_s_list_2NT,axis=0)
 
 
 theta_list_2 = np.array(theta_list_2)
@@ -135,20 +116,24 @@ fig.suptitle(r'Evolution of ζ (top : TQG and bottom : QG) : sum of '+str(nb_mod
 fig2, ax2 = plt.subplots(1, len(timesteps), figsize=(16, 4))
 fig2.suptitle(r'Evolution of Θ : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
-vmax = np.nanmax(zeta_final)
+vmax = np.mean(zeta_final)+200
 vmin = -vmax
 
 
-vmaxNT = np.nanmax(zeta_finalNT)
+vmaxNT = np.mean(zeta_finalNT)+200
 vminNT = -vmaxNT
 
+vmax_theta = 1
+vmin_theta = -vmax_theta
 
 
 for i in range(zeta_final.shape[0]):
-	im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],30,cmap='RdBu_r',vmin=vmin,vmax=vmax)
+	im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],30,cmap='coolwarm',vmin=vmin,vmax=vmax) #
 	#im1 = ax[0,i].pcolormesh(x,y,zeta_final[i,:,:],cmap='RdBu_r',vmin=vmin,vmax=vmax)
 	ax[0,i].set_title(str(timesteps[i]))
-	ax[0,i].streamplot(x,y,u_s_final[i,:,:],v_s_final[i,:,:],color='k',linewidth=0.5,arrowsize=0.75,density=0.75)
+
+	cs = ax[0,i].contour(x,y,zeta_final[i,:,:],15,colors='k')
+	
 	ax[0,i].set_xlim(np.min(x),np.max(x))
 	ax[0,i].set_ylim(np.min(y),np.max(y))
 	
@@ -164,7 +149,7 @@ for i in range(zeta_final.shape[0]):
 	    tick.set_fontweight('bold')
 	    
 	    
-	im_theta = ax2[i].contourf(x,y,theta_final[i,:,:],30,cmap='RdBu_r',vmin=-1,vmax=1)
+	im_theta = ax2[i].contourf(x,y,theta_final[i,:,:],30,cmap=cmocean.cm.curl,vmin=vmin_theta,vmax=vmax_theta) #
 	ax2[i].set_title(str(timesteps[i]))
 	ax2[i].set_xlim(np.min(x),np.max(x))
 	ax2[i].set_ylim(np.min(y),np.max(y))
@@ -183,9 +168,9 @@ for i in range(zeta_final.shape[0]):
 	
 	
 	
-	im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
+	im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='coolwarm',vmin=vminNT,vmax=vmaxNT) # 
+	cs = ax[1,i].contour(x,y,zeta_finalNT[i,:,:],15,colors='k')
 	#im2 = ax[1,i].pcolormesh(x,y,zeta_finalNT[i,:,:],cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
-	ax[1,i].streamplot(x,y,u_s_finalNT[i,:,:],v_s_finalNT[i,:,:],color='k',linewidth=0.5,arrowsize=0.75,density=0.75)
 	ax[1,i].set_xlim(np.min(x),np.max(x))
 	ax[1,i].set_ylim(np.min(y),np.max(y))
 	ax[1,i].set_xlabel(r"x", fontweight="bold")
@@ -202,6 +187,7 @@ for i in range(zeta_final.shape[0]):
 	
 	
 ax[0,0].set_ylabel(r'y', fontweight="bold")
+'''
 cbar_1 = fig.colorbar(im1, ax=ax[0,-1])
 cbar_1.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
 cbar_1.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
@@ -218,7 +204,7 @@ for tick in cbar_1.ax.get_yticklabels():
 
 # Set spine linewidth
 for spine in cbar_1.ax.spines.values():
-    spine.set_linewidth(1.5)
+    spine.set_linewidth(1.5)'''
 
 
 
@@ -228,6 +214,8 @@ ax[0,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direct
 ax[0,3].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 
 ax[1,0].set_ylabel(r'y', fontweight="bold")
+
+'''
 cbar_2 = fig.colorbar(im2, ax=ax[1,-1])
 cbar_2.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
 cbar_2.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
@@ -245,28 +233,10 @@ for tick in cbar_2.ax.get_yticklabels():
 
 # Set spine linewidth
 for spine in cbar_2.ax.spines.values():
-    spine.set_linewidth(1.5)
-
-
-'''
-cbar_3 = fig2.colorbar(im_theta,ax=ax2[:],location='bottom',aspect=75)
-cbar_3.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
-cbar_3.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
-                               direction='in',    # Tick style
-                               length=2,width=1)            # Length of ticks for visibilit
-
-
-# Set the border (spine) linewidth of the colorbar
-for spine in cbar_3.ax.spines.values():
-	spine.set_linewidth(1.5)  # You can set this to any float value
-
-# Set tick labels bold
-for tick in cbar_3.ax.get_xticklabels():
-    tick.set_fontweight('bold')
-
-# Set spine linewidth
-for spine in cbar_3.ax.spines.values():
     spine.set_linewidth(1.5)'''
+
+
+
     
     
     

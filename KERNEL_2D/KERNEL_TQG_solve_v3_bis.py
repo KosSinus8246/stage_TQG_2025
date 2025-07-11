@@ -7,6 +7,7 @@ from scipy.linalg import eig
 import sys
 
 
+
 '''
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 print('~~~~~~~~~~~~~~~~~~TQG_SOLVE_3_BIS~~~~~~~~~~~~~~~~~~~~')
@@ -25,9 +26,8 @@ def get_ix(c, c_NT,nb_modes):
 	the desired criteria
 	'''
 
-
-	norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
-	#norm_cNT = (np.imag(c_NT)**2)**0.5
+	norm_cNT = (np.imag(c_NT)**2)**0.5
+	#norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
 	norm_cNT__ = np.sort(norm_cNT)[::-1]
 	ix_norm_cNT__ = np.argsort(norm_cNT)[::-1]
 	
@@ -97,8 +97,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC):
 	K2 = (k0**2+l0**2 + F1star)*dh**2
 
 
-	#G12 = -2*yy*Theta0*np.exp(-yy**2) #-2*xx*Theta0*np.exp(-xx**2) # dThetabar/dy
-	G12 = -2*yy*Theta0*np.exp(-yy**2) -2*xx*Theta0*np.exp(-xx**2) # dThetabar/dy
+	G12 = -2*yy*Theta0*np.exp(-yy**2) # dThetabar/dy
+	Thetabar = Theta0* np.exp(-yy**2)
 
 
 	G11 = 2.0*Un*(1-2*yy**2) + F1star*Un + beta - G12
@@ -246,7 +246,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC):
 	
 	
 	#############################################"
-	return x_l, y_l, xx, yy, c, c_NT, X, X_NT
+	return x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar
 	
 	
 	
@@ -257,7 +257,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC):
 
 	
 	
-def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh):
+def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar):
 
 	'''
 	Function that computes the parameters zeta, us, vs
@@ -304,13 +304,7 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 
 
 	zeta_list = []
-	u_s_list = []
-	v_s_list = []
-	
 	zeta_listNT = []
-	u_s_listNT = []
-	v_s_listNT = []
-	
 	theta_list = []
 	
 
@@ -323,22 +317,19 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		THETA = np.real(THETA_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 		PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
 
-		# VELOCITIES
-		u_s, v_s = np.zeros_like(PSI), np.zeros_like(PSI)
-		u_sNT, v_sNT = np.zeros_like(PSI), np.zeros_like(PSI)
+		
 		zeta, zeta_NT = np.zeros_like(PSI), np.zeros_like(PSI)
 
+		PSI = PSI - Un*yy
+		PSI_NT = PSI_NT - Un*yy
 
+		THETA = THETA - Thetabar
 
 		# loop to compute physical params
 
 		for j in range(N-1):
 			for k in range(N-1):
-				u_s[j,k] = - (PSI[j+1,k] - PSI[j-1,k])/(2*dh) # -dpsi/dy
-				v_s[j,k] =   (PSI[j,k+1] - PSI[j,k-1])/(2*dh) # dpsi/dx
-
-				u_sNT[j,k] = - (PSI_NT[j+1,k] - PSI_NT[j-1,k])/(2*dh)
-				v_sNT[j,k] =   (PSI_NT[j,k+1] - PSI_NT[j,k-1])/(2*dh)
+				
 				
 				zeta[j,k] = (PSI[j,k+1] -2*PSI[j,k] + PSI[j,k-1])/(dh**2) +\
 				 (PSI[j+1,k] -2*PSI[j,k] + PSI[j-1,k])/(dh**2) 
@@ -348,12 +339,13 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		# stack it into a list	 
 				 
 		zeta_list.append(zeta)
-		u_s_list.append(u_s)
-		v_s_list.append(v_s)
+		
+		#u_s_list.append(u_s)
+		#v_s_list.append(v_s)
 		
 		zeta_listNT.append(zeta_NT)
-		u_s_listNT.append(u_sNT)
-		v_s_listNT.append(v_sNT)
+		#u_s_listNT.append(u_sNT)
+		#v_s_listNT.append(v_sNT)
 		
 		theta_list.append(THETA)
 		
@@ -364,19 +356,19 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	# convert the final list into an array
 
 	zeta_list = np.array(zeta_list)
-	u_s_list = np.array(u_s_list)
-	v_s_list = np.array(v_s_list)
+	#u_s_list = np.array(u_s_list)
+	#v_s_list = np.array(v_s_list)
 	
 	zeta_listNT = np.array(zeta_listNT)
-	u_s_listNT = np.array(u_s_listNT)
-	v_s_listNT = np.array(v_s_listNT)
+	#u_s_listNT = np.array(u_s_listNT)
+	#v_s_listNT = np.array(v_s_listNT)
 	
 	theta_list = np.array(theta_list)
 	
 	
 
 	
-	return zeta_list, u_s_list, v_s_list, zeta_listNT, u_s_listNT, v_s_listNT, theta_list 
+	return zeta_list, zeta_listNT, theta_list 
 
 
 
