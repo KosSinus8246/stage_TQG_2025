@@ -44,9 +44,6 @@ BC = ''
 crit = 'imag'
 timesteps = [0., 1., 3., 5., 7.]
 #timesteps = [0., 2.5, 5., 7.5, 10.]
-nb_modes = int(input('How many modes ? '))
-
-
 
 #####
 # compute eigenvalues and eigenvectors
@@ -56,8 +53,12 @@ x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, be
 
 #####
 # finding the modes that are important
-ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT,nb_modes,crit)
+ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT,crit)
+nb_modes = int(input('How many modes ? '))
+
 ix_norm_c__2, ix_norm_cNT__2 = ix_norm_c__[:nb_modes], ix_norm_cNT__[:nb_modes]
+
+
 
 
 # final list that stack each paramaters for each mode

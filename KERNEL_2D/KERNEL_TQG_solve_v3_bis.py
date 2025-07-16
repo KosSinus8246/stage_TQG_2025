@@ -19,7 +19,7 @@ print('-----------------------------------------------------')'''
 # @uthor : dimitri moreau 16/07/2025
 
 
-def get_ix(c, c_NT,nb_modes, crit):
+def get_ix(c, c_NT, crit):
 
 	'''
 	Function that select the most important modes following
@@ -45,14 +45,15 @@ def get_ix(c, c_NT,nb_modes, crit):
 	norm_c__ = np.sort(norm_c)[::-1]
 	ix_norm_c__ = np.argsort(norm_c)[::-1]
 
-
-	if nb_modes > len(c):
-		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-		print("!  THE NUMBER OF MODES REQUESTED IS TOO IMPORTANT  !")
-		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-		sys.exit()
-
-
+	print('-----------------------------------------------------')
+	print('The plot shows you the available modes : close this')
+	print('plot and choose a number of mode to sum whenever you')
+	print('are ready !')
+	print('')
+	print('Warning : you can\'t enter a number of mode over the')
+	print('smallest number of eigenvalues (i.e. the QG one)')
+	print('-----------------------------------------------------')
+	
 
 	fig, (ax) = plt.subplots(1,1)
 
@@ -61,8 +62,6 @@ def get_ix(c, c_NT,nb_modes, crit):
 	ax.plot(np.sort((np.real(c)**2 + np.imag(c)**2)**0.5)[::-1],'k',label='TQG')
 	ax.plot(np.sort((np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5)[::-1],'r',label='QG')
 	
-
-	ax.axvline(nb_modes, 0, 100, color='C1', linestyle='--')
 	
 	ax.set_xlabel('Number of mode', fontweight="bold")
 	ax.set_ylabel(r'Importance of the sorted mode', fontweight="bold")
@@ -81,6 +80,8 @@ def get_ix(c, c_NT,nb_modes, crit):
 	    tick.set_fontweight('bold')
 	for spine in ax.spines.values():
 		spine.set_linewidth(2)
+		
+	plt.show()
 
 	
 	return ix_norm_c__, ix_norm_cNT__
@@ -248,7 +249,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC):
 	##################################
 	
 
-
+	print('COMPUTING : PLEASE WAIT ...')
 	c, X = eig(A,B)
 	c_NT, X_NT = eig(A11_star, B11)
 	
