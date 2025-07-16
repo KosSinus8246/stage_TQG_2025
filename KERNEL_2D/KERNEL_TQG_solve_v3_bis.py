@@ -19,31 +19,40 @@ print('-----------------------------------------------------')'''
 # @uthor : dimitri moreau 16/07/2025
 
 
-def get_ix(c, c_NT,nb_modes):
+def get_ix(c, c_NT,nb_modes, crit):
 
 	'''
 	Function that select the most important modes following
 	the desired criteria
 	'''
 
-	norm_cNT = (np.imag(c_NT)**2)**0.5
-	#norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
+	if crit == 'imag':
+		norm_cNT = (np.imag(c_NT)**2)**0.5
+		norm_c = (np.imag(c)**2)**0.5
+		
+	elif crit == 'imag_real':
+		norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
+		norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
+		
+	elif crit == 'real':
+		norm_cNT = (np.real(c_NT)**2)**0.5
+		norm_c = (np.real(c)**2)**0.5
+	
+
 	norm_cNT__ = np.sort(norm_cNT)[::-1]
 	ix_norm_cNT__ = np.argsort(norm_cNT)[::-1]
-	
-	norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
-	#norm_c = (np.imag(c)**2)**0.5
+
 	norm_c__ = np.sort(norm_c)[::-1]
 	ix_norm_c__ = np.argsort(norm_c)[::-1]
-	
-	
+
+
 	if nb_modes > len(c):
 		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 		print("!  THE NUMBER OF MODES REQUESTED IS TOO IMPORTANT  !")
 		print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 		sys.exit()
-	
-	
+
+
 
 	fig, (ax) = plt.subplots(1,1)
 
@@ -51,6 +60,9 @@ def get_ix(c, c_NT,nb_modes):
 
 	ax.plot(100*norm_c__[2:]/np.nanmax(norm_c__[2:]),'k',label='TQG')
 	ax.plot(100*norm_cNT__[2:]/np.nanmax(norm_cNT__[2:]),'r',label='QG')
+	
+	
+	
 	ax.axvline(nb_modes, 0, 100, color='C1', linestyle='--')
 	
 	ax.set_xlabel('Number of mode', fontweight="bold")
