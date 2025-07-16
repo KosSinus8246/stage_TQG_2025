@@ -249,8 +249,9 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC):
 	##################################
 	
 
-	print('COMPUTING : PLEASE WAIT ...')
+	print('COMPUTING 1/2 ...')
 	c, X = eig(A,B)
+	print('COMPUTING 2/2 ...')
 	c_NT, X_NT = eig(A11_star, B11)
 	
 	

@@ -56,16 +56,15 @@ x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, be
 ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT,crit)
 nb_modes = int(input('How many modes ? '))
 
+	
+	
+
 ix_norm_c__2, ix_norm_cNT__2 = ix_norm_c__[:nb_modes], ix_norm_cNT__[:nb_modes]
-
-
-
 
 # final list that stack each paramaters for each mode
 zeta_list_2 = []
 zeta_list_2NT = []
 theta_list_2 = []
-
 
 
 for i in tqdm(range(nb_modes)):
