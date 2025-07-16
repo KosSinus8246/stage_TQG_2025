@@ -39,16 +39,17 @@ beta = 0.
 F1star = 0. # 1/Rd**2
 
 U0 = 1.
-Theta0_U0 = 1.0 # ratio
+Theta0_U0 = 1. # ratio
 
 k0, l0 = 2., 0.
 BC = ''
+crit = 'imag'
 #BC = 'activated'
 
 
 # Parameters for plotting
-timesteps = [0., 0.4, 0.8, 1.2]
-#timesteps = [0., 0.5, 1.5, 1.5]
+timesteps = [0., 1.6, 3.3, 5.0]
+#timesteps = [0., 0.2, 0.4, 0.8]
 
 
 nb_modes = int(input('How many modes ? '))
@@ -63,19 +64,13 @@ x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, be
 
 #####
 # finding the modes that are important
-ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT,nb_modes)
+ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT,nb_modes,crit)
 ix_norm_c__2, ix_norm_cNT__2 = ix_norm_c__[:nb_modes], ix_norm_cNT__[:nb_modes]
 
 
 # final list that stack each paramaters for each mode
 zeta_list_2 = []
-#u_s_list_2 = []
-#v_s_list_2 = []
-
 zeta_list_2NT = []
-#u_s_list_2NT = []
-#v_s_list_2NT = []
-
 theta_list_2 = []
 
 
