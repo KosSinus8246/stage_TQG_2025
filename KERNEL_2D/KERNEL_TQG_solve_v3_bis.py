@@ -58,11 +58,10 @@ def get_ix(c, c_NT,nb_modes, crit):
 
 	# [2:] to remove the inf of begin and end because they are sorted
 
-	ax.plot(100*norm_c__[2:]/np.nanmax(norm_c__[2:]),'k',label='TQG')
-	ax.plot(100*norm_cNT__[2:]/np.nanmax(norm_cNT__[2:]),'r',label='QG')
+	ax.plot(np.sort((np.real(c)**2 + np.imag(c)**2)**0.5)[::-1],'k',label='TQG')
+	ax.plot(np.sort((np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5)[::-1],'r',label='QG')
 	
-	
-	
+
 	ax.axvline(nb_modes, 0, 100, color='C1', linestyle='--')
 	
 	ax.set_xlabel('Number of mode', fontweight="bold")
@@ -335,7 +334,7 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		PSI = PSI - Un*yy
 		PSI_NT = PSI_NT - Un*yy
 
-		THETA = THETA + Thetabar
+		THETA = THETA - Thetabar
 
 		# loop to compute physical params
 
