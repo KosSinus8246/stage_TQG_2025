@@ -323,7 +323,7 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		PSI = PSI - Un*yy
 		PSI_NT = PSI_NT - Un*yy
 
-		THETA = THETA - Thetabar
+		THETA = THETA + Thetabar
 
 		# loop to compute physical params
 
@@ -356,20 +356,13 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	# convert the final list into an array
 
 	zeta_list = np.array(zeta_list)
-	#u_s_list = np.array(u_s_list)
-	#v_s_list = np.array(v_s_list)
-	
 	zeta_listNT = np.array(zeta_listNT)
-	#u_s_listNT = np.array(u_s_listNT)
-	#v_s_listNT = np.array(v_s_listNT)
-	
 	theta_list = np.array(theta_list)
 	
 	
 
 	
 	return zeta_list, zeta_listNT, theta_list 
-
 
 
 
