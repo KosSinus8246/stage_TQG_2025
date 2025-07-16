@@ -41,7 +41,7 @@ F1star = 0. # 1/Rd**2
 U0 = 1.
 Theta0_U0 = 1.0 # ratio
 
-k0, l0 = 2*1., 0.
+k0, l0 = 2., 0.
 BC = ''
 #BC = 'activated'
 
@@ -146,10 +146,10 @@ for i in range(zeta_final.shape[0]):
 	for spine in ax[0,i].spines.values():
 		spine.set_linewidth(2)
 	for tick in ax[0, i].get_xticklabels():
-	    tick.set_fontweight('bold')
+		tick.set_fontweight('bold')
 
 	for tick in ax[0, i].get_yticklabels():
-	    tick.set_fontweight('bold')
+		tick.set_fontweight('bold')
 	    
 	    
 	im_theta = ax2[i].contourf(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],30,cmap=cmocean.cm.curl) #
@@ -165,17 +165,17 @@ for i in range(zeta_final.shape[0]):
 	for spine in ax2[i].spines.values():
 		spine.set_linewidth(2)
 	for tick in ax2[i].get_xticklabels():
-	    tick.set_fontweight('bold')
+		tick.set_fontweight('bold')
 
 	for tick in ax2[i].get_yticklabels():
-	    tick.set_fontweight('bold')
+		tick.set_fontweight('bold')
 	
 	
 	
 	#im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='coolwarm',vmin=vminNT,vmax=vmaxNT)
-	im2 = ax[1,i].contourf(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],30,cmap='coolwarm')  
+	im2 = ax[1,i].contourf(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],30,cmap='coolwarm')  
 	#cs = ax[1,i].contour(x,y,zeta_finalNT[i,:,:],15,colors='k')
-	cs = ax[1,i].contour(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],10,colors='k')
+	cs = ax[1,i].contour(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],10,colors='k')
 	
 	ax[1,i].clabel(cs,colors='k')
 	#im2 = ax[1,i].pcolormesh(x,y,zeta_finalNT[i,:,:],cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
@@ -187,7 +187,7 @@ for i in range(zeta_final.shape[0]):
 	    tick.set_fontweight('bold')
 
 	for tick in ax[1, i].get_yticklabels():
-	    tick.set_fontweight('bold')
+		tick.set_fontweight('bold')
 
 	
 	for spine in ax[1,i].spines.values():
@@ -195,26 +195,6 @@ for i in range(zeta_final.shape[0]):
 	
 	
 ax[0,0].set_ylabel(r'y', fontweight="bold")
-'''
-cbar_1 = fig.colorbar(im1, ax=ax[0,-1])
-cbar_1.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
-cbar_1.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
-                               direction='in',    # Tick style
-                               length=2,width=1)            # Length of ticks for visibility
-
-# Set the border (spine) linewidth of the colorbar
-for spine in cbar_1.ax.spines.values():
-	spine.set_linewidth(1.5)  # You can set this to any float value
-
-# Set tick labels bold
-for tick in cbar_1.ax.get_yticklabels():
-    tick.set_fontweight('bold')
-
-# Set spine linewidth
-for spine in cbar_1.ax.spines.values():
-    spine.set_linewidth(1.5)'''
-
-
 
 
 ax[0,1].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
@@ -222,28 +202,6 @@ ax[0,2].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direct
 ax[0,3].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 
 ax[1,0].set_ylabel(r'y', fontweight="bold")
-
-'''
-cbar_2 = fig.colorbar(im2, ax=ax[1,-1])
-cbar_2.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
-cbar_2.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
-                               direction='in',    # Tick style
-                               length=2,width=1)            # Length of ticks for visibilit
-
-
-# Set the border (spine) linewidth of the colorbar
-for spine in cbar_2.ax.spines.values():
-	spine.set_linewidth(1.5)  # You can set this to any float value
-
-# Set tick labels bold
-for tick in cbar_2.ax.get_yticklabels():
-    tick.set_fontweight('bold')
-
-# Set spine linewidth
-for spine in cbar_2.ax.spines.values():
-    spine.set_linewidth(1.5)'''
-
-
 
     
 
