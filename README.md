@@ -3,11 +3,11 @@ Hello Quasi-Geostrophy enthusiast,
 Here's a set of codes that are solving an eigenvalue Thermal-QG and QG problem : A.X = c.B.X. This kind of problem is directly derived from the linear theory of TQG and QG PV conservation : you can have a look on it in the pdf called "TQG notes" in this repository
 
 
-The version 2 is the actual version of TQG solve 1D TARANIS (@uthor : Dimitri Moreau)
+The version 2 is the actual version of TQG solve 1D TARANIS 
 
-The version 3 is the actual version of TQG solve 2D JULIE (@uthor : Dimitri Moreau)
+The version 3 is the actual version of TQG solve 2D JULIE 
 
-The f90 version is coded by analogy to TQG solve python (@uthor : Dimitri Moreau)
+The f90 version is coded by analogy to TQG solve python 
 (need to be debuged for the moment -- lapack issues)
 
 The bis in the name means that the script solves QG and TQG cases.
