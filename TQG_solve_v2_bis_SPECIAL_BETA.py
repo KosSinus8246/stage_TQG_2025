@@ -277,18 +277,26 @@ print('PLOT...')
 #res = 5
 res = np.arange(0.0,1,0.05)
 
-
+'''
 fig, (ax) = plt.subplots(1,2,figsize=(13,6))
 cs = ax[0].contour(k,beta,contourf_beta_k_matrix,res,colors='k',linestyles='--')
 #ax[0].contourf(k,beta,contourf_beta_k_matrix,res,cmap='Grays')
 ax[0].clabel(cs,fontsize=15,colors='k')
-ax[0].set_xlabel(r'$k$')
-ax[0].set_ylabel(r'$\beta$')
-ax[0].set_title(r'$\sigma_i-$contours : TQG')
+ax[0].set_xlabel(r'$k$', fontweight="bold")
+ax[0].set_ylabel(r'$\beta$', fontweight="bold")
+ax[0].set_title(r'$\sigma_i-$contours : TQG', fontweight="bold")
 ax[0].tick_params(top=True,right=True,direction='in',size=4,width=1)
 
 ax[0].set_ylim(np.min(beta), np.max(beta))
 ax[0].set_xlim(0.1, np.max(k))
+
+
+for tick in ax[0].get_xticklabels():
+	    tick.set_fontweight('bold')
+
+for tick in ax[0].get_yticklabels():
+    tick.set_fontweight('bold')
+
 
 for spine in ax[0].spines.values():
     spine.set_linewidth(2)
@@ -296,9 +304,12 @@ for spine in ax[0].spines.values():
 
 cs = ax[1].contour(k,beta,contourf_beta_k_matrix_NT,res,colors='k',linestyles='-')
 #ax[1].contourf(k,beta,contourf_beta_k_matrix_NT,res,cmap='Grays')
-ax[1].clabel(cs,fontsize=15,colors='k')
-ax[1].set_xlabel(r'$k$')
-ax[1].set_title(r'$\sigma_i-$contours : QG')
+
+ax[1].clabel(cs,fontsize=15,colors='k',
+              fontproperties={'weight': 'bold'})  # Bold labels
+
+ax[1].set_xlabel(r'$k$', fontweight="bold")
+ax[1].set_title(r'$\sigma_i-$contours : QG', fontweight="bold")
 ax[1].tick_params(top=True,right=True, labelleft=False,direction='in',size=4,width=1)
 for spine in ax[1].spines.values():
     spine.set_linewidth(2)
@@ -306,36 +317,72 @@ for spine in ax[1].spines.values():
 ax[1].set_ylim(np.min(beta), np.max(beta))
 ax[1].set_xlim(0.1, np.max(k))
 
+for tick in ax[1].get_xticklabels():
+    tick.set_fontweight('bold')
 
+for tick in ax[1].get_yticklabels():
+    tick.set_fontweight('bold')'''
+  
+  
+  
+from matplotlib.font_manager import FontProperties
+# Define bold font
+bold_font = FontProperties(weight='bold')
+    
+# Create subplots
+fig, ax = plt.subplots(1, 2, figsize=(13, 6))
 
+# First subplot
+cs0 = ax[0].contour(k, beta, contourf_beta_k_matrix, res, colors='k', linestyles='--')
+labels0 = ax[0].clabel(cs0, fontsize=15, colors='k')
+for lbl in labels0:
+    lbl.set_fontproperties(bold_font)
 
+ax[0].set_xlabel(r'$k$', fontweight="bold")
+ax[0].set_ylabel(r'$\beta$', fontweight="bold")
+ax[0].set_title(r'$\sigma_i-$contours : TQG', fontweight="bold")
+ax[0].tick_params(top=True, right=True, direction='in', size=4, width=1)
+ax[0].set_ylim(np.min(beta), np.max(beta))
+ax[0].set_xlim(0.1, np.max(k))
 
+for tick in ax[0].get_xticklabels():
+    tick.set_fontweight('bold')
+for tick in ax[0].get_yticklabels():
+    tick.set_fontweight('bold')
+for spine in ax[0].spines.values():
+    spine.set_linewidth(2)
 
+# Second subplot
+cs1 = ax[1].contour(k, beta, contourf_beta_k_matrix_NT, res, colors='k', linestyles='-')
+labels1 = ax[1].clabel(cs1, fontsize=15, colors='k')
+for lbl in labels1:
+    lbl.set_fontproperties(bold_font)
 
+ax[1].set_xlabel(r'$k$', fontweight="bold")
+ax[1].set_title(r'$\sigma_i-$contours : QG', fontweight="bold")
+ax[1].tick_params(top=True, right=True, labelleft=False, direction='in', size=4, width=1)
+ax[1].set_ylim(np.min(beta), np.max(beta))
+ax[1].set_xlim(0.1, np.max(k))
 
-'''
-
-fig, (ax) = plt.subplots(1,1)
-
-cs = ax.contour(k,beta,contourf_beta_k_matrix,res,colors='k',linestyles='--')
-cs2 = ax.contour(k,beta,contourf_beta_k_matrix_NT,res,colors='k',linestyles='-')
-
-ax.clabel(cs,fontsize=15)
-ax.clabel(cs2,fontsize=15)
-ax.set_ylim(np.min(beta), np.max(beta))
-ax.set_xlim(0.1, np.max(k))
-ax.set_title(r'Contours : $\sigma_\mathbf{TQG} ~~;~~ \sigma_\mathbf{QG}$')
-
-ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
-
-for spine in ax.spines.values():
+for tick in ax[1].get_xticklabels():
+    tick.set_fontweight('bold')
+for tick in ax[1].get_yticklabels():
+    tick.set_fontweight('bold')
+for spine in ax[1].spines.values():
     spine.set_linewidth(2)
 
 
+plt.show()
 
-ax.set_xlabel(r'$k$')
-ax.set_ylabel(r'$\beta$')
-'''
+
+
+
+
+
+
+
+
+
 
 
 

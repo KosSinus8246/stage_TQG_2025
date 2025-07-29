@@ -56,7 +56,7 @@ U0 = 1.
 Theta0_U0 = 1. # ratio
 Theta0 = Theta0_U0 *U0
 
-mode_index = 327 # mode to observe
+mode_index = int(input('Which mode ? ')) # mode to observe
 
 
 #Un = U0*np.exp(-yy**2)
@@ -177,7 +177,7 @@ A = np.block([[A11,A12],[A21,A22]])
 print('MATRIX A : OK')
 
 
-
+'''
 # velocity odd
 A[0,1] = 2.0*A[0,1]
 B[0,1] = 2.0*B[0,1]
@@ -198,7 +198,23 @@ B11[0,1] = 2.0*B11[0,1]
 
 A11[(N*N)-1,(N*N)-1] = 0.0
 A11_star[(N*N)-1,(N*N)-1] = 0.0
-B11[(N*N)-1,(N*N)-1] = 0.0
+B11[(N*N)-1,(N*N)-1] = 0.0'''
+
+
+# Apply closed boundary conditions (ψ = 0) on all edges
+for i in range(N):
+	for j in range(N):
+		idx = ij_to_index(i, j, N)
+
+		if i == 0 or i == N-1 or j == 0 or j == N-1:
+			# Zero out the row and set diagonal to 1 (Dirichlet ψ=0)
+			A11[idx, :] = 0.0
+			A11[idx, idx] = 1.0
+			A11_star[idx, :] = 0.0
+			A11_star[idx, idx] = 1.0
+			B11[idx, :] = 0.0
+			B11[idx, idx] = 1.0
+
 
 
 
@@ -299,7 +315,7 @@ for i, t in enumerate(timesteps):
 	THETA_t = np.real(THETA_xy * np.exp(c_mode * t))
 	PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 	
-	PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+	PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t))) 
 	THETA = np.real(THETA_t * np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 	PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
 

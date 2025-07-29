@@ -65,6 +65,7 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 60, 51
+
 dk = 0.1
 ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
 dy = (Ly - ymin)/Ny
@@ -303,14 +304,20 @@ fig, (ax) = plt.subplots(1,1)
 
 ax.plot(k, val_c, 'k--', label='TQG')
 ax.plot(k, val_cNT, 'k-', label='QG')
-ax.set_xlabel(r'$k$')
-ax.set_ylabel(r'$\sigma_i = \mathbf{Im}\{c\}.k ~\geq~ 0$')
+ax.set_xlabel(r'$k$', fontweight="bold")
+ax.set_ylabel(r'$\sigma_i = \mathbf{Im}\{c\}.k ~\geq~ 0$', fontweight="bold")
 ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
-ax.legend(fancybox=False)
+ax.legend(fancybox=False, prop={'weight': 'bold'})
 ax.axhline(0, color='gray', linestyle=':')
 ax.axvline(0, color='gray', linestyle=':')
 for spine in ax.spines.values():
     spine.set_linewidth(2)
+    
+for tick in ax.get_xticklabels():
+    tick.set_fontweight('bold')
+
+for tick in ax.get_yticklabels():
+    tick.set_fontweight('bold')
     
 plt.tight_layout()
 
@@ -428,23 +435,77 @@ plt.tight_layout()
 
 
 
+from matplotlib import colormaps
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
+
 
 fig, (ax) = plt.subplots(1,1)
 
-t = np.linspace(0,1,1000)
-rc2 = Theta0
+t = np.linspace(0,5,1000)
 
+
+alp = 0
+'''
 for i in range(len(val_c)):
 	energy = np.exp(2*val_c[i]*t)
-	ax.plot(t,energy)
+	ax.plot(t,energy,'k',alpha=alp+0.3)'''
+
+cmap = colormaps.get_cmap('plasma').resampled(len(val_c)-1)
 
 
-M2 = Theta0/np.pi
-rc1 = -(-2*Theta0+4*M2*U0)/2
-#ax.plot(t,np.linspace(rc1,rc1,len(t)),'k-',linewidth=2)
+
+# Plot each k mode with a color from the colormap
+for i in range(0, len(val_c)):
+	color = cmap(i-1)
+	energy = np.exp(2*val_c[i]*t)
+	ax.plot(t,energy, color=color)
+
+
+
+for spine in ax.spines.values():
+	spine.set_linewidth(2)
 	
-#ax.plot(t,np.linspace(rc2,rc2,len(t)),'k--',linewidth=2)
+for tick in ax.get_xticklabels():
+    	tick.set_fontweight('bold')
 
+for tick in ax.get_yticklabels():
+    	tick.set_fontweight('bold')
+ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
+ax.set_xlabel('Time',fontweight='bold')
+ax.set_ylabel('Energy',fontweight='bold')
+
+ax.axhline(0, color='gray', linestyle=':')
+ax.axvline(0, color='gray', linestyle=':')
+
+
+
+sm = plt.cm.ScalarMappable(cmap=cmap, norm=mcolors.Normalize(vmin=1, vmax=len(val_c)-1))
+sm.set_array([])
+cbar = plt.colorbar(sm, ax=ax)
+cbar.set_label(r'Mode index', fontweight='bold')
+
+
+
+cbar.ax.yaxis.set_ticks_position('both')             # Ticks on both sides
+cbar.ax.yaxis.set_tick_params(labelleft=False,       # Hide left labels
+                               direction='in',    # Tick style
+                               length=2,width=1)            # Length of ticks for visibilit
+
+
+# Set the border (spine) linewidth of the colorbar
+for spine in cbar.ax.spines.values():
+	spine.set_linewidth(1.5)  # You can set this to any float value
+
+# Set tick labels bold
+for tick in cbar.ax.get_yticklabels():
+	tick.set_fontweight('bold')
+
+# Set spine linewidth
+for spine in cbar.ax.spines.values():
+	spine.set_linewidth(1.5)
+
+ax.set_xlim(None, t[-1])
 
 
 plt.show()
