@@ -39,6 +39,8 @@ F1star = 0. # 1/Rd**2
 U0 = 1.
 Theta0_U0 = 1. # ratio
 k0, l0 = 2., 0.
+Lstar = 0.5
+
 
 BC = ''
 crit = 'imag'
@@ -47,7 +49,7 @@ timesteps = [0., 1., 3., 5., 7.]
 
 #####
 # compute eigenvalues and eigenvectors
-x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC)
+x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lstar)
 
 
 

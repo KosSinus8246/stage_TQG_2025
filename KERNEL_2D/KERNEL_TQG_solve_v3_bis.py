@@ -71,7 +71,8 @@ def get_ix(c, c_NT, crit):
 	ax.axhline(0, color='gray', linestyle=':')
 	ax.axvline(0, color='gray', linestyle=':')
 	
-	
+   
+
 
 	
 	for tick in ax.get_xticklabels():
@@ -90,7 +91,7 @@ def get_ix(c, c_NT, crit):
 
 
 
-def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC):
+def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lstar):
 
 	'''
 	Function that computes eigenvalues and eigenvectors
@@ -109,7 +110,15 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC):
 	K2 = (k0**2+l0**2 + F1star)*dh**2
 
 
-	G12 = -2*yy*Theta0*np.exp(-yy**2) # dThetabar/dy
+	if Lstar == 0.:
+		print('CONF : NO LSTAR')
+		G12 = -2*yy*Theta0*np.exp(-yy**2) # dThetabar/dy
+	else:
+		print('CONF : LSTAR-EFFECT')
+		G12 = (-2/Lstar**2)*yy*Theta0*np.exp(-(y_l**2)/(Lstar**2)) # dThetabar/dy
+		#G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Lstar**2)) # dThetabar/dy	
+
+
 	Thetabar = Theta0* np.exp(-yy**2)
 
 
@@ -326,9 +335,13 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		THETA_t = np.real(THETA_xy * np.exp(c_mode * t))
 		PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 		
-		PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+		#PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+		PSI = np.real(PHI_t * np.exp(-1j*(k0*xx + l0*yy - c_mode*t)))
+		
 		THETA = np.real(THETA_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
-		PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
+
+		#PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
+		PSI_NT = np.real(PHI_t_NT * np.exp(-1j*(k0*xx + l0*yy - c_NT_mode*t)))
 
 		
 		zeta, zeta_NT = np.zeros_like(PSI), np.zeros_like(PSI)
