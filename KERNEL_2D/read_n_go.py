@@ -22,7 +22,7 @@ print('-----------------------------------------------------')
 
 #########################"
 # 1) Computes c and X for QG and TQG with : compute_TQG_2D()
-# 2) Find the most unstable modes with : get_ix()
+# 2) Find most unstables modes with : get_ix()
 # 3) Computes PSI, zeta, u, v with : compute_variables()
 
 
@@ -39,13 +39,13 @@ F1star = 0. # 1/Rd**2
 U0 = 1.
 Theta0_U0 = 1. # ratio
 k0, l0 = 2., 0.
-Lstar = 0.5
+Lstar = 0.
 
 
 BC = ''
 crit = 'imag'
 timesteps = [0., 1., 3., 5., 7.]
-#timesteps = [0., 2.5, 5., 7.5, 10.]
+#timesteps = [0., 1., 2., 3., 4.]
 
 #####
 # compute eigenvalues and eigenvectors
