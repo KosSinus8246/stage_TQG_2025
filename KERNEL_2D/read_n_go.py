@@ -25,6 +25,21 @@ print('-----------------------------------------------------')
 # 2) Find most unstables modes with : get_ix()
 # 3) Computes PSI, zeta, u, v with : compute_variables()
 
+'''
+N : Size of the grid
+Lmin, L : dimension of the grid
+
+beta, F1star : beta effect and deformation radius
+U0, Theta0_U0 : Mean velocity and ratio Theta0/U0
+k0, l0 : wavelenght of the perturbation
+Lstar : Shape of the temperature's gaussian
+std : Standard deviation of the random perturbation
+
+BC : Boundary conditions : '' or 'activated'
+crit : The program sort the modes following the most import
+part of imaginary : 'imag' or 'real' or module : 'imag_real'
+timesteps : the snapshots that you want to see on the plot
+'''
 
 
 
@@ -37,9 +52,10 @@ x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 beta = 0.
 F1star = 0. # 1/Rd**2
 U0 = 1.
-Theta0_U0 = 1. # ratio
+Theta0_U0 = 2. # ratio
 k0, l0 = 2., 0.
-Lstar = 0.
+Lstar = 0.5
+std = 2.
 
 
 BC = ''
@@ -49,7 +65,7 @@ timesteps = [0., 1., 3., 5., 7.]
 
 #####
 # compute eigenvalues and eigenvectors
-x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lstar)
+x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lstar, std)
 
 
 
@@ -58,8 +74,8 @@ x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, be
 ix_norm_c__, ix_norm_cNT__ = get_ix(c,c_NT,crit)
 nb_modes = int(input('How many modes ? '))
 
-	
-	
+
+
 
 ix_norm_c__2, ix_norm_cNT__2 = ix_norm_c__[:nb_modes], ix_norm_cNT__[:nb_modes]
 
@@ -70,18 +86,18 @@ theta_list_2 = []
 
 
 for i in tqdm(range(nb_modes)):
-	
+
 	zeta, zetaNT, theta  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar)
 
 	zeta_list_2.append(zeta)
 	zeta_list_2NT.append(zetaNT)
-	
+
 	theta_list_2.append(theta)
 
 
 
 
-	
+
 
 
 
@@ -118,20 +134,20 @@ fig2.suptitle(r'Evolution of Θ : sum of '+str(nb_modes)+' modes', fontweight='b
 
 for i in range(zeta_final.shape[0]):
 	#im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],30,cmap='coolwarm',vmin=vmin,vmax=vmax)
-	im1 = ax[0,i].contourf(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],30,cmap='coolwarm') 
+	im1 = ax[0,i].contourf(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],30,cmap='coolwarm')
 
 	ax[0,i].set_title(str(timesteps[i]))
 
 	#cs = ax[0,i].contour(x,y,zeta_final[i,:,:],15,colors='k')
 	cs = ax[0,i].contour(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],7,colors='k')
 	ax[0,i].clabel(cs,colors='k')
-	
+
 	ax[0,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
 	ax[0,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
-	
+
 	ax[0,i].set_title('t = '+str(timesteps[i]), fontweight="bold")
 	ax[0,i].tick_params(top=True,right=True,labelbottom=False,direction='in',size=4,width=1)
-	
+
 	for spine in ax[0,i].spines.values():
 		spine.set_linewidth(2)
 	for tick in ax[0, i].get_xticklabels():
@@ -139,9 +155,9 @@ for i in range(zeta_final.shape[0]):
 
 	for tick in ax[0, i].get_yticklabels():
 		tick.set_fontweight('bold')
-	    
-	    
-	im_theta = ax2[i].contourf(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],30,cmap='coolwarm') 
+
+
+	im_theta = ax2[i].contourf(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],30,cmap='coolwarm')
 	ax2[i].set_title(str(timesteps[i]))
 	ax2[i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
 	ax2[i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
@@ -158,14 +174,14 @@ for i in range(zeta_final.shape[0]):
 
 	for tick in ax2[i].get_yticklabels():
 		tick.set_fontweight('bold')
-	
-	
-	
+
+
+
 	#im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='coolwarm',vmin=vminNT,vmax=vmaxNT)
-	im2 = ax[1,i].contourf(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],30,cmap='coolwarm')  
+	im2 = ax[1,i].contourf(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],30,cmap='coolwarm')
 	#cs = ax[1,i].contour(x,y,zeta_finalNT[i,:,:],15,colors='k')
 	cs = ax[1,i].contour(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],7,colors='k')
-	
+
 	ax[1,i].clabel(cs,colors='k')
 	#im2 = ax[1,i].pcolormesh(x,y,zeta_finalNT[i,:,:],cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
 	ax[1,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
@@ -178,11 +194,11 @@ for i in range(zeta_final.shape[0]):
 	for tick in ax[1, i].get_yticklabels():
 		tick.set_fontweight('bold')
 
-	
+
 	for spine in ax[1,i].spines.values():
 		spine.set_linewidth(2)
-	
-	
+
+
 ax[0,0].set_ylabel(r'y', fontweight="bold")
 ax[1,0].set_ylabel(r'y', fontweight="bold")
 ax2[0].set_ylabel('y', fontweight="bold")
@@ -200,5 +216,5 @@ for i in range(1,len(timesteps)):
 
 plt.tight_layout()
 
-	
+
 plt.show()

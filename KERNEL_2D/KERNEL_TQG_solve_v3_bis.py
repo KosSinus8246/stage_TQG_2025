@@ -29,15 +29,15 @@ def get_ix(c, c_NT, crit):
 	if crit == 'imag':
 		norm_cNT = (np.imag(c_NT)**2)**0.5
 		norm_c = (np.imag(c)**2)**0.5
-		
+
 	elif crit == 'imag_real':
 		norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
 		norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
-		
+
 	elif crit == 'real':
 		norm_cNT = (np.real(c_NT)**2)**0.5
 		norm_c = (np.real(c)**2)**0.5
-	
+
 
 	norm_cNT__ = np.sort(norm_cNT)[::-1]
 	ix_norm_cNT__ = np.argsort(norm_cNT)[::-1]
@@ -53,7 +53,7 @@ def get_ix(c, c_NT, crit):
 	print('Warning : you can\'t enter a number of mode over the')
 	print('smallest number of eigenvalues (i.e. the QG one)')
 	print('-----------------------------------------------------')
-	
+
 
 	fig, (ax) = plt.subplots(1,1)
 
@@ -61,37 +61,37 @@ def get_ix(c, c_NT, crit):
 
 	ax.plot(np.sort((np.real(c)**2 + np.imag(c)**2)**0.5)[::-1],'k',label='TQG')
 	ax.plot(np.sort((np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5)[::-1],'r',label='QG')
-	
-	
+
+
 	ax.set_xlabel('Number of mode', fontweight="bold")
 	ax.set_ylabel(r'Importance of the sorted mode', fontweight="bold")
 	ax.legend(fancybox=False, prop={'weight': 'bold'})
 	ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
-	
+
 	ax.axhline(0, color='gray', linestyle=':')
 	ax.axvline(0, color='gray', linestyle=':')
-	
-   
 
 
-	
+
+
+
 	for tick in ax.get_xticklabels():
 	    tick.set_fontweight('bold')
 	for tick in ax.get_yticklabels():
 	    tick.set_fontweight('bold')
 	for spine in ax.spines.values():
 		spine.set_linewidth(2)
-		
+
 	plt.show()
 
-	
+
 	return ix_norm_c__, ix_norm_cNT__
 
 
 
 
 
-def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lstar):
+def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lstar, std):
 
 	'''
 	Function that computes eigenvalues and eigenvectors
@@ -100,12 +100,12 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 
 	x_l, y_l = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 	xx, yy = np.meshgrid(x_l,y_l)
-	
+
 	Theta0 = Theta0_U0 *U0
-	
+
 	Un = U0*np.exp(-(yy-L/2)**2)
-	
-	
+
+
 	Vn = Un*(dh**2)
 	K2 = (k0**2+l0**2 + F1star)*dh**2
 
@@ -116,7 +116,15 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 	else:
 		print('CONF : LSTAR-EFFECT')
 		G12 = (-2/Lstar**2)*yy*Theta0*np.exp(-(y_l**2)/(Lstar**2)) # dThetabar/dy
+
+		if std == 0:
+			print('NOISE : NONE')
+			G12 = G12
 		#G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Lstar**2)) # dThetabar/dy	
+		else:
+			print('NOISE : GAUSSIAN NOISE ; STD = ',std)
+			G12 = G12 + np.random.normal(0,std,len(G12))
+
 
 
 	Thetabar = Theta0* np.exp(-yy**2)
@@ -137,7 +145,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 
 	B11 = np.zeros((N*N, N*N))
 
-			
+
 	def ij_to_index(i, j, N):
 	    return i * N + j
 
@@ -155,8 +163,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 			if j < N-1:
 				B11[idx, ij_to_index(i, j+1, N)] = 1
 
-			
-			
+
+
 
 
 
@@ -183,8 +191,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 	# term that is F11 for the non-TQG solving
 	# Block A11
 
-			
-			
+
+
 	for i in range(N):
 		for j in range(N):
 			idx = i * N + j
@@ -217,8 +225,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 	# Final block matrix A
 
 	A = np.block([[A11,A12],[A21,A22]])
-	
-	
+
+
 	print('MATRIX A : OK')
 
 
@@ -244,11 +252,11 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 		A11[(N*N)-1,(N*N)-1] = 0.0
 		A11_star[(N*N)-1,(N*N)-1] = 0.0
 		B11[(N*N)-1,(N*N)-1] = 0.0
-		
+
 	elif BC == '':
 		print('NO BC\'S IMPLEMENTED')
 
-	
+
 
 
 
@@ -256,36 +264,36 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 	##################################
 	# SOLVING
 	##################################
-	
+
 
 	print('COMPUTING 1/2 ...')
 	c, X = eig(A,B)
 	print('COMPUTING 2/2 ...')
 	c_NT, X_NT = eig(A11_star, B11)
-	
-	
+
+
 	print('EIGENVALUES AND EIGENVECTORS : OK')
-	
-	
+
+
 	#############################################"
 	return x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar
-	
-	
-	
-	
-	
-	
-	
 
-	
-	
+
+
+
+
+
+
+
+
+
 def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar):
 
 	'''
 	Function that computes the parameters zeta, us, vs
 	'''
 
-	
+
 	# TQG ##################
 	########################
 	# Extract eigenvalue and eigenvector
@@ -297,7 +305,7 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	phi_xy = phi_flat.reshape((N, N))
 	# Normalize for visualization if needed
 	PHI_xy = np.real(phi_xy)
-	
+
 	# Extract Theta from second half of X
 	theta_flat = X_mode[N*N:]
 	theta_xy = theta_flat.reshape((N, N))
@@ -328,22 +336,22 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	zeta_list = []
 	zeta_listNT = []
 	theta_list = []
-	
+
 
 	for i, t in enumerate(timesteps):
 		PHI_t = np.real(PHI_xy * np.exp(c_mode * t))
 		THETA_t = np.real(THETA_xy * np.exp(c_mode * t))
 		PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
-		
+
 		#PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 		PSI = np.real(PHI_t * np.exp(-1j*(k0*xx + l0*yy - c_mode*t)))
-		
+
 		THETA = np.real(THETA_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 
 		#PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
 		PSI_NT = np.real(PHI_t_NT * np.exp(-1j*(k0*xx + l0*yy - c_NT_mode*t)))
 
-		
+
 		zeta, zeta_NT = np.zeros_like(PSI), np.zeros_like(PSI)
 
 		PSI = PSI - Un*yy
@@ -355,40 +363,40 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 
 		for j in range(N-1):
 			for k in range(N-1):
-				
-				
+
+
 				zeta[j,k] = (PSI[j,k+1] -2*PSI[j,k] + PSI[j,k-1])/(dh**2) +\
 				 (PSI[j+1,k] -2*PSI[j,k] + PSI[j-1,k])/(dh**2) 
 				zeta_NT[j,k] = (PSI_NT[j,k+1] -2*PSI_NT[j,k] + PSI_NT[j,k-1])/(dh**2) +\
 				 (PSI_NT[j+1,k] -2*PSI_NT[j,k] + PSI_NT[j-1,k])/(dh**2)
-		
-		# stack it into a list	 
-				 
+
+		# stack it into a list
+
 		zeta_list.append(zeta)
-		
+
 		#u_s_list.append(u_s)
 		#v_s_list.append(v_s)
-		
+
 		zeta_listNT.append(zeta_NT)
 		#u_s_listNT.append(u_sNT)
 		#v_s_listNT.append(v_sNT)
-		
+
 		theta_list.append(THETA)
-		
 
 
 
-	
+
+
 	# convert the final list into an array
 
 	zeta_list = np.array(zeta_list)
 	zeta_listNT = np.array(zeta_listNT)
 	theta_list = np.array(theta_list)
-	
-	
 
-	
-	return zeta_list, zeta_listNT, theta_list 
+
+
+
+	return zeta_list, zeta_listNT, theta_list
 
 
 
