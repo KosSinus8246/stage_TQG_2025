@@ -1,6 +1,11 @@
 from KERNEL_TQG_solve_v3_bis import *
 import imageio.v2 as imageio
 import cmocean
+
+from matplotlib.font_manager import FontProperties
+# Define bold font
+bold_font = FontProperties(weight='bold')
+
 '''
 import os
 from io import BytesIO
@@ -26,6 +31,8 @@ print('-----------------------------------------------------')
 # 3) Computes PSI, zeta, u, v with : compute_variables()
 
 '''
+PARAMETERS
+
 N : Size of the grid
 Lmin, L : dimension of the grid
 
@@ -33,7 +40,8 @@ beta, F1star : beta effect and deformation radius
 U0, Theta0_U0 : Mean velocity and ratio Theta0/U0
 k0, l0 : wavelenght of the perturbation
 Lstar : Shape of the temperature's gaussian
-std : Standard deviation of the random perturbation
+std : Standard deviation of the random perturbation only
+for the thermal profile
 
 BC : Boundary conditions : '' or 'activated'
 crit : The program sort the modes following the most import
@@ -50,18 +58,23 @@ dh = L/N
 x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 
 beta = 0.
-F1star = 0. # 1/Rd**2
+F1star = 0.
 U0 = 1.
-Theta0_U0 = 2. # ratio
+Theta0_U0 = 1.
 k0, l0 = 2., 0.
 Lstar = 0.5
-std = 2.
+std = 0.
 
 
 BC = ''
 crit = 'imag'
-timesteps = [0., 1., 3., 5., 7.]
-#timesteps = [0., 1., 2., 3., 4.]
+#timesteps = [0., 1., 3., 5., 7.]
+timesteps = [0., 1., 2., 3., 4.]
+
+
+#lev_cont = [-3000,-1500, 0, 1500, 3000]
+lev_cont = 6
+
 
 #####
 # compute eigenvalues and eigenvectors
@@ -139,8 +152,10 @@ for i in range(zeta_final.shape[0]):
 	ax[0,i].set_title(str(timesteps[i]))
 
 	#cs = ax[0,i].contour(x,y,zeta_final[i,:,:],15,colors='k')
-	cs = ax[0,i].contour(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],7,colors='k')
-	ax[0,i].clabel(cs,colors='k')
+	cs = ax[0,i].contour(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],lev_cont,colors='k')
+	lbl = ax[0,i].clabel(cs,colors='k')
+	for lbl in lbl:
+	        lbl.set_fontproperties(bold_font)
 
 	ax[0,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
 	ax[0,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
@@ -163,10 +178,15 @@ for i in range(zeta_final.shape[0]):
 	ax2[i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
 	ax2[i].set_title('t = '+str(timesteps[i]), fontweight="bold")
 	ax2[i].tick_params(top=True,right=True,direction='in',size=4,width=1)
-	cs = ax2[i].contour(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],7,colors='k')
-	ax2[i].clabel(cs,colors='k')
+	cs = ax2[i].contour(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],lev_cont,colors='k')
+	lbl = ax2[i].clabel(cs,colors='k')
+	for lbl in lbl:
+    		lbl.set_fontproperties(bold_font)
+
 	ax2[i].set_xlabel('x', fontweight="bold")
-	ax2[i].clabel(cs)
+	lbl = ax2[i].clabel(cs)
+	for lbl in lbl:
+                lbl.set_fontproperties(bold_font)
 	for spine in ax2[i].spines.values():
 		spine.set_linewidth(2)
 	for tick in ax2[i].get_xticklabels():
@@ -180,9 +200,11 @@ for i in range(zeta_final.shape[0]):
 	#im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='coolwarm',vmin=vminNT,vmax=vmaxNT)
 	im2 = ax[1,i].contourf(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],30,cmap='coolwarm')
 	#cs = ax[1,i].contour(x,y,zeta_finalNT[i,:,:],15,colors='k')
-	cs = ax[1,i].contour(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],7,colors='k')
+	cs = ax[1,i].contour(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],lev_cont,colors='k')
 
-	ax[1,i].clabel(cs,colors='k')
+	lbl = ax[1,i].clabel(cs,colors='k')
+	for lbl in lbl:
+	        lbl.set_fontproperties(bold_font)
 	#im2 = ax[1,i].pcolormesh(x,y,zeta_finalNT[i,:,:],cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
 	ax[1,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
 	ax[1,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
