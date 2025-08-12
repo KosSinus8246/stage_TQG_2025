@@ -65,6 +65,7 @@ print('-----------------------------------------------------')
 ##################################
 
 Ny, Nk = 60, 51
+Nk = 10
 
 dk = 0.1
 ymin, kmin, Ly, Lk = 0.1, 0.1, np.pi, 0.1+dk*Nk
@@ -304,8 +305,9 @@ fig, (ax) = plt.subplots(1,1)
 
 ax.plot(k, val_c, 'k--', label='TQG')
 ax.plot(k, val_cNT, 'k-', label='QG')
-ax.set_xlabel(r'$k$', fontweight="bold")
-ax.set_ylabel(r'$\sigma_i = \mathbf{Im}\{c\}.k ~\geq~ 0$', fontweight="bold")
+ax.set_xlabel(r'k', fontweight="bold")
+#ax.set_ylabel(r'$\sigma_i = \mathbf{Im}\{c\}.k ~\geq~ 0$', fontweight="bold")
+ax.set_ylabel(r'σ$_i$ ≥ Im{c}.k',fontweight='bold')
 ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
 ax.legend(fancybox=False, prop={'weight': 'bold'})
 ax.axhline(0, color='gray', linestyle=':')
@@ -442,14 +444,9 @@ import matplotlib.colors as mcolors
 
 fig, (ax) = plt.subplots(1,1)
 
-t = np.linspace(0,5,1000)
+t = np.linspace(0,33,500)
 
 
-alp = 0
-'''
-for i in range(len(val_c)):
-	energy = np.exp(2*val_c[i]*t)
-	ax.plot(t,energy,'k',alpha=alp+0.3)'''
 
 cmap = colormaps.get_cmap('plasma').resampled(len(val_c)-1)
 
@@ -473,7 +470,8 @@ for tick in ax.get_yticklabels():
     	tick.set_fontweight('bold')
 ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
 ax.set_xlabel('Time',fontweight='bold')
-ax.set_ylabel('Energy',fontweight='bold')
+#ax.set_ylabel(r'Energy : $\mathbf{exp}(2.\sigma_i.t)$',fontweight='bold')
+ax.set_ylabel(r'Energy : exp(2.σ$_i$.t)',fontweight='bold')
 
 ax.axhline(0, color='gray', linestyle=':')
 ax.axvline(0, color='gray', linestyle=':')
@@ -506,7 +504,13 @@ for spine in cbar.ax.spines.values():
 	spine.set_linewidth(1.5)
 
 ax.set_xlim(None, t[-1])
+ax.set_yscale('log')
+from matplotlib.ticker import LogLocator
 
+ax.tick_params(axis='y', which='both', direction='in', length=4, width=1, color='k', labelcolor='k')
+ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
+ax.yaxis.set_minor_locator(LogLocator(base=10.0, subs='auto', numticks=10))
+ax.yaxis.set_ticks_position('both')  # Ticks on both left and right
 
 plt.show()
 

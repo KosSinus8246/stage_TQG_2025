@@ -338,9 +338,9 @@ labels0 = ax[0].clabel(cs0, fontsize=15, colors='k')
 for lbl in labels0:
     lbl.set_fontproperties(bold_font)
 
-ax[0].set_xlabel(r'$k$', fontweight="bold")
-ax[0].set_ylabel(r'$\beta$', fontweight="bold")
-ax[0].set_title(r'$\sigma_i-$contours : TQG', fontweight="bold")
+ax[0].set_xlabel(r'k', fontweight="bold")
+ax[0].set_ylabel(r'β', fontweight="bold")
+ax[0].set_title(r'σ$_i-$contours : TQG', fontweight="bold")
 ax[0].tick_params(top=True, right=True, direction='in', size=4, width=1)
 ax[0].set_ylim(np.min(beta), np.max(beta))
 ax[0].set_xlim(0.1, np.max(k))
@@ -358,8 +358,8 @@ labels1 = ax[1].clabel(cs1, fontsize=15, colors='k')
 for lbl in labels1:
     lbl.set_fontproperties(bold_font)
 
-ax[1].set_xlabel(r'$k$', fontweight="bold")
-ax[1].set_title(r'$\sigma_i-$contours : QG', fontweight="bold")
+ax[1].set_xlabel(r'k', fontweight="bold")
+ax[1].set_title(r'σ$_i-$contours : QG', fontweight="bold")
 ax[1].tick_params(top=True, right=True, labelleft=False, direction='in', size=4, width=1)
 ax[1].set_ylim(np.min(beta), np.max(beta))
 ax[1].set_xlim(0.1, np.max(k))
