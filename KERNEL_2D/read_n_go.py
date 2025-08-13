@@ -60,7 +60,7 @@ x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 beta = 0.
 F1star = 0.
 U0 = 1.
-Theta0_U0 = 1.
+Theta0_U0 = 2.
 k0, l0 = 2., 0.
 Lstar = 0.5
 std = 0.
@@ -129,6 +129,7 @@ theta_final = np.nansum(theta_list_2,axis=0)
 
 fig, ax = plt.subplots(2, len(timesteps), figsize=(16, 6))
 fig.suptitle(r'Evolution of ζ (top : TQG and bottom : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
+
 
 # figure for theta
 fig2, ax2 = plt.subplots(1, len(timesteps), figsize=(16, 4))
@@ -223,6 +224,7 @@ for i in range(zeta_final.shape[0]):
 
 ax[0,0].set_ylabel(r'y', fontweight="bold")
 ax[1,0].set_ylabel(r'y', fontweight="bold")
+
 ax2[0].set_ylabel('y', fontweight="bold")
 
 

@@ -59,12 +59,15 @@ def get_ix(c, c_NT, crit):
 
 	# [2:] to remove the inf of begin and end because they are sorted
 
-	ax.plot(np.sort((np.real(c)**2 + np.imag(c)**2)**0.5)[::-1],'k',label='TQG')
-	ax.plot(np.sort((np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5)[::-1],'r',label='QG')
+	max_ = (1/100)*np.max(np.sort((np.real(c)**2 + np.imag(c)**2)**0.5))
+	max__ = (1/100)*np.max(np.sort((np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5))
+
+	ax.plot(np.sort((np.real(c)**2 + np.imag(c)**2)**0.5)[::-1]/max_,'k--',label='TQG')
+	ax.plot(np.sort((np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5)[::-1]/max__,'k-',label='QG')
 
 
-	ax.set_xlabel('Number of mode', fontweight="bold")
-	ax.set_ylabel(r'Importance of the sorted mode', fontweight="bold")
+	ax.set_xlabel('Number of modes summed', fontweight="bold")
+	ax.set_ylabel(r'% contribution', fontweight="bold")
 	ax.legend(fancybox=False, prop={'weight': 'bold'})
 	ax.tick_params(top=True,right=True,direction='in',size=4,width=1)
 
