@@ -339,6 +339,8 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	zeta_list = []
 	zeta_listNT = []
 	theta_list = []
+	psi_list = []
+	psi_listNT = []
 
 
 	for i, t in enumerate(timesteps):
@@ -349,7 +351,8 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		#PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 		PSI = np.real(PHI_t * np.exp(-1j*(k0*xx + l0*yy - c_mode*t)))
 
-		THETA = np.real(THETA_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+		#THETA = np.real(THETA_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
+		THETA = np.real(THETA_t)
 
 		#PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
 		PSI_NT = np.real(PHI_t_NT * np.exp(-1j*(k0*xx + l0*yy - c_NT_mode*t)))
@@ -401,7 +404,8 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		theta_list.append(THETA)
 
 
-
+		psi_list.append(PSI)
+		psi_listNT.append(PSI_NT)
 
 
 	# convert the final list into an array
@@ -410,10 +414,12 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	zeta_listNT = np.array(zeta_listNT)
 	theta_list = np.array(theta_list)
 
+	psi_list = np.array(psi_list)
+	psi_listNT = np.array(psi_listNT)
 
 
 
-	return zeta_list, zeta_listNT, theta_list
+	return zeta_list, zeta_listNT, theta_list, psi_list, psi_listNT
 
 
 

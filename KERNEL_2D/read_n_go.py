@@ -98,17 +98,21 @@ zeta_list_2 = []
 zeta_list_2NT = []
 theta_list_2 = []
 
+psi_list_2 = []
+psi_listNT_2 = []
+
 
 for i in tqdm(range(nb_modes)):
 
-	zeta, zetaNT, theta  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar)
+	zeta, zetaNT, theta, psi, psiNT  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar)
 
 	zeta_list_2.append(zeta)
 	zeta_list_2NT.append(zetaNT)
 
 	theta_list_2.append(theta)
 
-
+	psi_list_2.append(psi)
+	psi_listNT_2.append(psiNT)
 
 
 
@@ -127,40 +131,42 @@ theta_list_2 = np.array(theta_list_2)
 theta_final = np.nansum(theta_list_2,axis=0)
 
 
+psi_list_2 = np.array(psi_list_2)
+psi_final = np.nansum(psi_list_2,axis=0)
 
-fig, ax = plt.subplots(2, len(timesteps), figsize=(16, 6))
+psi_listNT_2 = np.array(psi_listNT_2)
+psi_finalNT = np.nansum(psi_listNT_2,axis=0)
+
+
+
+fig, ax = plt.subplots(2, len(timesteps), figsize=(18, 6))
 fig.suptitle(r'Evolution of ζ (top : TQG and bottom : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 
 # figure for theta
-fig2, ax2 = plt.subplots(1, len(timesteps), figsize=(16, 4))
+fig2, ax2 = plt.subplots(1, len(timesteps), figsize=(18, 4))
 fig2.suptitle(r'Evolution of Θ : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
-#vmax = np.mean(zeta_final)+200
-#vmin = -vmax
+fig3, ax3 = plt.subplots(2, len(timesteps), figsize=(18, 6))
+fig3.suptitle(r'Evolution of ψ (top : TQG and bottom : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 
- #maxNT = np.mean(zeta_finalNT)+200
-#minNT = -vmaxNT
-
-#vmax_theta = 1
-#vmin_theta = -vmax_theta
 
 
 for i in range(zeta_final.shape[0]):
 	#im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],30,cmap='coolwarm',vmin=vmin,vmax=vmax)
-	im1 = ax[0,i].contourf(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],30,cmap='coolwarm')
+	im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],30,cmap='coolwarm')
 
 	ax[0,i].set_title(str(timesteps[i]))
 
 	#cs = ax[0,i].contour(x,y,zeta_final[i,:,:],15,colors='k')
-	cs = ax[0,i].contour(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],lev_cont,colors='k')
+	cs = ax[0,i].contour(x,y,zeta_final[i,:,:],lev_cont,colors='k')
 	lbl = ax[0,i].clabel(cs,colors='k')
 	for lbl in lbl:
 	        lbl.set_fontproperties(bold_font)
 
-	ax[0,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
-	ax[0,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
+	ax[0,i].set_xlim(x[1],x[-1])
+	ax[0,i].set_ylim(y[1],y[-1])
 
 	ax[0,i].set_title('t = '+str(timesteps[i]), fontweight="bold")
 	ax[0,i].tick_params(top=True,right=True,labelbottom=False,direction='in',size=4,width=1)
@@ -169,26 +175,25 @@ for i in range(zeta_final.shape[0]):
 		spine.set_linewidth(2)
 	for tick in ax[0, i].get_xticklabels():
 		tick.set_fontweight('bold')
-
 	for tick in ax[0, i].get_yticklabels():
 		tick.set_fontweight('bold')
 
 
-	im_theta = ax2[i].contourf(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],30,cmap='coolwarm')
+	im_theta = ax2[i].contourf(x,y,theta_final[i,:,:],30,cmap='coolwarm')
 	ax2[i].set_title(str(timesteps[i]))
-	ax2[i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
-	ax2[i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
+	ax2[i].set_xlim(x[1],x[-1])
+	ax2[i].set_ylim(y[1],y[-1])
 	ax2[i].set_title('t = '+str(timesteps[i]), fontweight="bold")
 	ax2[i].tick_params(top=True,right=True,direction='in',size=4,width=1)
-	cs = ax2[i].contour(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],lev_cont,colors='k')
+	cs = ax2[i].contour(x,y,theta_final[i,:,:],lev_cont,colors='k')
 	lbl = ax2[i].clabel(cs,colors='k')
 	for lbl in lbl:
-    		lbl.set_fontproperties(bold_font)
+		lbl.set_fontproperties(bold_font)
 
 	ax2[i].set_xlabel('x', fontweight="bold")
 	lbl = ax2[i].clabel(cs)
 	for lbl in lbl:
-                lbl.set_fontproperties(bold_font)
+		lbl.set_fontproperties(bold_font)
 	for spine in ax2[i].spines.values():
 		spine.set_linewidth(2)
 	for tick in ax2[i].get_xticklabels():
@@ -200,20 +205,20 @@ for i in range(zeta_final.shape[0]):
 
 
 	#im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='coolwarm',vmin=vminNT,vmax=vmaxNT)
-	im2 = ax[1,i].contourf(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],30,cmap='coolwarm')
+	im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='coolwarm')
 	#cs = ax[1,i].contour(x,y,zeta_finalNT[i,:,:],15,colors='k')
-	cs = ax[1,i].contour(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],lev_cont,colors='k')
+	cs = ax[1,i].contour(x,y,zeta_finalNT[i,:,:],lev_cont,colors='k')
 
 	lbl = ax[1,i].clabel(cs,colors='k')
 	for lbl in lbl:
-	        lbl.set_fontproperties(bold_font)
+		lbl.set_fontproperties(bold_font)
 	#im2 = ax[1,i].pcolormesh(x,y,zeta_finalNT[i,:,:],cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
-	ax[1,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
-	ax[1,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
+	ax[1,i].set_xlim(x[1],x[-1])
+	ax[1,i].set_ylim(y[1],y[-1])
 	ax[1,i].set_xlabel(r"x", fontweight="bold")
 	ax[1,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
 	for tick in ax[1, i].get_xticklabels():
-	    tick.set_fontweight('bold')
+		tick.set_fontweight('bold')
 
 	for tick in ax[1, i].get_yticklabels():
 		tick.set_fontweight('bold')
@@ -223,23 +228,72 @@ for i in range(zeta_final.shape[0]):
 		spine.set_linewidth(2)
 
 
+
+
+	ax3[0,i].contourf(x,y,psi_final[i,:,:],30,cmap='coolwarm')
+	cs = ax3[0,i].contour(x,y,psi_final[i,:,:],lev_cont,colors='k')
+	lbl = ax3[0,i].clabel(cs,colors='k')
+
+	ax3[0,i].set_title('t = '+str(timesteps[i]),fontweight='bold')
+
+	for tick in ax3[0, i].get_xticklabels():
+		tick.set_fontweight('bold')
+	for tick in ax3[0, i].get_yticklabels():
+		tick.set_fontweight('bold')
+	for spine in ax3[0,i].spines.values():
+		spine.set_linewidth(2)
+	for lbl in lbl:
+		lbl.set_fontproperties(bold_font)
+
+	ax3[0,i].set_xlim(x[1],x[-1])
+	ax3[0,i].set_ylim(y[1],y[-1])
+
+
+
+	ax3[1,i].contourf(x,y,psi_finalNT[i,:,:],30,cmap='coolwarm')
+	cs = ax3[1,i].contour(x,y,psi_finalNT[i,:,:],lev_cont,colors='k')
+	lbl = ax3[1,i].clabel(cs,colors='k')
+
+
+	for tick in ax3[1, i].get_xticklabels():
+		tick.set_fontweight('bold')
+	for tick in ax3[1, i].get_yticklabels():
+		tick.set_fontweight('bold')
+	for spine in ax3[1,i].spines.values():
+		spine.set_linewidth(2)
+	for lbl in lbl:
+		lbl.set_fontproperties(bold_font)
+
+	ax3[1,i].set_xlabel('x',fontweight='bold')
+	ax3[1,i].set_xlim(x[1],x[-1])
+	ax3[1,i].set_ylim(y[1],y[-1])
+
+
+
 ax[0,0].set_ylabel(r'y', fontweight="bold")
 ax[1,0].set_ylabel(r'y', fontweight="bold")
 
+
 ax2[0].set_ylabel('y', fontweight="bold")
+
+
+ax3[0,0].set_ylabel('y',fontweight='bold')
+ax3[1,0].set_ylabel('y',fontweight='bold')
 
 
 for i in range(1,len(timesteps)):
 	ax[0,i].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
 	ax[1,i].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
 
+	ax3[0,i].tick_params(top=True,right=True,labelbottom=False,labelleft=False,direction='in',size=4,width=1)
+	ax3[1,i].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
+
+
+ax3[0,0].tick_params(left=True,bottom=False)
+ax3[1,0].tick_params(left=True)
 
 
 
-
-
-
-plt.tight_layout()
 
 
 plt.show()
