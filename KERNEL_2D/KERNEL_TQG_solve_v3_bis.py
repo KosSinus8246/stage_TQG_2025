@@ -357,15 +357,29 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 
 		zeta, zeta_NT = np.zeros_like(PSI), np.zeros_like(PSI)
 
-		PSI = PSI - Un*yy
-		PSI_NT = PSI_NT - Un*yy
+		#PSI = PSI - Un*yy
+		#PSI_NT = PSI_NT - Un*yy
+		#####
+		# Build background streamfunction psi0(y) = ∫ U(y) dy  (trapezoidal)
+		U1d = Un[:, 0]
+		psi0_y = np.zeros(N)
+		psi0_y[1:] = np.cumsum(0.5*(U1d[1:] + U1d[:-1])) * dh
+		psi_bg = psi0_y[:, None] * np.ones((1, N))
 
-		THETA = THETA - Thetabar
+		PSI    = PSI    - psi_bg
+		PSI_NT = PSI_NT - psi_bg
+
+		###
+
+
+
+
+		#THETA = THETA - Thetabar
 
 		# loop to compute physical params
 
-		for j in range(N-1):
-			for k in range(N-1):
+		for j in range(1,N-1):
+			for k in range(1,N-1):
 
 
 				zeta[j,k] = (PSI[j,k+1] -2*PSI[j,k] + PSI[j,k-1])/(dh**2) +\
