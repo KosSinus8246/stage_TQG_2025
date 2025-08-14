@@ -61,7 +61,7 @@ x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 beta = 0.
 F1star = 0.
 U0 = 1.
-Theta0_U0 = 5.
+Theta0_U0 = 1.
 k0, l0 = 2., 0.
 Lstar = 0.5
 std = 0.
@@ -69,8 +69,9 @@ std = 0.
 
 BC = ''
 crit = 'imag'
-#timesteps = [0., 1., 3., 5., 7.]
+
 timesteps = [0., 1., 2., 3., 4.]
+#timesteps = [0., 1., 3., 5., 7.]
 
 
 #lev_cont = [-3000,-1500, 0, 1500, 3000]
@@ -139,15 +140,15 @@ psi_finalNT = np.nansum(psi_listNT_2,axis=0)
 
 
 
-fig, ax = plt.subplots(2, len(timesteps), figsize=(18, 6))
+fig, ax = plt.subplots(2, len(timesteps), figsize=(16, 6))
 fig.suptitle(r'Evolution of ζ (top : TQG and bottom : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 
 # figure for theta
-fig2, ax2 = plt.subplots(1, len(timesteps), figsize=(18, 4))
+fig2, ax2 = plt.subplots(1, len(timesteps), figsize=(16, 4))
 fig2.suptitle(r'Evolution of Θ : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
-fig3, ax3 = plt.subplots(2, len(timesteps), figsize=(18, 6))
+fig3, ax3 = plt.subplots(2, len(timesteps), figsize=(16, 6))
 fig3.suptitle(r'Evolution of ψ (top : TQG and bottom : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 
@@ -155,18 +156,18 @@ fig3.suptitle(r'Evolution of ψ (top : TQG and bottom : QG) : sum of '+str(nb_mo
 
 for i in range(zeta_final.shape[0]):
 	#im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],30,cmap='coolwarm',vmin=vmin,vmax=vmax)
-	im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],30,cmap='coolwarm')
+	im1 = ax[0,i].contourf(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],30,cmap='coolwarm')
 
 	ax[0,i].set_title(str(timesteps[i]))
 
 	#cs = ax[0,i].contour(x,y,zeta_final[i,:,:],15,colors='k')
-	cs = ax[0,i].contour(x,y,zeta_final[i,:,:],lev_cont,colors='k')
+	cs = ax[0,i].contour(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],lev_cont,colors='k')
 	lbl = ax[0,i].clabel(cs,colors='k')
 	for lbl in lbl:
 	        lbl.set_fontproperties(bold_font)
 
-	ax[0,i].set_xlim(x[1],x[-1])
-	ax[0,i].set_ylim(y[1],y[-1])
+	ax[0,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
+	ax[0,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
 
 	ax[0,i].set_title('t = '+str(timesteps[i]), fontweight="bold")
 	ax[0,i].tick_params(top=True,right=True,labelbottom=False,direction='in',size=4,width=1)
@@ -179,13 +180,15 @@ for i in range(zeta_final.shape[0]):
 		tick.set_fontweight('bold')
 
 
-	im_theta = ax2[i].contourf(x,y,theta_final[i,:,:],30,cmap='coolwarm')
+	im_theta = ax2[i].contourf(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],30,cmap='coolwarm')
 	ax2[i].set_title(str(timesteps[i]))
-	ax2[i].set_xlim(x[1],x[-1])
-	ax2[i].set_ylim(y[1],y[-1])
+
+	ax2[i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
+	ax2[i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
+
 	ax2[i].set_title('t = '+str(timesteps[i]), fontweight="bold")
 	ax2[i].tick_params(top=True,right=True,direction='in',size=4,width=1)
-	cs = ax2[i].contour(x,y,theta_final[i,:,:],lev_cont,colors='k')
+	cs = ax2[i].contour(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],lev_cont,colors='k')
 	lbl = ax2[i].clabel(cs,colors='k')
 	for lbl in lbl:
 		lbl.set_fontproperties(bold_font)
@@ -205,16 +208,18 @@ for i in range(zeta_final.shape[0]):
 
 
 	#im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='coolwarm',vmin=vminNT,vmax=vmaxNT)
-	im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='coolwarm')
+	im2 = ax[1,i].contourf(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],30,cmap='coolwarm')
 	#cs = ax[1,i].contour(x,y,zeta_finalNT[i,:,:],15,colors='k')
-	cs = ax[1,i].contour(x,y,zeta_finalNT[i,:,:],lev_cont,colors='k')
+	cs = ax[1,i].contour(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],lev_cont,colors='k')
 
 	lbl = ax[1,i].clabel(cs,colors='k')
 	for lbl in lbl:
 		lbl.set_fontproperties(bold_font)
 	#im2 = ax[1,i].pcolormesh(x,y,zeta_finalNT[i,:,:],cmap='RdBu_r',vmin=vminNT,vmax=vmaxNT)
-	ax[1,i].set_xlim(x[1],x[-1])
-	ax[1,i].set_ylim(y[1],y[-1])
+
+	ax[1,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
+	ax[1,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
+
 	ax[1,i].set_xlabel(r"x", fontweight="bold")
 	ax[1,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
 	for tick in ax[1, i].get_xticklabels():
@@ -230,8 +235,8 @@ for i in range(zeta_final.shape[0]):
 
 
 
-	ax3[0,i].contourf(x,y,psi_final[i,:,:],30,cmap='coolwarm')
-	cs = ax3[0,i].contour(x,y,psi_final[i,:,:],lev_cont,colors='k')
+	ax3[0,i].contourf(x[1:-1],y[1:-1],psi_final[i,1:-1,1:-1],30,cmap='coolwarm')
+	cs = ax3[0,i].contour(x[1:-1],y[1:-1],psi_final[i,1:-1,1:-1],lev_cont,colors='k')
 	lbl = ax3[0,i].clabel(cs,colors='k')
 
 	ax3[0,i].set_title('t = '+str(timesteps[i]),fontweight='bold')
@@ -245,13 +250,15 @@ for i in range(zeta_final.shape[0]):
 	for lbl in lbl:
 		lbl.set_fontproperties(bold_font)
 
-	ax3[0,i].set_xlim(x[1],x[-1])
-	ax3[0,i].set_ylim(y[1],y[-1])
+
+	ax3[0,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
+	ax3[0,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
 
 
 
-	ax3[1,i].contourf(x,y,psi_finalNT[i,:,:],30,cmap='coolwarm')
-	cs = ax3[1,i].contour(x,y,psi_finalNT[i,:,:],lev_cont,colors='k')
+
+	ax3[1,i].contourf(x[1:-1],y[1:-1],psi_finalNT[i,1:-1,1:-1],30,cmap='coolwarm')
+	cs = ax3[1,i].contour(x[1:-1],y[1:-1],psi_finalNT[i,1:-1,1:-1],lev_cont,colors='k')
 	lbl = ax3[1,i].clabel(cs,colors='k')
 
 
@@ -265,8 +272,11 @@ for i in range(zeta_final.shape[0]):
 		lbl.set_fontproperties(bold_font)
 
 	ax3[1,i].set_xlabel('x',fontweight='bold')
-	ax3[1,i].set_xlim(x[1],x[-1])
-	ax3[1,i].set_ylim(y[1],y[-1])
+
+
+	ax3[1,i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
+	ax3[1,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
+
 
 
 
