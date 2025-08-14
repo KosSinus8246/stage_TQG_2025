@@ -1,6 +1,6 @@
 from KERNEL_TQG_solve_v3_bis import *
-import imageio.v2 as imageio
-import cmocean
+#import imageio.v2 as imageio
+#import cmocean
 
 from matplotlib.font_manager import FontProperties
 # Define bold font
@@ -52,7 +52,8 @@ timesteps : the snapshots that you want to see on the plot
 
 
 N = 25
-Lmin = 0.1
+Lmin = 0.
+#Lmin = 0.1
 L = 2*np.pi
 dh = L/N
 x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
@@ -60,7 +61,7 @@ x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 beta = 0.
 F1star = 0.
 U0 = 1.
-Theta0_U0 = 2.
+Theta0_U0 = 1.
 k0, l0 = 2., 0.
 Lstar = 0.5
 std = 0.
