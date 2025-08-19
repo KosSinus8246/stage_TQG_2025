@@ -53,6 +53,7 @@ timesteps : the snapshots that you want to see on the plot
 
 N = 25
 Lmin = 0.
+epsilon = 0.001
 #Lmin = 0.1
 L = 2*np.pi
 dh = L/N
@@ -64,7 +65,7 @@ U0 = 1.
 Theta0_U0 = 5.
 k0, l0 = 2., 0.
 Lstar = 0.5
-std = 0.5
+std = 0.
 
 
 BC = ''
@@ -105,7 +106,7 @@ psi_listNT_2 = []
 
 for i in tqdm(range(nb_modes)):
 
-	zeta, zetaNT, theta, psi, psiNT  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar)
+	zeta, zetaNT, theta, psi, psiNT  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar,epsilon)
 
 	zeta_list_2.append(zeta)
 	zeta_list_2NT.append(zetaNT)
@@ -371,6 +372,18 @@ for tick in cbar.ax.get_yticklabels():
 for spine in cbar.ax.spines.values():
 	spine.set_linewidth(1.5)
 
+# Log scale for y-axis
+ax.set_yscale('log')
+
+# Tick settings: major and minor ticks "in"
+ax.tick_params(axis='y', which='both', direction='in', length=4, width=1, color='k', labelcolor='k')
+ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
+ax.yaxis.set_minor_locator(LogLocator(base=10.0, subs='auto', numticks=10))
+ax.yaxis.set_ticks_position('both')  # Ticks on both left and right
+
+
+
+
 
 
 
@@ -415,6 +428,15 @@ for tick in cbar.ax.get_yticklabels():
 for spine in cbar.ax.spines.values():
 	spine.set_linewidth(1.5)
 
+
+# Log scale for y-axis
+ax.set_yscale('log')
+
+# Tick settings: major and minor ticks "in"
+ax.tick_params(axis='y', which='both', direction='in', length=4, width=1, color='k', labelcolor='k')
+ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
+ax.yaxis.set_minor_locator(LogLocator(base=10.0, subs='auto', numticks=10))
+ax.yaxis.set_ticks_position('both')  # Ticks on both left and right
 
 
 

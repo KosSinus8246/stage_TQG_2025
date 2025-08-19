@@ -131,7 +131,8 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 
 
 			fig, (ax) = plt.subplots(1,1)
-			ax.hist(noise,color='skyblue',edgecolor='k',density=True)
+			#ax.hist(noise,color='skyblue',edgecolor='k',density=True)
+			ax.plot(G12)
 			ax.set_xlabel('noise',fontweight='bold')
 			ax.set_ylabel('%',fontweight='bold')
 			ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
@@ -144,7 +145,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 
 
 
-	Thetabar = Theta0* np.exp(-yy**2)
+	Thetabar = Theta0 * np.exp(-yy**2)
 
 
 	G11 = 2.0*Un*(1-2*yy**2) + F1star*Un + beta - G12
@@ -304,7 +305,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 
 
 
-def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar):
+def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar,epsilon):
 
 	'''
 	Function that computes the parameters zeta, us, vs
@@ -362,14 +363,15 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		THETA_t = np.real(THETA_xy * np.exp(c_mode * t))
 		PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 
-		#PSI = np.real(PHI_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 		PSI = np.real(PHI_t * np.exp(-1j*(k0*xx + l0*yy - c_mode*t)))
+		#PSI = PHI_t
+
 
 		#THETA = np.real(THETA_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
 		THETA = np.real(THETA_t)
 
-		#PSI_NT = np.real(PHI_t_NT* np.exp(1j*(k0*xx+l0*yy - c_NT_mode*t)))
 		PSI_NT = np.real(PHI_t_NT * np.exp(-1j*(k0*xx + l0*yy - c_NT_mode*t)))
+		#PSI_NT = PHI_t_NT
 
 
 		zeta, zeta_NT = np.zeros_like(PSI), np.zeros_like(PSI)
@@ -383,8 +385,8 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		psi0_y[1:] = np.cumsum(0.5*(U1d[1:] + U1d[:-1])) * dh
 		psi_bg = psi0_y[:, None] * np.ones((1, N))
 
-		PSI    = PSI    - psi_bg
-		PSI_NT = PSI_NT - psi_bg
+		PSI    = epsilon*PSI    - psi_bg
+		PSI_NT = epsilon*PSI_NT - psi_bg
 
 		###
 
