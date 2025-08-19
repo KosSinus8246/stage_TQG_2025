@@ -107,10 +107,9 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 	Theta0 = Theta0_U0 *U0
 
 	Un = U0*np.exp(-(yy-L/2)**2)
-
-
 	Vn = Un*(dh**2)
 	K2 = (k0**2+l0**2 + F1star)*dh**2
+
 
 
 	if Lstar == 0.:
@@ -123,10 +122,13 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 		if std == 0:
 			print('NOISE : NONE')
 			G12 = G12
+			Un = Un
 		#G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Lstar**2)) # dThetabar/dy	
 		else:
 			print('NOISE : GAUSSIAN NOISE ; STD = ',std)
-			G12 = G12 + np.random.normal(0,std,len(G12))
+			noise = np.random.normal(0,std,len(G12))
+			G12 = G12 + noise
+
 
 
 
@@ -423,3 +425,44 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 
 
 
+def spatial_fourier_decomposition(psi, x, k_vals, dx):
+	"""
+	psi: numpy array of shape (T, X, Y)
+	x: 1D numpy array of x positions (length X)
+	k_vals: 1D array of wave numbers (length K)
+
+	Returns:
+	A_k: shape (K, T, Y)
+	phi_k: shape (K, T, Y)
+	A_bar_k: shape (K, T)
+	phi_bar_k: shape (K, T)
+	"""
+	T, X, Y = psi.shape
+	K = len(k_vals)
+
+	# Expand x for broadcasting
+	x = x.reshape(1, X, 1)  # shape (1, X, 1)
+	print(x.shape)
+
+	# Result arrays
+	c_k = np.zeros((K, T, Y))
+	s_k = np.zeros((K, T, Y))
+
+	for i, k in enumerate(k_vals):
+		cos_kx = np.cos(k * x)  # shape (1, X, 1)
+		sin_kx = np.sin(k * x)
+
+		# Element-wise multiply and sum over x
+		c_k[i] = np.sum(psi * cos_kx, axis=1)*dx
+		s_k[i] = np.sum(psi * sin_kx, axis=1)*dx
+
+	# Amplitude and phase
+	A_k = np.sqrt(c_k**2 + s_k**2)
+	#phi_k = np.arctan2(s_k, c_k)
+	phi_k = np.arctan(s_k/c_k)
+
+	# Integration over y (average for discrete grid)
+	A_bar_k = np.mean(A_k, axis=2)
+	phi_bar_k = np.mean(phi_k, axis=2)
+
+	return A_k, phi_k, A_bar_k, phi_bar_k
