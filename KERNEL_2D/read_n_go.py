@@ -61,7 +61,7 @@ x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 beta = 0.
 F1star = 0.
 U0 = 1.
-Theta0_U0 = 1.
+Theta0_U0 = 3.
 k0, l0 = 2., 0.
 Lstar = 0.5
 std = 0.
@@ -71,7 +71,7 @@ BC = ''
 crit = 'imag'
 
 timesteps = [0., 1., 2., 3., 4.]
-#timesteps = [0., 1., 3., 5., 7.]
+timesteps = [0., 10., 20., 30., 40.]
 
 
 #lev_cont = [-3000,-1500, 0, 1500, 3000]
@@ -137,6 +137,17 @@ psi_final = np.nansum(psi_list_2,axis=0)
 
 psi_listNT_2 = np.array(psi_listNT_2)
 psi_finalNT = np.nansum(psi_listNT_2,axis=0)
+
+
+################
+# spatial decomp
+
+k_vals = np.arange(0,9,1)*2*np.pi
+A_k, phi_k, A_bar_k, phi_bar_k = spatial_fourier_decomposition(psi_final, x_l, k_vals, dh)
+
+
+
+
 
 
 
@@ -301,6 +312,108 @@ for i in range(1,len(timesteps)):
 
 ax3[0,0].tick_params(left=True,bottom=False)
 ax3[1,0].tick_params(left=True)
+
+
+
+
+###########################
+# decomp
+
+fig, ax = plt.subplots(1, 1)
+import matplotlib.cm as cm
+from matplotlib.ticker import LogLocator
+import matplotlib.colors as mcolors
+from matplotlib import colormaps
+
+cmap = colormaps.get_cmap('plasma').resampled(len(k_vals)-1)
+
+for i in range(1, len(k_vals)):
+	color = cmap(i-1)
+	ax.plot(timesteps,A_bar_k[i, :], color=color)
+
+ax.set_yscale('log')
+
+ax.tick_params(axis='y', which='both', direction='in', length=4, width=1, color='k', labelcolor='k')
+ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
+ax.yaxis.set_minor_locator(LogLocator(base=10.0, subs='auto', numticks=10))
+ax.yaxis.set_ticks_position('both')
+
+ax.set_xlabel('Time', fontweight='bold')
+ax.set_ylabel(r'Amplitude', fontweight='bold')
+
+for tick in ax.get_yticklabels() + ax.get_xticklabels():
+	tick.set_fontweight('bold')
+
+for spine in ax.spines.values():
+	spine.set_linewidth(2)
+
+ax.set_xlim(0, timesteps[-1])
+ax.set_title(r'ψ-decomposition : ' + str(len(k_vals)-1) + ' modes', fontweight='bold')
+
+sm = plt.cm.ScalarMappable(cmap=cmap, norm=mcolors.Normalize(vmin=1, vmax=len(k_vals)-1))
+sm.set_array([])
+cbar = plt.colorbar(sm, ax=ax)
+cbar.set_label(r'Mode index', fontweight='bold')
+
+
+
+cbar.ax.yaxis.set_ticks_position('both')
+cbar.ax.yaxis.set_tick_params(labelleft=False,
+                               direction='in',
+                               length=2,width=1)
+
+for spine in cbar.ax.spines.values():
+	spine.set_linewidth(1.5)
+
+for tick in cbar.ax.get_yticklabels():
+	tick.set_fontweight('bold')
+
+for spine in cbar.ax.spines.values():
+	spine.set_linewidth(1.5)
+
+
+
+
+
+fig, ax = plt.subplots(1, 1)
+
+cmap = colormaps.get_cmap('plasma').resampled(len(k_vals)-1)
+
+
+for i in range(1, len(k_vals)):
+	color = cmap(i-1)
+	ax.plot(timesteps,phi_bar_k[i, :], color=color)
+
+
+ax.tick_params(axis='y', which='both', direction='in', length=4, width=1, color='k', labelcolor='k')
+ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
+ax.set_xlabel('Time', fontweight='bold')
+ax.set_ylabel(r'Phase', fontweight='bold')
+
+
+
+for tick in ax.get_yticklabels() + ax.get_xticklabels():
+	tick.set_fontweight('bold')
+for spine in ax.spines.values():
+	spine.set_linewidth(2)
+
+ax.set_title(r'ψ-decomposition : ' + str(len(k_vals)-1) + ' modes', fontweight='bold')
+
+sm = plt.cm.ScalarMappable(cmap=cmap, norm=mcolors.Normalize(vmin=1, vmax=len(k_vals)-1))
+sm.set_array([])
+cbar = plt.colorbar(sm, ax=ax)
+cbar.set_label(r'Mode index', fontweight='bold')
+cbar.ax.yaxis.set_ticks_position('both')
+cbar.ax.yaxis.set_tick_params(labelleft=False,
+                               direction='in',
+                               length=2,width=1)
+for spine in cbar.ax.spines.values():
+	spine.set_linewidth(1.5)
+for tick in cbar.ax.get_yticklabels():
+	tick.set_fontweight('bold')
+
+for spine in cbar.ax.spines.values():
+	spine.set_linewidth(1.5)
 
 
 
