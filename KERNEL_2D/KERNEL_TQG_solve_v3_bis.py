@@ -130,6 +130,18 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 			G12 = G12 + noise
 
 
+			fig, (ax) = plt.subplots(1,1)
+			ax.hist(noise,color='skyblue',edgecolor='k',density=True)
+			ax.set_xlabel('noise',fontweight='bold')
+			ax.set_ylabel('%',fontweight='bold')
+			ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
+			for spine in ax.spines.values():
+				spine.set_linewidth(2)
+			for tick in ax.get_yticklabels() + ax.get_xticklabels():
+				tick.set_fontweight('bold')
+
+
+
 
 
 	Thetabar = Theta0* np.exp(-yy**2)
@@ -442,7 +454,7 @@ def spatial_fourier_decomposition(psi, x, k_vals, dx):
 
 	# Expand x for broadcasting
 	x = x.reshape(1, X, 1)  # shape (1, X, 1)
-	print(x.shape)
+	
 
 	# Result arrays
 	c_k = np.zeros((K, T, Y))

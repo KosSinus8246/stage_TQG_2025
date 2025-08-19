@@ -61,17 +61,17 @@ x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 beta = 0.
 F1star = 0.
 U0 = 1.
-Theta0_U0 = 3.
+Theta0_U0 = 5.
 k0, l0 = 2., 0.
 Lstar = 0.5
-std = 0.
+std = 0.5
 
 
 BC = ''
 crit = 'imag'
 
 timesteps = [0., 1., 2., 3., 4.]
-timesteps = [0., 10., 20., 30., 40.]
+#timesteps = [0., 10., 20., 30., 40.]
 
 
 #lev_cont = [-3000,-1500, 0, 1500, 3000]
