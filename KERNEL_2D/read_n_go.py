@@ -51,7 +51,7 @@ timesteps : the snapshots that you want to see on the plot
 
 
 
-N = 25
+N = 30
 Lmin = 0.
 epsilon = 0.001
 #Lmin = 0.1
@@ -63,7 +63,7 @@ beta = 0.
 F1star = 0.
 U0 = 1.
 Theta0_U0 = 5.
-k0, l0 = 2., 0.
+k0 = 2.
 Lstar = 0.5
 std = 0.
 
@@ -71,18 +71,34 @@ std = 0.
 BC = ''
 crit = 'imag'
 
-timesteps = [0., 1., 2., 3., 4.]
-#timesteps = [0., 10., 20., 30., 40.]
+timesteps = [0., 1., 2., 3.]
 
 
 #lev_cont = [-3000,-1500, 0, 1500, 3000]
-lev_cont = 6
+lev_cont = 5
 
 
 #####
 # compute eigenvalues and eigenvectors
-x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lstar, std)
+x_l, y_l, xx, yy, c, c_NT, X, X_NT, Un, Thetabar = compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, dh, BC, Lstar, std)
 
+
+#####
+# computing linear max time
+sigma = np.max(np.imag(c)*k0)
+time_linear = (1/sigma) * np.log(1/epsilon)
+
+#sigmaNT = np.max(np.imag(c_NT)*k0)
+#time_linearNT = (1/sigmaNT) * np.log(1/epsilon)
+
+if timesteps[-1] > time_linear:
+	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+	print('WARNING : RANGE OF TIME OVER THE TIME MAX CRITERIA')
+	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+
+
+print('Maximum Linear Time TQG = ',time_linear)
+#print('Maximum Linear Time QG = ',time_linearNT)
 
 
 #####
@@ -106,10 +122,7 @@ psi_listNT_2 = []
 
 for i in tqdm(range(nb_modes)):
 
-	zeta, zetaNT, theta, psi, psiNT  = compute_variables(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar,epsilon)
-
-	zeta_list_2.append(zeta)
-	zeta_list_2NT.append(zetaNT)
+	theta, psi, psiNT  = compute_variables_prime(N,ix_norm_c__2[i], ix_norm_cNT__2[i], c, c_NT, X, X_NT,timesteps, k0, xx, yy, dh, Un, Thetabar,epsilon)
 
 	theta_list_2.append(theta)
 
@@ -121,23 +134,43 @@ for i in tqdm(range(nb_modes)):
 
 
 
-# convert all in an array
-zeta_list_2 = np.array(zeta_list_2)
-zeta_final = np.nansum(zeta_list_2,axis=0)
-
-zeta_list_2NT = np.array(zeta_list_2NT)
-zeta_finalNT = np.nansum(zeta_list_2NT,axis=0)
-
-
 theta_list_2 = np.array(theta_list_2)
 theta_final = np.nansum(theta_list_2,axis=0)
-
-
 psi_list_2 = np.array(psi_list_2)
 psi_final = np.nansum(psi_list_2,axis=0)
-
 psi_listNT_2 = np.array(psi_listNT_2)
 psi_finalNT = np.nansum(psi_listNT_2,axis=0)
+
+
+#PSI = PSI - Un*yy
+#PSI_NT = PSI_NT - Un*yy
+#####
+# Build background streamfunction psi0(y) = ∫ U(y) dy  (trapezoidal)
+U1d = Un[:, 0]
+psi0_y = np.zeros(N)
+psi0_y[1:] = np.cumsum(0.5*(U1d[1:] + U1d[:-1])) * dh
+psi_bg = psi0_y[:, None] * np.ones((1, N))
+
+
+PSI = np.zeros_like(psi_final)
+PSI_NT = np.zeros_like(psi_finalNT)
+THETA = np.zeros_like(theta_final)
+
+for i in range(len(timesteps)):
+
+	PSI[i,:,:]    = psi_final[i,:,:]    + psi_bg
+	PSI_NT[i,:,:] = psi_finalNT[i,:,:] + psi_bg
+	THETA[i,:,:]  = theta_final[i,:,:] + Thetabar
+	
+	
+
+
+ZETA, ZETANT = compute_zeta(N,len(timesteps),PSI, PSI_NT,dh)
+ZETA, ZETANT = ZETA[0,:,:,:], ZETANT[0,:,:,:]
+
+
+
+
 
 
 ################
@@ -153,7 +186,7 @@ A_k, phi_k, A_bar_k, phi_bar_k = spatial_fourier_decomposition(psi_final, x_l, k
 
 
 fig, ax = plt.subplots(2, len(timesteps), figsize=(16, 6))
-fig.suptitle(r'Evolution of ζ (top : TQG and bottom : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
+fig.suptitle(r'TQG : Evolution of ψ (top) and ζ (bottom) : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 
 # figure for theta
@@ -161,19 +194,21 @@ fig2, ax2 = plt.subplots(1, len(timesteps), figsize=(16, 4))
 fig2.suptitle(r'Evolution of Θ : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 fig3, ax3 = plt.subplots(2, len(timesteps), figsize=(16, 6))
-fig3.suptitle(r'Evolution of ψ (top : TQG and bottom : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
+fig3.suptitle(r'QG : Evolution of ψ (top) and ζ (bottom) : QG) : sum of '+str(nb_modes)+' modes', fontweight='bold')
 
 
 
 
-for i in range(zeta_final.shape[0]):
+
+
+for i in range(ZETA.shape[0]):
 	#im1 = ax[0,i].contourf(x,y,zeta_final[i,:,:],30,cmap='coolwarm',vmin=vmin,vmax=vmax)
-	im1 = ax[0,i].contourf(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],30,cmap='coolwarm')
+	im1 = ax[0,i].contourf(x[1:-1],y[1:-1],PSI[i,1:-1,1:-1],30,cmap='coolwarm')
 
 	ax[0,i].set_title(str(timesteps[i]))
 
 	#cs = ax[0,i].contour(x,y,zeta_final[i,:,:],15,colors='k')
-	cs = ax[0,i].contour(x[1:-1],y[1:-1],zeta_final[i,1:-1,1:-1],lev_cont,colors='k')
+	cs = ax[0,i].contour(x[1:-1],y[1:-1],PSI[i,1:-1,1:-1],lev_cont,colors='k')
 	lbl = ax[0,i].clabel(cs,colors='k')
 	for lbl in lbl:
 	        lbl.set_fontproperties(bold_font)
@@ -192,7 +227,7 @@ for i in range(zeta_final.shape[0]):
 		tick.set_fontweight('bold')
 
 
-	im_theta = ax2[i].contourf(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],30,cmap='coolwarm')
+	im_theta = ax2[i].contourf(x[1:-1],y[1:-1],THETA[i,1:-1,1:-1],30,cmap='coolwarm')
 	ax2[i].set_title(str(timesteps[i]))
 
 	ax2[i].set_xlim(np.min(x[1:-1]),np.max(x[1:-1]))
@@ -200,7 +235,7 @@ for i in range(zeta_final.shape[0]):
 
 	ax2[i].set_title('t = '+str(timesteps[i]), fontweight="bold")
 	ax2[i].tick_params(top=True,right=True,direction='in',size=4,width=1)
-	cs = ax2[i].contour(x[1:-1],y[1:-1],theta_final[i,1:-1,1:-1],lev_cont,colors='k')
+	cs = ax2[i].contour(x[1:-1],y[1:-1],THETA[i,1:-1,1:-1],lev_cont,colors='k')
 	lbl = ax2[i].clabel(cs,colors='k')
 	for lbl in lbl:
 		lbl.set_fontproperties(bold_font)
@@ -220,9 +255,9 @@ for i in range(zeta_final.shape[0]):
 
 
 	#im2 = ax[1,i].contourf(x,y,zeta_finalNT[i,:,:],30,cmap='coolwarm',vmin=vminNT,vmax=vmaxNT)
-	im2 = ax[1,i].contourf(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],30,cmap='coolwarm')
+	im2 = ax[1,i].contourf(x[1:-1],y[1:-1],ZETA[i,1:-1,1:-1],30,cmap='coolwarm')
 	#cs = ax[1,i].contour(x,y,zeta_finalNT[i,:,:],15,colors='k')
-	cs = ax[1,i].contour(x[1:-1],y[1:-1],zeta_finalNT[i,1:-1,1:-1],lev_cont,colors='k')
+	cs = ax[1,i].contour(x[1:-1],y[1:-1],ZETA[i,1:-1,1:-1],lev_cont,colors='k')
 
 	lbl = ax[1,i].clabel(cs,colors='k')
 	for lbl in lbl:
@@ -247,8 +282,8 @@ for i in range(zeta_final.shape[0]):
 
 
 
-	ax3[0,i].contourf(x[1:-1],y[1:-1],psi_final[i,1:-1,1:-1],30,cmap='coolwarm')
-	cs = ax3[0,i].contour(x[1:-1],y[1:-1],psi_final[i,1:-1,1:-1],lev_cont,colors='k')
+	ax3[0,i].contourf(x[1:-1],y[1:-1],PSI_NT[i,1:-1,1:-1],30,cmap='coolwarm')
+	cs = ax3[0,i].contour(x[1:-1],y[1:-1],PSI_NT[i,1:-1,1:-1],lev_cont,colors='k')
 	lbl = ax3[0,i].clabel(cs,colors='k')
 
 	ax3[0,i].set_title('t = '+str(timesteps[i]),fontweight='bold')
@@ -269,8 +304,8 @@ for i in range(zeta_final.shape[0]):
 
 
 
-	ax3[1,i].contourf(x[1:-1],y[1:-1],psi_finalNT[i,1:-1,1:-1],30,cmap='coolwarm')
-	cs = ax3[1,i].contour(x[1:-1],y[1:-1],psi_finalNT[i,1:-1,1:-1],lev_cont,colors='k')
+	ax3[1,i].contourf(x[1:-1],y[1:-1],ZETANT[i,1:-1,1:-1],30,cmap='coolwarm')
+	cs = ax3[1,i].contour(x[1:-1],y[1:-1],ZETANT[i,1:-1,1:-1],lev_cont,colors='k')
 	lbl = ax3[1,i].clabel(cs,colors='k')
 
 

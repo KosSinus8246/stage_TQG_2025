@@ -29,7 +29,7 @@ def get_ix(c, c_NT, crit):
 	if crit == 'imag':
 		norm_cNT = (np.imag(c_NT)**2)**0.5
 		norm_c = (np.imag(c)**2)**0.5
-
+	
 	elif crit == 'imag_real':
 		norm_cNT = (np.real(c_NT)**2 + np.imag(c_NT)**2)**0.5
 		norm_c = (np.real(c)**2 + np.imag(c)**2)**0.5
@@ -94,7 +94,7 @@ def get_ix(c, c_NT, crit):
 
 
 
-def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lstar, std):
+def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, dh, BC, Lstar, std):
 
 	'''
 	Function that computes eigenvalues and eigenvectors
@@ -108,7 +108,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 
 	Un = U0*np.exp(-(yy-L/2)**2)
 	Vn = Un*(dh**2)
-	K2 = (k0**2+l0**2 + F1star)*dh**2
+	K2 = (k0**2 + F1star)*dh**2
 
 
 
@@ -127,6 +127,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 		else:
 			print('NOISE : GAUSSIAN NOISE ; STD = ',std)
 			noise = np.random.normal(0,std,len(G12))
+			noise = np.abs(noise)/(np.max(noise))
 			G12 = G12 + noise
 
 
@@ -165,7 +166,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 
 
 	def ij_to_index(i, j, N):
-	    return i * N + j
+		return i * N + j
 
 	for i in range(N):
 		for j in range(N):
@@ -305,7 +306,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, l0, dh, BC, Lsta
 
 
 
-def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, l0, xx, yy, dh, Un, Thetabar,epsilon):
+def compute_variables_prime(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, k0, xx, yy, dh, Un, Thetabar,epsilon):
 
 	'''
 	Function that computes the parameters zeta, us, vs
@@ -340,6 +341,7 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 	# Extract eigenvalue and eigenvector
 	c_NT_mode = c_NT[ix_norm_cNT__]  # eigenvalue
 	X_NT_mode = X_NT[:, ix_norm_cNT__]  # eigenvector
+	
 
 	# Extract Theta from second half of X
 	#Theta_flat = X_mode[N*N:]
@@ -363,59 +365,18 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		THETA_t = np.real(THETA_xy * np.exp(c_mode * t))
 		PHI_t_NT = np.real(PHI_xy_NT * np.exp(c_NT_mode * t))
 
-		PSI = np.real(PHI_t * np.exp(-1j*(k0*xx + l0*yy - c_mode*t)))
+		PSI = np.real(PHI_t * np.exp(-1j*(k0*xx - c_mode*t)))
 		#PSI = PHI_t
 
 
-		#THETA = np.real(THETA_t* np.exp(1j*(k0*xx+l0*yy - c_mode*t)))
-		THETA = np.real(THETA_t)
+		THETA = np.real(THETA_t* np.exp(1j*(k0*xx - c_mode*t)))
+		#THETA = np.real(THETA_t)
 
-		PSI_NT = np.real(PHI_t_NT * np.exp(-1j*(k0*xx + l0*yy - c_NT_mode*t)))
+		PSI_NT = np.real(PHI_t_NT * np.exp(-1j*(k0*xx - c_NT_mode*t)))
 		#PSI_NT = PHI_t_NT
 
-
-		zeta, zeta_NT = np.zeros_like(PSI), np.zeros_like(PSI)
-
-		#PSI = PSI - Un*yy
-		#PSI_NT = PSI_NT - Un*yy
-		#####
-		# Build background streamfunction psi0(y) = ∫ U(y) dy  (trapezoidal)
-		U1d = Un[:, 0]
-		psi0_y = np.zeros(N)
-		psi0_y[1:] = np.cumsum(0.5*(U1d[1:] + U1d[:-1])) * dh
-		psi_bg = psi0_y[:, None] * np.ones((1, N))
-
-		PSI    = epsilon*PSI    - psi_bg
-		PSI_NT = epsilon*PSI_NT - psi_bg
-
-		###
-
-
-
-
-		#THETA = THETA - Thetabar
-
-		# loop to compute physical params
-
-		for j in range(1,N-1):
-			for k in range(1,N-1):
-
-
-				zeta[j,k] = (PSI[j,k+1] -2*PSI[j,k] + PSI[j,k-1])/(dh**2) +\
-				 (PSI[j+1,k] -2*PSI[j,k] + PSI[j-1,k])/(dh**2) 
-				zeta_NT[j,k] = (PSI_NT[j,k+1] -2*PSI_NT[j,k] + PSI_NT[j,k-1])/(dh**2) +\
-				 (PSI_NT[j+1,k] -2*PSI_NT[j,k] + PSI_NT[j-1,k])/(dh**2)
-
-		# stack it into a list
-
-		zeta_list.append(zeta)
-
-		#u_s_list.append(u_s)
-		#v_s_list.append(v_s)
-
-		zeta_listNT.append(zeta_NT)
-		#u_s_listNT.append(u_sNT)
-		#v_s_listNT.append(v_sNT)
+	
+		#zeta, zeta_NT = np.zeros_like(PSI), np.zeros_like(PSI)
 
 		theta_list.append(THETA)
 
@@ -424,18 +385,46 @@ def compute_variables(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,timesteps, 
 		psi_listNT.append(PSI_NT)
 
 
-	# convert the final list into an array
-
-	zeta_list = np.array(zeta_list)
-	zeta_listNT = np.array(zeta_listNT)
 	theta_list = np.array(theta_list)
 
-	psi_list = np.array(psi_list)
-	psi_listNT = np.array(psi_listNT)
+	psi_list = np.array(psi_list)*epsilon
+	psi_listNT = np.array(psi_listNT)*epsilon
 
 
 
-	return zeta_list, zeta_listNT, theta_list, psi_list, psi_listNT
+	return theta_list, psi_list, psi_listNT
+
+
+
+def compute_zeta(N,Ntime,PSI, PSI_NT,dh):
+	zeta = np.zeros_like(PSI)
+	zeta_NT = np.zeros_like(PSI_NT)
+	
+	zeta_list = []
+	zetaNT_list = []
+
+	for i in range(Ntime):
+		for j in range(1,N-1):
+			for k in range(1,N-1):
+
+
+				zeta[i,j,k] = (PSI[i,j,k+1] -2*PSI[i,j,k] + PSI[i,j,k-1])/(dh**2) +\
+				(PSI[i,j+1,k] -2*PSI[i,j,k] + PSI[i,j-1,k])/(dh**2) 
+				zeta_NT[i,j,k] = (PSI_NT[i,j,k+1] -2*PSI_NT[i,j,k] + PSI_NT[i,j,k-1])/(dh**2) +\
+				(PSI_NT[i,j+1,k] -2*PSI_NT[i,j,k] + PSI_NT[i,j-1,k])/(dh**2)
+
+		# stack it into a list
+
+	zeta_list.append(zeta)
+	zetaNT_list.append(zeta_NT)
+	
+	ZETA = np.array(zeta_list)
+	ZETATN = np.array(zetaNT_list)
+	
+	return ZETA, ZETATN
+
+
+
 
 
 
