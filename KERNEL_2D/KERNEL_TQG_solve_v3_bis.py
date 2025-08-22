@@ -16,7 +16,7 @@ print('-----------------------------------------------------')'''
 
 # cf TQG notes : A.X = c.B.X is the 2D system that is solved here
 # and also the 2D non thermal system
-# @uthor : dimitri moreau 16/07/2025
+# @uthor : dimitri moreau 22/08/2025
 
 
 def get_ix(c, c_NT, crit):
@@ -130,21 +130,7 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, dh, BC, Lstar, s
 		noise = np.abs(noise)/(np.max(noise))
 		G12 = G12 + noise
 
-		'''
-		fig, (ax) = plt.subplots(1,1)
-		#ax.hist(noise,color='skyblue',edgecolor='k',density=True)
-		ax.plot(G12)
-		ax.set_xlabel('noise',fontweight='bold')
-		ax.set_ylabel('%',fontweight='bold')
-		ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
-		for spine in ax.spines.values():
-			spine.set_linewidth(2)
-		for tick in ax.get_yticklabels() + ax.get_xticklabels():
-			tick.set_fontweight('bold')'''
-
-
-
-
+		
 
 	Thetabar = Theta0 * np.exp(-yy**2)
 
