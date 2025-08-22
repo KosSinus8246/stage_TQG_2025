@@ -62,8 +62,8 @@ x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 beta = 0.
 F1star = 0.
 U0 = 1.
-Theta0_U0 = 5.
-k0 = 2.
+Theta0_U0 = 1.
+k0 = 1.
 Lstar = 0.5
 std = 0.
 
@@ -72,10 +72,11 @@ BC = ''
 crit = 'imag'
 
 timesteps = [0., 1., 2., 3.]
+#timesteps = [0., 2., 4., 6.]
 
 
-#lev_cont = [-3000,-1500, 0, 1500, 3000]
-lev_cont = 5
+#lev_cont = [-0.75,-0.5, 0., 0.5, 0.75]
+lev_cont = 6
 
 
 #####
@@ -97,7 +98,9 @@ if timesteps[-1] > time_linear:
 	print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
 
 
+print('-----------------------------------------------------')
 print('Maximum Linear Time TQG = ',time_linear)
+print('-----------------------------------------------------')
 #print('Maximum Linear Time QG = ',time_linearNT)
 
 

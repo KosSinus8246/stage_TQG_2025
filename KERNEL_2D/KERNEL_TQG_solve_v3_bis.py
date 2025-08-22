@@ -119,28 +119,28 @@ def compute_TQG_2D(N, Lmin, L, beta, F1star, U0, Theta0_U0, k0, dh, BC, Lstar, s
 		print('CONF : LSTAR-EFFECT')
 		G12 = (-2/Lstar**2)*yy*Theta0*np.exp(-(y_l**2)/(Lstar**2)) # dThetabar/dy
 
-		if std == 0:
-			print('NOISE : NONE')
-			G12 = G12
-			Un = Un
-		#G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Lstar**2)) # dThetabar/dy	
-		else:
-			print('NOISE : GAUSSIAN NOISE ; STD = ',std)
-			noise = np.random.normal(0,std,len(G12))
-			noise = np.abs(noise)/(np.max(noise))
-			G12 = G12 + noise
+	if std == 0:
+		print('NOISE : NONE')
+		G12 = G12
+		Un = Un
+	#G12 = -(2/Ly**2)*y_l*Theta0*np.exp(-(y_l**2)/(Lstar**2)) # dThetabar/dy	
+	else:
+		print('NOISE : GAUSSIAN NOISE ; STD = ',std)
+		noise = np.random.normal(0,std,len(G12))
+		noise = np.abs(noise)/(np.max(noise))
+		G12 = G12 + noise
 
-
-			fig, (ax) = plt.subplots(1,1)
-			#ax.hist(noise,color='skyblue',edgecolor='k',density=True)
-			ax.plot(G12)
-			ax.set_xlabel('noise',fontweight='bold')
-			ax.set_ylabel('%',fontweight='bold')
-			ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
-			for spine in ax.spines.values():
-				spine.set_linewidth(2)
-			for tick in ax.get_yticklabels() + ax.get_xticklabels():
-				tick.set_fontweight('bold')
+		'''
+		fig, (ax) = plt.subplots(1,1)
+		#ax.hist(noise,color='skyblue',edgecolor='k',density=True)
+		ax.plot(G12)
+		ax.set_xlabel('noise',fontweight='bold')
+		ax.set_ylabel('%',fontweight='bold')
+		ax.tick_params(top=True, right=True, direction='in', length=4, width=1)
+		for spine in ax.spines.values():
+			spine.set_linewidth(2)
+		for tick in ax.get_yticklabels() + ax.get_xticklabels():
+			tick.set_fontweight('bold')'''
 
 
 
@@ -368,9 +368,7 @@ def compute_variables_prime(N,ix_norm_c__, ix_norm_cNT__, c, c_NT, X, X_NT,times
 		PSI = np.real(PHI_t * np.exp(-1j*(k0*xx - c_mode*t)))
 		#PSI = PHI_t
 
-
-		THETA = np.real(THETA_t* np.exp(1j*(k0*xx - c_mode*t)))
-		#THETA = np.real(THETA_t)
+		THETA = np.real(THETA_t)
 
 		PSI_NT = np.real(PHI_t_NT * np.exp(-1j*(k0*xx - c_NT_mode*t)))
 		#PSI_NT = PHI_t_NT
