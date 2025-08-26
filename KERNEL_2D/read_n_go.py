@@ -59,7 +59,7 @@ x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 beta = 0.
 F1star = 0.
 U0 = 1.
-Theta0_U0 = 1.
+Theta0_U0 = 6.
 k0 = 2.
 Lstar = 0.5
 std = 0.
@@ -69,7 +69,7 @@ BC = ''
 crit = 'imag'
 
 timesteps = [0., 1., 2., 3.]
-timesteps = [0., 0.33, 0.66, 1.]
+#timesteps = [0., 0.33, 0.66, 1.]
 
 
 #lev_cont = [-0.75,-0.5, 0., 0.5, 0.75]
@@ -158,9 +158,9 @@ THETA = np.zeros_like(theta_final)
 
 for i in range(len(timesteps)):
 
-	PSI[i,:,:]    = psi_final[i,:,:]    + psi_bg
-	PSI_NT[i,:,:] = psi_finalNT[i,:,:] + psi_bg
-	THETA[i,:,:]  = theta_final[i,:,:] + Thetabar
+	PSI[i,:,:]    = psi_final[i,:,:]    - psi_bg
+	PSI_NT[i,:,:] = psi_finalNT[i,:,:] - psi_bg
+	THETA[i,:,:]  = theta_final[i,:,:] - Thetabar
 	
 	
 
