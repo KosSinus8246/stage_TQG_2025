@@ -59,7 +59,7 @@ x, y = np.linspace(Lmin,L,N), np.linspace(Lmin,L,N)
 beta = 0.
 F1star = 0.
 U0 = 1.
-Theta0_U0 = 6.
+Theta0_U0 = 1.
 k0 = 2.
 Lstar = 0.5
 std = 0.
@@ -69,7 +69,7 @@ BC = ''
 crit = 'imag'
 
 timesteps = [0., 1., 2., 3.]
-#timesteps = [0., 0.3, 0.6, 0.9]
+timesteps = [0., 0.33, 0.66, 1.]
 
 
 #lev_cont = [-0.75,-0.5, 0., 0.5, 0.75]
@@ -325,6 +325,10 @@ for i in range(ZETA.shape[0]):
 	ax3[1,i].set_ylim(np.min(y[1:-1]),np.max(y[1:-1]))
 
 
+	ax3[0,i].tick_params(top=True,right=True,labelbottom=False,direction='in',size=4,width=1)
+	ax3[1,i].tick_params(top=True,right=True,direction='in',size=4,width=1)
+
+
 
 
 ax[0,0].set_ylabel(r'y', fontweight="bold")
@@ -346,8 +350,8 @@ for i in range(1,len(timesteps)):
 	ax3[1,i].tick_params(top=True,right=True,labelbottom=True,labelleft=False,direction='in',size=4,width=1)
 
 
-ax3[0,0].tick_params(left=True,bottom=False)
-ax3[1,0].tick_params(left=True)
+#ax3[0,0].tick_params(left=True,labelbottom=False)
+#ax3[1,0].tick_params(left=True,bottom=False)
 
 
 
