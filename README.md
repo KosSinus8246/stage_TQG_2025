@@ -6,6 +6,7 @@ Here's a set of codes that are solving an eigenvalue Thermal-QG and QG problem :
 The version 2 is the actual version of TQG solve 1D TARANIS 
 
 The version 3 is the actual version of TQG solve 2D JULIE 
+but you should use the KERNEL 2D Version
 
 The bis in the name means that the script solves QG and TQG cases.
 
